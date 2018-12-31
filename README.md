@@ -31,7 +31,7 @@ Calculating the evolution in time of the effective radius and effective temperat
 * `matplotlib`
 * `pyphot`
 
-## How to run the `SLAB-Diffusion` code?
+## How to run the `PhotoFit` code?
 
 ### Edit the params.py file
 
