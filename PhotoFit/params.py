@@ -1,0 +1,25 @@
+## Parameters used in script.py ##
+mcmc=False# if False, plot with linear fit. If True, plots with mcmc
+output_file_mcmc='./results_fit_sed_mcmc'
+output_file_linear='./results_fit_sed_matrix'
+output_file_interpolation='/Users/maayanesoumagnac/PostDoc/projects/2018fif/results_interpolation'
+z = 0.017189 #redshift to correct for.
+distance_modulus=34.31
+explosion_date=2458351.653729907237
+EBV=0.13564
+data_file='/Users/maayanesoumagnac/PostDoc/projects/2018fif/data/data_ZTF_Swift_3_subtracted.txt' #must have at least the following fiels, and a header with the fields written as such: jd,mag,magerr,flux,fluxerr,absmag,absmagerr,filter,instr
+dates_file='/Users/maayanesoumagnac/PostDoc/projects/2018fif/dates.txt'
+lower_limit_on_flux=1e-40
+already_run_interp_errors_UVW1=True
+already_run_interp_errors_UVW2=True
+already_run_interp_errors_UVM2=True
+already_run_interp_errors_u_swift=True
+already_run_interp_errors_b_swift=True
+already_run_interp_errors_v_swift=True
+already_run_interp_errors_r_sdss=True
+already_run_interp_errors_g_sdss=True
+already_run_interp_errors_i_sdss=True
+already_run_interp_errors_r_p48=True
+already_run_interp_errors_g_p48=True
+filters_directory='/Users/maayanesoumagnac/Maayane_Astro_python_library/data/filters'
+already_run_mcmc=False
