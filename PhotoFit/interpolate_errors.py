@@ -1,11 +1,6 @@
 #! //anaconda/bin/python
 
-"""*******************************************************
-This codes deroves eerors of onterpolated points, by runninng a mcmc to fit a linear fintion between two dajacent points which have errors
-*****************************************************
-"""
-#print(__doc__
-
+## NOTE: if the sampling does not work it may be due to zero errors.
 import pdb
 
 import numpy as np
@@ -17,7 +12,7 @@ from scipy.interpolate import interp1d
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_run=False,show_plot=True,title=None):
+def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_run=False,plot=True,show_plot=True,title=None):
     """Description: given a value, select the line of array with the first colomn closest to the value
     Input  :- N-3 array with the known x position, y positions, errors
             - an M-1 array with the x positions on which to interpolate
@@ -32,31 +27,36 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
     #print('we will interpolate {0} on {1}'.format(data,x_on_which_to_interpolate)
     #print(data)
     #pdb.set_trace()
-    pylab.figure()
-    pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red')
-    #print('data[:,0] is',data[:,0])
-    #print('x is',x_on_which_to_interpolate)
-    #pdb.set_trace()
-    for i,j in enumerate(x_on_which_to_interpolate):
-        pylab.axvline(j, linestyle='--')
+    if plot==True:
+        pylab.figure()
+        pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red',label='data')
+        #print('data[:,0] is',data[:,0])
+        #print('x is',x_on_which_to_interpolate)
+        #pdb.set_trace()
+        for i,j in enumerate(x_on_which_to_interpolate):
+            pylab.axvline(j, linestyle='--')
+        pylab.axvline(x_on_which_to_interpolate[0],label='interpolation dates')
+        if title is not None:
+            pylab.title(title)
+        pylab.legend()
     #pylab.show()
     #print('data is',data)
     Results_array=np.empty((np.shape(x_on_which_to_interpolate)[0],5))
     # calculate the interpolated values with interp1d
     interpol_1d= interp1d(data[:,0], data[:,1])
-    print('test')
+    #print('test')
     #print(interpol_1d(x_on_which_to_interpolate[0]))
-    print(np.shape(data[:,0]))
-    print(np.shape(data[:, 1]))
-    print(x_on_which_to_interpolate)
-    print('the shape of x is',np.shape(x_on_which_to_interpolate))
+    #print(np.shape(data[:,0]))
+    #print(np.shape(data[:, 1]))
+    #print(x_on_which_to_interpolate)
+   # print('the shape of x is',np.shape(x_on_which_to_interpolate))
     values_with_interp1d=np.zeros(np.shape(x_on_which_to_interpolate))
     for i,j in enumerate(values_with_interp1d):#je sais pas pourquoi, en python3 c est necessaire
         values_with_interp1d[i]=interpol_1d(x_on_which_to_interpolate[i])
     already_run=already_run
     if already_run==False:
         for i,j in enumerate(x_on_which_to_interpolate):
-            #print('i is {0} and j is {1}'.format(i,j))
+            print('i is {0} and j is {1}'.format(i,j))
             print('I am interpolating on ',x_on_which_to_interpolate)
             print('the data x I am interpolating is',data[:,0])
             #pdb.set_trace()
@@ -114,17 +114,12 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
             #print('b_ini is {0}'.format(b_ini))
             if a_ini==0.:#CE CAS MARCHE MAL, preferer une alternative
                 prior_a=np.array([-0.001,0.001])
-                prior_b = np.sort(np.array([y_lower + 0.1 * y_lower, y_higher - 0.1 * y_higher]))
-                #prior_b = np.array([y_lower+0.05*y_lower, y_higher-0.05*y_higher])
-                #prior_b = np.array([y_lower + 5 * y_lower, y_higher - 5 * y_higher])
-                #print('prior on b is',prior_b)
-                #pdb.set_trace()
+                prior_b = np.sort(np.array([y_lower + 0.* y_lower, y_higher - 0.1 * y_higher]))
 
             else:
-                prior_a=np.array([0.3*a_ini,3*a_ini])
-                #prior_b=np.array([0.5*y_lower,5*y_higher])
+                prior_a=np.array([0.1*a_ini,10*a_ini])
                 prior_bx=np.sort(np.array([y_lower,y_higher]))
-                prior_b = np.array([0.9*np.min(prior_bx),1.1*np.max(prior_bx)])
+                prior_b = np.array([0.1*np.min(prior_bx),1.9*np.max(prior_bx)])
             #print('the prior on b is {0}'.format(prior_b))
             #fit a my_data a(x-j)+b avec meme:
             class model_linear_x_fixed(object):  # given tref,A(t-tref])**n
@@ -184,46 +179,50 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
 
 
     else:
+        print('I am looking into',output_path+'/Results_array.txt')
         Results_array=np.genfromtxt(output_path+'/Results_array.txt',skip_header=1)
+        print('Result is',Results_array)
     #print('Results_array is',Results_array)
-    pylab.figure()
-    pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red',label='data to interpolate')
-    for i,j in enumerate(x_on_which_to_interpolate):
-        #pylab.axvline(j, linestyle='--')
-        #print(np.shape(Results_array))
-        #print(Results_array)
-        #print(i)
-        if Results_array.ndim>1:
-            #print(Results_array[i,3])
-            #print(Results_array[i,4])
-            pylab.plot(j,Results_array[i,1],'bo')#,label='interpolation with interp1d')
-            pylab.plot(j,Results_array[i,2],'go')#,label='best b in linear fit')
-            #pylab.errorbar(j,Results_array[i.T,color='green')
-            pylab.vlines(j,Results_array[i,3],Results_array[i,4],color='green')
+    if plot==True:
+        pylab.figure()
+        pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red',label='data')
+        for i,j in enumerate(x_on_which_to_interpolate):
+            #pylab.axvline(j, linestyle='--')
+            #print(np.shape(Results_array))
+            #print(Results_array)
+            #print(i)
+            if Results_array.ndim>1:
+                #print(Results_array[i,3])
+                #print(Results_array[i,4])
+                pylab.plot(j,Results_array[i,1],'bo')#,label='interpolation with interp1d')
+                pylab.plot(j,Results_array[i,2],'go')#,label='best b in linear fit')
+                #pylab.errorbar(j,Results_array[i.T,color='green')
+                pylab.vlines(j,Results_array[i,3],Results_array[i,4],color='green')
+            else:
+                #print(Results_array[i, 3])
+                #print(Results_array[i, 4])
+                pylab.plot(j, Results_array[1], 'bo')  # ,label='interpolation with interp1d')
+                pylab.plot(j, Results_array[2], 'go')  # ,label='best b in linear fit')
+                # pylab.errorbar(j,Results_array[i.T,color='green')
+                pylab.vlines(j, Results_array[3], Results_array[4], color='green')
+
+        if Results_array.ndim > 1:
+            pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 1], 'bo', label='interpolation with interp1d')
+            pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 2], 'go', label='best b in mcmc fit')
         else:
-            #print(Results_array[i, 3])
-            #print(Results_array[i, 4])
-            pylab.plot(j, Results_array[1], 'bo')  # ,label='interpolation with interp1d')
-            pylab.plot(j, Results_array[2], 'go')  # ,label='best b in linear fit')
-            # pylab.errorbar(j,Results_array[i.T,color='green')
-            pylab.vlines(j, Results_array[3], Results_array[4], color='green')
+            pylab.plot(x_on_which_to_interpolate[0], Results_array[1], 'bo', label='interpolation with interp1d')
+            pylab.plot(x_on_which_to_interpolate[0], Results_array[2], 'go', label='best b in mcmc fit')
 
-    if Results_array.ndim > 1:
-        pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 1], 'bo', label='interpolation with interp1d')
-        pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 2], 'go', label='best b in mcmc fit')
-    else:
-        pylab.plot(x_on_which_to_interpolate[0], Results_array[1], 'bo', label='interpolation with interp1d')
-        pylab.plot(x_on_which_to_interpolate[0], Results_array[2], 'go', label='best b in mcmc fit')
+        pylab.legend()
+        pylab.savefig(output_path+'/Plot_w_interpolated_errors.pdf',
+            facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+            bbox_inches=None, pad_inches=0.5)
+        if title is not None:
+            pylab.title(title)
+        if show_plot==True:
+            pylab.show()
+        #pylab.plot()
 
-    pylab.legend()
-    pylab.savefig(output_path+'/Plot_w_interpolated_errors.pdf',
-        facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
-        bbox_inches=None, pad_inches=0.5)
-    if show_plot==True:
-        pylab.show()
-    #pylab.plot()
-    if title is not None:
-        pylab.title(title)
     return Results_array
 
 

@@ -1,25 +1,20 @@
 #! //anaconda/bin/python
 
-"""*******************************************************
-
-******************************************************"""
-#print(__doc__)
 
 
 import os
 import numpy as np
 import pdb
-import calc_black_body_flux_filters
+from . import calc_black_body_flux_filters
 import pylab
-import distances_conversions
-import energy_conversions
+from . import distances_conversions
+from . import energy_conversions
 import math
 import logging
 import pyphot
-import correct_spectrum
-import fitter_general
-import get_filter
-import black_body_flux_density
+from . import fitter_general
+from . import get_filter
+from . import black_body_flux_density
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

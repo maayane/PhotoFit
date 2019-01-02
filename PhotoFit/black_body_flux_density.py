@@ -1,15 +1,10 @@
 
-"""*******************************************************
-This module has functions converting distances
-*****************************************************
-"""
-#print __doc__
 
 import astropy
 from astropy import constants as const
 import math
-import distances_conversions
-import extinction
+from . import distances_conversions
+from . import extinction
 import numpy as np
 import pdb
 import pylab

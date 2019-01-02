@@ -1,33 +1,21 @@
 #! //anaconda/bin/python
 
-"""*******************************************************
-This code calcultes the magnitude of a black_body in a given filter, given its temperature T, Radius and distance
-******************************************************"""
-__author__ = 'maayanesoumagnac'
-
-print(__doc__)
 
 import numpy as np
-import get_filter
-import astropy
-from astropy import constants as const
-import pdb
-import black_body_flux_density
-import distances_conversions
-import extinction
+from . import get_filter
+from . import black_body_flux_density
+from . import distances_conversions
 import pylab
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
-import matplotlib
-import math
 import pyphot
 import os
 import logging
 import shutil
+import pdb
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def calc_black_body_flux_filters(Temp,wavelengths,Filter_vector=None,P_vector=None,Radius=None,distance_pc=None,output_txt=True,output_plot=True,lib=None,show_plots=False,Ebv=None,R_ext=None,z=0,output_file=None):
+def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_vector=None,P_vector=None,Radius=None,distance_pc=None,output_txt=True,output_plot=True,lib=None,show_plots=False,Ebv=None,R_ext=None,z=0,output_file=None):
     """This code calcultes the synthetic flux \bar{f}(P) of a black_body in a given filter P (filter family and filter name), given its temperature T, Radius and distance.
     Input  :- Temperature [K]
             - wavelengths [m]
@@ -58,7 +46,7 @@ def calc_black_body_flux_filters(Temp,wavelengths,Filter_vector=None,P_vector=No
     #print('I am running calc_blacl_body_flux_filter'
     if Filter_vector is None and P_vector is None:
         print('ERROR: you need to define either Filter_vector or P_vector')
-        exit
+        pdb.set_trace()
     if output_txt==True:
         if os.path.exists('./outputs_from_calc_black_body_flux_filters_function'):
             logger.info('output_path/txt_files did exist, I am removing it and creating a new one')
@@ -102,7 +90,8 @@ def calc_black_body_flux_filters(Temp,wavelengths,Filter_vector=None,P_vector=No
 
 
     if Filter_vector is not None:
-        [P, wav]=get_filter.make_filter_object(Filter_vector)
+        #print('filters_directory:',filters_directory)
+        [P, wav]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
         output_array = np.empty([np.shape(Filter_vector)[0], 4], dtype=object)
         string = np.empty(np.shape(Filter_vector)[0], dtype=object)
         for i,j in enumerate(Filter_vector):

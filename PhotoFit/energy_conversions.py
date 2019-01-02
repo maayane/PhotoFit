@@ -1,5 +1,5 @@
 """*******************************************************
-This module has functions converting distances
+This module has functions converting energies
 *****************************************************
 """
 #print __doc__

@@ -1,24 +1,14 @@
 #! /usr/bin/env python
 
-"""*******************************************************
-uses emcee and class_chi2 to fit data with a model of 1, 2, 3, 4 parameters
-*******************************************************"""
-#print __doc__
-
 
 import numpy as np
-import class_chi2
-import models
+from . import class_chi2
 import emcee
 import pylab
 import corner
-import pdb
 import scipy.optimize as op
-import triangle
 import os
-import matplotlib
-#ndim=2
-#matplotlib.rcParams.update({'font.size': 22})
+
 
 # simple power lax ax^n or a(x-xref)^n
 '''

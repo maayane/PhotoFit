@@ -1,9 +1,6 @@
 #! //anaconda/bin/python
 
-"""*******************************************************
 
-******************************************************"""
-#print __doc__
 
 import numpy as np
 import sys
@@ -12,7 +9,7 @@ import numpy as np
 from . import black_body_flux_density
 from . import calc_black_body_flux_filters
 import pylab
-import fitting_tools
+from . import fitting_tools
 from . import distances_conversions
 from . import energy_conversions
 import math
@@ -87,15 +84,15 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	mags=np.zeros(np.shape(Filter_vector)[0])
 	mags_correct = np.zeros(np.shape(Filter_vector)[0])
 	lib = pyphot.get_library()
-	print('The filters library contains {0} filters'.format(len(lib)))
-	print('from which the following filters are used here:')
-	print(Filter_vector)
+	#print('The filters library contains {0} filters'.format(len(lib)))
+	#print('from which the following filters are used here:')
+	print('Filter_vector:',Filter_vector)
 	[P_vectorx, effective_wavelength] = get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
-	print('the shape of Filter vector is', np.shape(Filter_vector)[0])
+	#print('the shape of Filter vector is', np.shape(Filter_vector)[0])
 	P_vector = np.empty((np.shape(Filter_vector)[0], 3), dtype=object)
-	print(np.shape(P_vector))
-	print(P_vectorx['filter_family'])
-	print(np.shape(P_vectorx['filter_family'][:]))
+	#print(np.shape(P_vector))
+	#print(P_vectorx['filter_family'])
+	#print(np.shape(P_vectorx['filter_family'][:]))
 	P_vector[:, 0] = P_vectorx['filter_family'][:]
 	P_vector[:, 1] = P_vectorx['filter_name'][:]
 	P_vector[:, 2] = P_vectorx['filter_object'][:]
@@ -119,7 +116,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	#print('wavelengths are',wavelengths)
 	#pdb.set_trace()
 	wavelengths_in_meters=wavelengths*1e-10
-	print(P_vector)
+	#print(P_vector)
 	'''
 	for i, s in enumerate(Filter_vector):
 
@@ -188,12 +185,12 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 			print('*********************')
 			print('i=',i)
 			print('*********************')
-			A = np.array(calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9), Filter_vector,Radius=None, distance_pc=None, output_plot=False,show_plots=False,output_txt=False, lib=lib,z=z,Ebv=Ebv)[:, 3])
+			A = np.array(calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9), Filter_vector=Filter_vector,Radius=None, distance_pc=None, output_plot=False,show_plots=False,output_txt=False, lib=lib,z=z,Ebv=Ebv)[:, 3])
 			matrix_solution = np.dot(1. / (np.dot(A.transpose(), A)), (np.dot(A.transpose(), spectrum_flux[:,1])))
 			coeff1[i] = matrix_solution
 			Xi_array[i, 2] = fitting_tools.objective_no_cov(
 					coeff1[i] * calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9),
-																						  Filter_vector, Radius=None,
+																						  Filter_vector=Filter_vector, Radius=None,
 																						  distance_pc=None,
 																						  output_txt=False,
 																						  output_plot=False, lib=lib,z=z, Ebv=Ebv)[:, 3],spectrum_flux[:, 0:2]).chi_square_value()
@@ -214,19 +211,19 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 			print('i=',i)
 			print('*********************')
 			A = np.array(
-				calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9), Filter_vector,
+				calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9), Filter_vector=Filter_vector,
 																		  Radius=None, distance_pc=None, output_txt=False,
-																		  output_plot=False, lib=lib,z=z,Ebv=Ebv)[:, 3])
+																		  output_plot=False, lib=lib,z=z,Ebv=Ebv,filters_directory=filters_directory)[:, 3])
 			matrix_solution=np.dot(1./(np.dot(np.dot(A.transpose(),invcov),A)),(np.dot(np.dot(A.transpose(),invcov),spectrum_flux[:,1])))
 			coeff1[i] = matrix_solution
 			#print('coeff1[i] is',coeff1[i])
 			#print('j is',j)
 			Xi_array[i, 2] = fitting_tools.objective_with_cov(
 					coeff1[i] * calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9),
-																						  Filter_vector, Radius=None,
+																						  Filter_vector=Filter_vector, Radius=None,
 																						  distance_pc=None,
 																						  output_txt=False,
-																						  output_plot=False, lib=lib,z=z,Ebv=Ebv)[:,
+																						  output_plot=False, lib=lib,z=z,Ebv=Ebv,filters_directory=filters_directory)[:,
 								3], spectrum_flux[:,0:2], invcov).chi_square_value()
 			coeff1[i] = matrix_solution
 			Xi_array[i, 0] = j
@@ -271,7 +268,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	#This is in case there are 2 param in model l1*black_body+l2: pylab.plot(Spectrum_corrected[:,0]*1e9,best_coeff1*black_body_flux_density.black_body_flux_density(best_temp, Spectrum_corrected[:, 0], 'P')[0][:,1]+best_coeff2,'-b',label='best fit')
 	if z!=0:
 		pylab.plot(spectrum_flux[:,0],
-			   best_coeff1 * calc_black_body_flux_filters.calc_black_body_flux_filters(best_temp,np.arange(1e-7, 3e-6, 1e-9),Filter_vector, Radius=None,distance_pc=None,output_plot=False,output_txt=False,z=z,Ebv=Ebv)[:,3]
+			   best_coeff1 * calc_black_body_flux_filters.calc_black_body_flux_filters(best_temp,np.arange(1e-7, 3e-6, 1e-9),Filter_vector=Filter_vector,filters_directory=filters_directory,Radius=None,distance_pc=None,output_plot=False,output_txt=False,z=z,Ebv=Ebv)[:,3]
 ,
 			   'ro', label='synphot(best fit redshifted+extincted)')
 	#else:
@@ -282,7 +279,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	#																			Filter_vector, Radius=None,
 	#																			distance_pc=None, output_plot=False,
 	#																			output_txt=False)[:, 3],'go', label = 'best fit')
-	print('bb')
+	#print('bb')
 	bb=black_body_flux_density.black_body_flux_density(best_temp, np.arange(1e-7, 3e-6, 1e-9), 'P',
 															   distance_pc=distance,
 															   Radius=distances_conversions.cm_to_solar_radius(
@@ -290,7 +287,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 
 
 
-	print('after bb')
+	#print('after bb')
 	#pylab.figure()
 	pylab.plot(bb[:,0]*1e10,bb[:,1],'-g', label='best fit redshifted+extincted')
 	pylab.xlabel('wavelength $[\AA]$')

@@ -25,8 +25,8 @@ def read_data_into_numpy_array(path,delimiter=',',header=False,skiprows=None,no_
         pd_array = pd.read_csv(path, header=0,
                                      index_col=False, delimiter=delimiter,skiprows=skiprows)
         pd_numpy_array=pd_array.values
-        print(pd_numpy_array)
-        print(pd_numpy_array[:, :-2])
+        #print(pd_numpy_array)
+        #print(pd_numpy_array[:, :-2])
         if no_repeat_rows==True:
             unique, index = np.unique(pd_numpy_array.astype("<U22"),axis=0,return_index=True)
             #print(unique)
