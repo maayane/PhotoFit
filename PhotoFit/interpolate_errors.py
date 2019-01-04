@@ -56,9 +56,9 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
     already_run=already_run
     if already_run==False:
         for i,j in enumerate(x_on_which_to_interpolate):
-            print('i is {0} and j is {1}'.format(i,j))
-            print('I am interpolating on ',x_on_which_to_interpolate)
-            print('the data x I am interpolating is',data[:,0])
+            #print('i is {0} and j is {1}'.format(i,j))
+            #print('I am interpolating on ',x_on_which_to_interpolate)
+            #print('the data x I am interpolating is',data[:,0])
             #pdb.set_trace()
             if os.path.exists(output_path+'/error_calc_'+str(i)+'th_point'):
                 print(output_path+'/error_calc_'+str(i)+'th_point exists')
@@ -73,19 +73,19 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
             y_higher=data[data[:,0]==x_higher,1]#resoudre le cas u plusieurs
             err_lower=data[data[:,0]==x_lower,2]#resoudre le cas u plusieurs
             err_higher=data[data[:,0]==x_higher,2]#resoudre le cas u plusieurs
-            print('the pont on which I am now interpolating is',j)
-            print('x_lower is,',x_lower)
-            print('y_lower is',y_lower)
+            #print('the pont on which I am now interpolating is',j)
+            #print('x_lower is,',x_lower)
+            #print('y_lower is',y_lower)
             if np.shape(y_lower)[0] > 1:
                 print(
                 'warining, there is a repeated y point in the data file, at x point {0}. solve this and continue'.format(
                     x_lower))
                 pdb.set_trace()
 
-            print('err_lower is',err_lower)
-            print('x_higher is,',x_higher)
-            print(np.shape(y_higher))
-            print('y_higher is',y_higher)
+            #print('err_lower is',err_lower)
+            #print('x_higher is,',x_higher)
+            #print(np.shape(y_higher))
+            #print('y_higher is',y_higher)
             if np.shape(y_higher)[0]>1:
                 print('warining, there is a repeated y point in the data file, at x point {0}. solve this and continue'.format(x_higher))
                 pdb.set_trace()
@@ -179,9 +179,9 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
 
 
     else:
-        print('I am looking into',output_path+'/Results_array.txt')
+        #print('I am looking into',output_path+'/Results_array.txt')
         Results_array=np.genfromtxt(output_path+'/Results_array.txt',skip_header=1)
-        print('Result is',Results_array)
+        #print('Result is',Results_array)
     #print('Results_array is',Results_array)
     if plot==True:
         pylab.figure()

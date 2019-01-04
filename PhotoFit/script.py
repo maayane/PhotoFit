@@ -146,12 +146,11 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
         interp[k]=dict()
         for i,j in enumerate(JD_basis_interpolation[k]):
             interp[k][str(round(j-explosion_date,8))]=interp_and_errors_array[k][i,:]
-        print('interp_and_errors_array[k] is',interp_and_errors_array[k])
-        print('JD_basis_interpolation[k] is',JD_basis_interpolation[k]-explosion_date)
-    #pdb.set_trace()
+        #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
+        #print('JD_basis_interpolation[k] is',JD_basis_interpolation[k]-explosion_date)
 
-    pylab.show()
-    pdb.set_trace()
+    #print("interp['UVW2'] is",interp['UVW2'])
+    #pdb.set_trace()
 
     Spectra=[]
     if verbose == True:
@@ -168,6 +167,10 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
                 epoch[k]=interp[k][str(epoch['time'])][1] #flux
                 epoch[k+'_err']=[interp[k][str(epoch['time'])][3],interp[k][str(epoch['time'])][4]] # lower and higher limit of 2 sigma area. the error is half of this
         Spectra.append(epoch)
+
+    #for i,j in enumerate(Spectra):
+    #    print('At day {0}, the Spectrum is {1}'.format(j['time'],Spectra[i]))
+    #    pdb.set_trace()
 
     ########################################### Filters definition ###########################################
 
@@ -231,8 +234,8 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
         symbol['u_swift']='d'
         symbol['b_swift']='d'
         symbol['v_swift']='d'
-        symbol['r_cousin']='V'
-        symbol['i_cousin']='V'
+        symbol['r_cousin']='v'
+        symbol['i_cousin']='v'
         symbol['r_sdss']='*'
         symbol['i_sdss']='*'
         symbol['g_sdss']='*'
@@ -245,24 +248,26 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
         symbol['b_johnson']='s'
         symbol['v_johnson']='s'
 
-
-        for i,j in enumerate(Spectra):#j is an epoch, epoch['UVW1']=flux, epoch['UVW1_err']=fluxerr
-            #print('the keys of this epoch are',j.keys())
-            pylab.figure()
-            for k in data_dicts.keys():
-                if k in j.keys():
-                    #print('the filter name {0} is therefore in epoch'.format(k))
-                    #print('epoch[{0}] is {1}'.format(k,epoch[k]))
-                    pylab.plot(wavelengths_filter[k], j[k], symbol[k], color=color[k])
-                    pylab.vlines(wavelengths_filter[k], j[k + '_err'][0], j[k + '_err'][1], label=k, color=color[k])
-            pylab.legend()
-            pylab.title('flux spectrum on JD={0}'.format(j['time']))
-            pylab.grid()
-            pylab.ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
-            pylab.xlabel(r'wavelength [$\AA$]', fontsize=20)
-            pylab.tight_layout()
-        pylab.show()
-        pdb.set_trace()
+        if show_underlying_plots == True:
+            for i,j in enumerate(Spectra):#j is an epoch, epoch['UVW1']=flux, epoch['UVW1_err']=fluxerr
+                if verbose==True:
+                    print('the keys of this epoch are',j.keys())
+                pylab.figure()
+                for k in data_dicts.keys():
+                    if k in j.keys():
+                        if verbose==True:
+                            print('the filter name {0} is therefore in epoch'.format(k))
+                            print('epoch[{0}] is {1}'.format(k,j[k]))
+                        pylab.plot(wavelengths_filter[k], j[k], symbol[k], color=color[k],label=k)
+                        pylab.vlines(wavelengths_filter[k], j[k + '_err'][0], j[k + '_err'][1], color=color[k])
+                pylab.legend()
+                pylab.title('flux spectrum on JD={0}'.format(j['time']))
+                pylab.grid()
+                pylab.ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
+                pylab.xlabel(r'wavelength [$\AA$]', fontsize=20)
+                pylab.tight_layout()
+            #pylab.show()
+            #pdb.set_trace()
 
     ################################################# Fit black body using mcmc/linear fit ###############################
 
@@ -281,106 +286,49 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
         #print(Best)
         #pdb.set_trace()
         for i,j in enumerate(Spectra): #goes through all epochs
-            #print(i)
-            #print(j)
-            #pdb.set_trace()
             Spectrum = []
             if 'UVW2' in j.keys():
-                Spectrum.append(np.array(['Swift', 'UVW2',j['UVW2'],j['UVW2_err'][1]-j['UVW2_err'][0]],dtype=object))#the error is half od the length upper_sigma-lower_sigma
+                Spectrum.append(np.array(['Swift', 'UVW2',j['UVW2'],max(j['UVW2_err'][1]-j['UVW2'],j['UVW2']-j['UVW2_err'][0])],dtype=object))#the error is half od the length upper_sigma-lower_sigma
             if 'UVW1' in j.keys():
-                Spectrum.append(np.array(['Swift', 'UVW1',j['UVW1'],j['UVW1_err'][1]-j['UVW1_err'][0] ],dtype=object))
+                Spectrum.append(np.array(['Swift', 'UVW1',j['UVW1'],max(j['UVW1_err'][1]-j['UVW1'],j['UVW1']-j['UVW1_err'][0]) ],dtype=object))
             if 'UVM2' in j.keys():
-                Spectrum.append(np.array(['Swift', 'UVM2',j['UVM2'],j['UVM2_err'][1]-j['UVM2_err'][0] ],dtype=object))
+                Spectrum.append(np.array(['Swift', 'UVM2',j['UVM2'],max(j['UVM2_err'][1]-j['UVM2'],j['UVM2']-j['UVM2_err'][0])],dtype=object))
             if 'u_swift' in j.keys():
-                Spectrum.append(np.array(['Swift', 'u_swift',j['u_swift'],j['u_swift_err'][1]-j['u_swift_err'][0] ],dtype=object))
+                Spectrum.append(np.array(['Swift', 'u_swift',j['u_swift'],max(j['u_swift_err'][1]-j['u_swift'],j['u_swift']-j['u_swift_err'][0]) ],dtype=object))
             if 'v_swift' in j.keys():
-                Spectrum.append(np.array(['Swift', 'v_swift',j['v_swift'],j['v_swift_err'][1]-j['v_swift_err'][0] ],dtype=object))
+                Spectrum.append(np.array(['Swift', 'v_swift',j['v_swift'],max(j['v_swift_err'][1]-j['v_swift'],j['v_swift']-j['v_swift_err'][0]) ],dtype=object))
             if 'b_swift' in j.keys():
-                Spectrum.append(np.array(['Swift', 'b_swift',j['b_swift'],j['b_swift_err'][1]-j['b_swift_err'][0] ],dtype=object))
+                Spectrum.append(np.array(['Swift', 'b_swift',j['b_swift'],max(j['b_swift_err'][1]-j['b_swift'],j['b_swift']-j['b_swift_err'][0]) ],dtype=object))
             if 'r_p48' in j.keys():
-                Spectrum.append(np.array(['ptf_p48', 'r_p48',j['r_p48'],j['r_p48_err'][1]-j['r_p48_err'][0]],dtype=object))
+                Spectrum.append(np.array(['ptf_p48', 'r_p48',j['r_p48'],max(j['r_p48_err'][1]-j['r_p48'],j['r_p48']-j['r_p48_err'][0])],dtype=object))
             if 'g_p48' in j.keys():
-                Spectrum.append(np.array(['ptf_p48', 'g_p48',j['g_p48'],j['g_p48_err'][1]-j['g_p48_err'][0]],dtype=object))
+                Spectrum.append(np.array(['ptf_p48', 'g_p48',j['g_p48'],max(j['g_p48_err'][1]-j['g_p48'],j['g_p48']-j['g_p48_err'][0])],dtype=object))
             if 'r_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'r_sdss',j['r_sdss'],j['r_sdss_err'][1]-j['r_sdss_err'][0]],dtype=object))
+                Spectrum.append(np.array(['sdss', 'r_sdss',j['r_sdss'],max(j['r_sdss_err'][1]-j['r_sdss'],j['r_sdss']-j['r_sdss_err'][0])],dtype=object))
             if 'g_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'g_sdss',j['g_sdss'],j['g_sdss_err'][1]-j['g_sdss_err'][0]],dtype=object))
+                Spectrum.append(np.array(['sdss', 'g_sdss',j['g_sdss'],max(j['g_sdss_err'][1]-j['g_sdss'],j['g_sdss']-j['g_sdss_err'][0])],dtype=object))
             if 'i_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'i_sdss',j['i_sdss'],j['i_sdss_err'][1]-j['i_sdss_err'][0]],dtype=object))
+                Spectrum.append(np.array(['sdss', 'i_sdss',j['i_sdss'],max(j['i_sdss_err'][1]-j['i_sdss'],j['i_sdss']-j['i_sdss_err'][0])],dtype=object))
             if 'z_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'z_sdss',j['z_sdss'],j['z_sdss_err'][1]-j['z_sdss_err'][0]],dtype=object))
+                Spectrum.append(np.array(['sdss', 'z_sdss',j['z_sdss'],max(j['z_sdss_err'][1]-j['z_sdss'],j['z_sdss']-j['z_sdss_err'][0])],dtype=object))
             if 'u_johnson' in j.keys():
-                Spectrum.append(np.array(['johnson', 'u_johnson',j['u_johnson'],j['u_johnson_err'][1]-j['u_johnson_err'][0]],dtype=object))
+                Spectrum.append(np.array(['johnson', 'u_johnson',j['u_johnson'],max(j['u_johnson_err'][1]-j['u_johnson'],j['u_johnson']-j['u_johnson_err'][0])],dtype=object))
             if 'b_johnson' in j.keys():
-                Spectrum.append(np.array(['johnson', 'b_johnson', j['b_johnson'], 0.5 * j['b_johnson_err'][1] - j['b_johnson_err'][0]],dtype=object))
+                Spectrum.append(np.array(['johnson', 'b_johnson', j['b_johnson'], max(j['b_johnson_err'][1]-j['b_johnson'],j['b_johnson']-j['b_johnson_err'][0])],dtype=object))
             if 'v_johnson' in j.keys():
-                Spectrum.append(np.array(['johnson', 'v_johnson', j['v_johnson'], 0.5 * j['v_johnson_err'][1] - j['v_johnson_err'][0]],dtype=object))
+                Spectrum.append(np.array(['johnson', 'v_johnson', j['v_johnson'], max(j['v_johnson_err'][1]-j['v_johnson'],j['v_johnson']-j['v_johnson_err'][0])],dtype=object))
             if 'i_cousin' in j.keys():
                 Spectrum.append(np.array(
-                    ['cousin', 'i_cousin', j['i_cousin'], 0.5 * j['i_cousin_err'][1] - j['i_cousin_err'][0]],
-                    dtype=object))
+                    ['cousin', 'i_cousin', j['i_cousin'],  max(j['i_cousin_err'][1]-j['i_cousin'],j['i_cousin']-j['i_cousin_err'][0])],dtype=object))
             if 'r_cousin' in j.keys():
                 Spectrum.append(np.array(
-                    ['cousin', 'r_cousin', j['r_cousin'], 0.5 * j['r_cousin_err'][1] - j['r_cousin_err'][0]],
-                    dtype=object))
+                    ['cousin', 'r_cousin', j['r_cousin'],  max(j['r_cousin_err'][1]-j['r_cousin'],j['r_cousin']-j['r_cousin_err'][0])],dtype=object))
             if 'h_2mass' in j.keys():
-                Spectrum.append(np.array(
-                    ['2MASS', 'h_2mass', j['h_2mass'], 0.5 * j['h_2mass_err'][1] - j['h_2mass_err'][0]],
-                    dtype=object))
+                Spectrum.append(np.array(['2MASS', 'h_2mass', j['h_2mass'],  max(j['h_2mass_err'][1]-j['h_2mass'],j['h_2mass']-j['h_2mass_err'][0])],dtype=object))
             if 'j_2mass' in j.keys():
-                Spectrum.append(np.array(
-                    ['2MASS', 'j_2mass', j['j_2mass'], 0.5 * j['j_2mass_err'][1] - j['j_2mass_err'][0]],
-                    dtype=object))
-                
-            '''
-            if 'UVW2' in j.keys():
-                Spectrum.append(np.array(['Swift', 'UVW2',j['UVW2'],0.5*j['UVW2_err'][1]-j['UVW2_err'][0]],dtype=object))#the error is half od the length upper_sigma-lower_sigma
-            if 'UVW1' in j.keys():
-                Spectrum.append(np.array(['Swift', 'UVW1',j['UVW1'],0.5*j['UVW1_err'][1]-j['UVW1_err'][0] ],dtype=object))
-            if 'UVM2' in j.keys():
-                Spectrum.append(np.array(['Swift', 'UVM2',j['UVM2'],0.5*j['UVM2_err'][1]-j['UVM2_err'][0] ],dtype=object))
-            if 'u_swift' in j.keys():
-                Spectrum.append(np.array(['Swift', 'u_swift',j['u_swift'],0.5*j['u_swift_err'][1]-j['u_swift_err'][0] ],dtype=object))
-            if 'v_swift' in j.keys():
-                Spectrum.append(np.array(['Swift', 'v_swift',j['v_swift'],0.5*j['v_swift_err'][1]-j['v_swift_err'][0] ],dtype=object))
-            if 'b_swift' in j.keys():
-                Spectrum.append(np.array(['Swift', 'b_swift',j['b_swift'],0.5*j['b_swift_err'][1]-j['b_swift_err'][0] ],dtype=object))
-            if 'r_p48' in j.keys():
-                Spectrum.append(np.array(['ptf_p48', 'r_p48',j['r_p48'],0.5*j['r_p48_err'][1]-j['r_p48_err'][0]],dtype=object))
-            if 'g_p48' in j.keys():
-                Spectrum.append(np.array(['ptf_p48', 'g_p48',j['g_p48'],0.5*j['g_p48_err'][1]-j['g_p48_err'][0]],dtype=object))
-            if 'r_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'r_sdss',j['r_sdss'],0.5*j['r_sdss_err'][1]-j['r_sdss_err'][0]],dtype=object))
-            if 'g_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'g_sdss',j['g_sdss'],0.5*j['g_sdss_err'][1]-j['g_sdss_err'][0]],dtype=object))
-            if 'i_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'i_sdss',j['i_sdss'],0.5*j['i_sdss_err'][1]-j['i_sdss_err'][0]],dtype=object))
-            if 'z_sdss' in j.keys():
-                Spectrum.append(np.array(['sdss', 'z_sdss',j['z_sdss'],0.5*j['z_sdss_err'][1]-j['z_sdss_err'][0]],dtype=object))
-            if 'u_johnson' in j.keys():
-                Spectrum.append(np.array(['johnson', 'u_johnson',j['u_johnson'],0.5*j['u_johnson_err'][1]-j['u_johnson_err'][0]],dtype=object))
-            if 'b_johnson' in j.keys():
-                Spectrum.append(np.array(['johnson', 'b_johnson', j['b_johnson'], 0.5 * j['b_johnson_err'][1] - j['b_johnson_err'][0]],dtype=object))
-            if 'v_johnson' in j.keys():
-                Spectrum.append(np.array(['johnson', 'v_johnson', j['v_johnson'], 0.5 * j['v_johnson_err'][1] - j['v_johnson_err'][0]],dtype=object))
-            if 'i_cousin' in j.keys():
-                Spectrum.append(np.array(
-                    ['cousin', 'i_cousin', j['i_cousin'], 0.5 * j['i_cousin_err'][1] - j['i_cousin_err'][0]],
-                    dtype=object))
-            if 'r_cousin' in j.keys():
-                Spectrum.append(np.array(
-                    ['cousin', 'r_cousin', j['r_cousin'], 0.5 * j['r_cousin_err'][1] - j['r_cousin_err'][0]],
-                    dtype=object))
-            if 'h_2mass' in j.keys():
-                Spectrum.append(np.array(
-                    ['2MASS', 'h_2mass', j['h_2mass'], 0.5 * j['h_2mass_err'][1] - j['h_2mass_err'][0]],
-                    dtype=object))
-            if 'j_2mass' in j.keys():
-                Spectrum.append(np.array(
-                    ['2MASS', 'j_2mass', j['j_2mass'], 0.5 * j['j_2mass_err'][1] - j['j_2mass_err'][0]],
-                    dtype=object))'''
+                Spectrum.append(np.array(['2MASS', 'j_2mass', j['j_2mass'],  max(j['j_2mass_err'][1]-j['j_2mass'],j['j_2mass']-j['j_2mass_err'][0])],dtype=object))
+
             Spectrum_right_format=np.array(Spectrum)
-            print('the Spectrum in the format to be fit is',Spectrum_right_format)
             if (j['time']< 1):
                 hitemp = 3e5
                 hirad=1e15
@@ -461,14 +409,28 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
     else:
 
         Best = np.genfromtxt(output+'/Results.txt', skip_header=1)
-    #if show_underlying_plots==True:
-    pylab.show()
+    if show_underlying_plots==True:
+        pylab.show()
     return Best #JD, best T, lower sigma_T, upper sigma_T,best R, lower sigma_R, upper sigma_R, best L
 
-def plot_T_and_R_in_time(Best):
+def plot_T_and_R_in_time(Best,compare=False,label_comparision=None):
+
+    #Best_comare=np.genfromtxt('/Users/maayanesoumagnac/PostDoc/projects/2018fif/comparision_with_others/results_fit_sed_mat_PTF13dqy_test/Results.txt')
+
+    if compare==True:
+        if os.path.isfile(params.data_compare)==False:
+            print('I do not find any file at the location of the data to compare,',params.data_compare)
+        Best_compare = np.genfromtxt(params.data_compare)
+
     #####################################   Plot best T and best R with error bars, compare with other methods ###############
     pylab.figure()
-    pylab.plot(Best[:, 0], Best[:, 1], 'ro', label='best fit')
+    pylab.plot(Best[:, 0], Best[:, 1], 'ro', label='Best fit')
+    if (compare==True) & (label_comparision is not None):
+        pylab.plot(Best_compare[:, 0], Best_compare[:, 1], 'bo', label=label_comparision)
+        pylab.legend()
+    elif (compare==True) & (label_comparision is None):
+        pylab.plot(Best_compare[:, 0], Best_compare[:, 1], 'bo',label='comparision file')
+        pylab.legend()
     for i, j in enumerate(Best):
         pylab.vlines(Best[i, 0] , Best[i, 2], Best[i, 3], color='red')
     pylab.xlabel(r'time $[days]$')
@@ -482,9 +444,15 @@ def plot_T_and_R_in_time(Best):
     #pylab.show()
 
     pylab.figure()
-    pylab.plot(Best[:, 0], Best[:, 4], 'bo', label='best fit')
+    pylab.plot(Best[:, 0], Best[:, 4], 'go', label='Best fit')
     for i, j in enumerate(Best):
-        pylab.vlines(Best[i, 0] , Best[i, 5], Best[i, 6], color='blue')
+        pylab.vlines(Best[i, 0] , Best[i, 5], Best[i, 6], color='green')
+    if (compare==True) & (label_comparision is not None):
+        pylab.plot(Best_compare[:, 0], Best_compare[:, 2], 'bo', label=label_comparision)
+        pylab.legend()
+    elif (compare==True) & (label_comparision is None):
+        pylab.plot(Best_compare[:, 0], Best_compare[:, 2], 'bo',label='comparision file')
+        pylab.legend()
     pylab.xlabel(r'time $[days]$')
     pylab.ylabel(r'$r_{BB}\; [cm]$')
     pylab.grid()
@@ -684,22 +652,22 @@ def plot_SEDs(Best):
         data_dicts[j] = dict()
         data_dicts[j]['jd'] = data_dico['jd'][
             (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-        data_dicts[j]['mag'] = data_dico['mag'][
-            (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+        #data_dicts[j]['mag'] = data_dico['mag'][
+        #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
         data_dicts[j]['flux'] = data_dico['flux'][
             (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-        data_dicts[j]['magerr'] = data_dico['magerr'][
-            (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+        #data_dicts[j]['magerr'] = data_dico['magerr'][
+        #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
         data_dicts[j]['fluxerr'] = data_dico['fluxerr'][
             (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-        data_dicts[j]['absmag'] = data_dico['absmag'][
-            (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-        data_dicts[j]['absmagerr'] = data_dico['absmagerr'][
-            (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-        data_dicts[j]['filter'] = data_dico['filter'][
-            (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-        data_dicts[j]['instr'] = data_dico['instr'][
-            (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+        #data_dicts[j]['absmag'] = data_dico['absmag'][
+        #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+        #data_dicts[j]['absmagerr'] = data_dico['absmagerr'][
+        #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+        #data_dicts[j]['filter'] = data_dico['filter'][
+        #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+        #data_dicts[j]['instr'] = data_dico['instr'][
+        #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
 
     print(data_dicts.keys())
 
@@ -715,17 +683,8 @@ def plot_SEDs(Best):
     interp_and_errors_array = dict()
     interp = dict()
 
-    already_run_interp_errors['UVW1'] = True
-    already_run_interp_errors['UVW2'] = True
-    already_run_interp_errors['UVM2'] = True
-    already_run_interp_errors['u_swift'] = True
-    already_run_interp_errors['b_swift'] = True
-    already_run_interp_errors['v_swift'] = True
-    already_run_interp_errors['r_sdss'] = True
-    already_run_interp_errors['g_sdss'] = True
-    already_run_interp_errors['i_sdss'] = True
-    already_run_interp_errors['r_p48'] = True
-    already_run_interp_errors['g_p48'] = True
+    for k in data_dicts.keys():
+        already_run_interp_errors[k] = params.already_run_interp_errors[k]
 
     ### Interpolate all data on the interpolation dates dates ####
     for k in data_dicts.keys():
@@ -770,18 +729,26 @@ def plot_SEDs(Best):
     ########################################### Filters definition ###########################################
 
     # Filter_vector for all the filters
-    Filter_vector = np.empty([11, 2], dtype=object)
+    Filter_vector = np.empty([19, 2], dtype=object)
     Filter_vector[0] = [str('Swift'), str('UVW1')]
     Filter_vector[1] = [str('Swift'), str('UVW2')]
     Filter_vector[2] = [str('Swift'), str('UVM2')]
     Filter_vector[3] = [str('Swift'), str('u_swift')]
     Filter_vector[4] = [str('Swift'), str('b_swift')]
     Filter_vector[5] = [str('Swift'), str('v_swift')]
-    Filter_vector[6]=[str('ptf_p48'),str('r_p48')]
-    Filter_vector[7]=[str('ptf_p48'),str('g_p48')]
-    Filter_vector[8]=[str('sdss'),str('g_sdss')]
-    Filter_vector[9]=[str('sdss'),str('r_sdss')]
-    Filter_vector[10]=[str('sdss'),str('i_sdss')]
+    Filter_vector[6] = [str('johnson'), str('u_johnson')]
+    Filter_vector[7] = [str('johnson'), str('v_johnson')]
+    Filter_vector[8] = [str('johnson'), str('b_johnson')]
+    Filter_vector[9] = [str('ptf_p48'), str('r_p48')]
+    Filter_vector[10] = [str('ptf_p48'), str('g_p48')]
+    Filter_vector[11] = [str('SDSS'), str('g_sdss')]
+    Filter_vector[12] = [str('SDSS'), str('i_sdss')]
+    Filter_vector[13] = [str('SDSS'), str('z_sdss')]
+    Filter_vector[14] = [str('SDSS'), str('r_sdss')]
+    Filter_vector[15] = [str('cousin'), str('i_cousin')]
+    Filter_vector[16] = [str('cousin'), str('r_cousin')]
+    Filter_vector[17] = [str('2MASS'), str('j_2mass')]
+    Filter_vector[18] = [str('2MASS'), str('h_2mass')]
 
     lib = pyphot.get_library()
     #print("Library contains: ", len(lib), " filters")
@@ -789,26 +756,42 @@ def plot_SEDs(Best):
     [P,wavelengths_filter]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directroy)
     #print('wavelengths are',wavelengths_filter)
 
-
+    #n=len([name for name in os.listdir(output)])
+    #print('output is',output)
+    number=0
+    for name in os.listdir(output):
+        print(os.path.splitext(name)[1])
+        if (os.path.splitext(name)[1] is not '.pdf') & (os.path.splitext(name)[1] is not '.txt'):
+            number=number+1
+            print(name)
+    HERE
+    print('there are {0} directories in the output file',number)
+    a=number//9
+    print('I will take every {0} file from this directory'.format(a))
+    indexes=range(number)[0::a]
+    print(indexes)
     fig, axes2d = plt.subplots(nrows=3, ncols=3,
                                sharex=True, sharey=True,
                                figsize=(10, 10))
     Spectra2D = np.empty((3, 3), dtype=object)
-    Spectra2D[0:3, 0] = Spectra[0:3]
-    Spectra2D[0:3, 1] = Spectra[3:6]
-    Spectra2D[0:3, 2] = Spectra[6:9]
+    for i,j in enumerate( Spectra2D[0:3, 0]):
+        Spectra2D[i, 0] = Spectra[indexes[i]]
+    for i, j in enumerate(Spectra2D[0:3, 1]):
+        Spectra2D[0:3, 1] = Spectra[indexes[i+3]]
+    for i, j in enumerate(Spectra2D[0:3, 2]):
+        Spectra2D[0:3, 2] = Spectra[indexes[i+6]]
 
 
     Result_T2D = np.empty((3, 3), dtype=object)
-    Result_T2D[0:3, 0] = Best[0:3, 1]
-    Result_T2D[0:3, 1] = Best[3:6, 1]
-    Result_T2D[0:3, 2] = Best[6:9, 1]
+    Result_T2D[0:3, 0] = Best[indexes[0:3], 1]
+    Result_T2D[0:3, 1] = Best[indexes[3:6], 1]
+    Result_T2D[0:3, 2] = Best[indexes[6:9], 1]
 
 
     Result_R2D = np.empty((3, 3), dtype=object)
-    Result_R2D[0:3, 0] = Best[0:3, 4]
-    Result_R2D[0:3, 1] = Best[3:6, 4]
-    Result_R2D[0:3, 2] = Best[6:9, 4]
+    Result_R2D[0:3, 0] = Best[indexes[0:3], 4]
+    Result_R2D[0:3, 1] = Best[indexes[3:6], 4]
+    Result_R2D[0:3, 2] = Best[indexes[6:9], 4]
 
 
     for i, row in enumerate(Spectra2D):

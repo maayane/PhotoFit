@@ -1,6 +1,8 @@
 # PhotoFit
 Calculating the evolution in time of the effective radius and effective temperature from multiple-band photometric light-curves (assuming blackbody SEDs).
 
+THIS IS STILL UNDER CONSTRUCTION (Please wait for 7.01.2018 before installing anything)
+
 [![PyPI](https://img.shields.io/pypi/v/SLAB-Diffusion.svg?style=flat-square)](https://pypi.python.org/pypi/SLAB-Diffusion)
 
 ```python
@@ -12,22 +14,22 @@ Calculating the evolution in time of the effective radius and effective temperat
 
 `PhotoFit` is a package to model the effective radius and temperature from multiple-bands photometry of a supernova.
 
-### How does PhotoFit work, in short?
+### How does PhotoFit work?
 
-* The data in the different bands are usually taken at different dates. The first thing to do is to define common epochs on which to
-the data will be interpolated and calculate the interpolated flux and (this is more tricky) the interpolated errors. `PhotoFit` does this task using mcmc.
-Although this task can be time-consuming (~0.5 min per band and per epoch), your can set the parameters file to only do once per set of data.
+1. Your data are usually taken at different dates for each band. The first thing to do is to define common epochs on which
+the data will be interpolated, and calculate the interpolated flux and (more tricky) the interpolated errors. `PhotoFit` does this task using Monte Carlo Markov Chains simulations.
+Although this task can be time-consuming (~0.5 min per band and per epoch), your can set the parameters (in the parameters file `params.py`) to only do this once for a given data set.
 At the end of this first step, there is one SED per epoch.
 
-* `PhotoFit` fits then fits each SED with a blackbody model that has been corrected for:
-** the extinction: `PhotoFit` does this using Schlay & Finkbeiner (2011) and using the extinction curves of Cardelli et al. (1989).
-** the redshift
-** the effect of the filters transmission curves: `PhotoFit` does this using the `pyphot` package for synthetic photometry.
+2. `PhotoFit` then fits each SED with a blackbody model that has been corrected for:
+    - the extinction: `PhotoFit` does this using Schlay & Finkbeiner (2011) and using the extinction curves of Cardelli et al. (1989).
+    - the redshift
+    - the effect of the filters transmission curves: `PhotoFit` does this using the `pyphot` package for synthetic photometry.
 
-*The fit itself can be done in two different ways (to choose from in the parameters file params.py):
-** Monte Carlo Markov Chain (with emcee). The advantage of this option is it gives you error bars on T and R. The disadvantage is that it is time-consuming
+3. The fit itself can be done in two different ways (to choose from in the parameters file params.py):
+    - Monte Carlo Markov Chain (with emcee). The advantage of this option is it gives you error bars on T and R. The disadvantage is that it is time-consuming
 (~30 min per epoch for 100 walkers and 350 steps )
-** A linear fit with a grid of temperatures. The advantage is the speed. The disadvantage is you loose the error bars.
+    - A linear fit with a grid of temperatures. The advantage is the speed. The disadvantage is you loose the error bars.
 
 ## How to install the `PhotoFit` code?
 
@@ -102,10 +104,9 @@ show plot
 >>> PhotoFit.calculate_T_and_R_in_time()
 ```
 
-
 ## The parameters file in details
 
-## Test data
+## Give it a try with the test data!
 
 
 
