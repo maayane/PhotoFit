@@ -88,7 +88,7 @@ The results of the interpolation (see step 1. of [How does PhotoFit work](https:
 
 <p align="center">
   <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/data_and_interpolation_dates.pdf" width="350">
-  <img src="./test/result_interpolation/errors_interpolation_results_j_2mass/Plot_w_interpolated_errors.pdf" width="350">
+  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/Plot_w_interpolated_errors.pdf" width="350">
 </p>
 
 ### Visualize the evolution of R and T
