@@ -1,5 +1,5 @@
 # PhotoFit
-This package allows you to calculate and visualize the evolution in time of the effective radius, temperature and luminosity of a supernova from multiple-bands photometric light-curves.
+This package is for calculating and visualizing the evolution in time of the effective radius, temperature and luminosity of a supernova (or any target assumed to behave as a blackbody) from multiple-bands photometry.
 
 [![PyPI](https://img.shields.io/pypi/v/SLAB-Diffusion.svg?style=flat-square)](https://pypi.python.org/pypi/SLAB-Diffusion)
 
@@ -19,14 +19,14 @@ common epochs defined by the user. `PhotoFit` does this task using Monte Carlo M
 but you can set the parameters (in the parameters file `params.py`) to only do this once for a given data set.
 At the end of this first step, there is one spectral energy distribution (SED) to fit per epoch.
 
-2. `PhotoFit` then fits each SED with a blackbody model that has been corrected for:
-    - the extinction: `PhotoFit` does this using Schlay & Finkbeiner (2011) and using the extinction curves of Cardelli et al. (1989).
-    - the redshift
-    - the effect of the filters transmission curves: `PhotoFit` does this using the `pyphot` package for synthetic photometry.
+2. `PhotoFit` then fits each SED with a blackbody model after:
+    - correcting for the extinction: `PhotoFit` does this using [Schlafly & Finkbeiner (2011)](https://ui.adsabs.harvard.edu/#abs/2011ApJ...737..103S/abstract) and using the extinction curves of [Cardelli et al. (1989)](https://ui.adsabs.harvard.edu/#abs/1989ApJ...345..245C/abstract).
+    - correcting for the redshift
+    - correcting for the effect of the filters transmission curves: `PhotoFit` does this using the `pyphot` package for synthetic photometry.
 
 3. The fit itself can be done in two different ways (to be chosen by the user and defined in the `params.py` file):
-    - Monte Carlo Markov Chain simulations (with emcee). The advantage of this option is it gives you error bars on T and R. The disadvantage is that it is time-consuming
-(~30 min per epoch for 100 walkers and 350 steps )
+    - Monte Carlo Markov Chain simulations (with [emcee](http://dfm.io/emcee/current/)). The advantage of this option is it gives you error bars on T and R. The disadvantage is that it is time-consuming
+(~30 min per epoch for 100 walkers and 350 steps)
     - A linear fit with a grid of temperatures. The advantage of this method is its speed. The disadvantage is the lack of error bars.
 
 ## How to install `PhotoFit`?
@@ -51,14 +51,13 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 
 ### Edit the params.py file
 
-The content of the parameters file `params.py` is fully detailed in the section [The parameters file in details](https://github.com/maayane/PhotoFit/blob/master/README.md#the-parameters-file-in-details).
+The first step is to edit the content of the parameters file `params.py` as detailed in [this section](https://github.com/maayane/PhotoFit/blob/master/README.md#the-parameters-file-in-details). Unless you want to give it a try with the default parameters, which allow you to run `PhotoFit` on the test data from PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)), as explained [here](https://github.com/maayane/PhotoFit/blob/master/README.md#give-it-a-try-with-the-test-data).
 
-After every modification of `params.py`, rerun
+After every modification of `params.py`, don't forget to rerun the following command from your `PhotoFit` directory
 
 ```python
 >>> python setup.py install
 ```
-from your `PhotoFit` directory
 
 ### Calculate the evolution of R and T
 
@@ -67,9 +66,9 @@ The simplest way to run PhotoFit is
 >>> import PhotoFit
 >>> Best=PhotoFit.calculate_T_and_R_in_time()
 ```
-`Best` is a numpy array where the first column is the time (jd), the second column is the temperature (K) and the third column is the radius (cm).
+`Best` is a numpy array of which the first column is the time (jd), the second column is the temperature (K) and the third column is the radius (cm).
 
-By default, the code show and save the plots. If you do not want to see and save these plots, you can set `show_underlying_plots` to `False`, i.e. run
+By default, the code shows and save plots generated while running. They are interesting, but if you do not want to see or save them, you can set `show_underlying_plots` to `False`, i.e. run
 
 ```python
 >>> Best=PhotoFit.calculate_T_and_R_in_time(show_underlying_plots=False)
@@ -79,7 +78,7 @@ And if you want the code to tell you more about what it is doing at each step, y
 ```python
 >>> Best=PhotoFit.calculate_T_and_R_in_time(verbose=True)
 ```
-The `Best` numpy array, containing the time evolution of T and R, is stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates in your output directory one sub-directory per epoch, with several files and plots in it. In particular, the plot stored in `SED_date_X.XXX.pdf`(left) shows the infered SED at epoch X.XXX and the plot stored in `fit_result_FLux.pdf` (right) shows the data and best-fit model superimposed.
+The `Best` numpy array, containing the time evolution of T and R, is stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates in your output directory one sub-directory per epoch, with several files and plots. In particular, the plot stored in `SED_date_X.XXX.pdf`(left) shows the infered SED at epoch X.XXX and the plot stored in `fit_result_FLux.pdf` (right) shows the data and best-fit model superimposed.
 
 <p align="center">
   <img src="./test/result_fit_sed_mat/day_1.359/SED_date_1.359.png" width="350">
@@ -102,7 +101,7 @@ The simplest way to visualize the evolution of R and T is simply to run
 >>> PhotoFit.plot_T_and_R_in_time(Best)
 ```
 
-If you want to compare the evolution of R and T to the one of an other object, set the path to the file to be compared in the `params.py` file and run
+If you want to compare the temperature and radius to those of another object, just tell `PhotoFit` where to look for this additional data (buy setting the  `data_compare` pparameter in `params.py`) and run
 
 ```python
 >>> PhotoFit.plot_T_and_R_in_time(Best,compare=True,label_comparision='PTF 13dqy')
@@ -123,7 +122,7 @@ If you want to compare the evolution of R and T to the one of an other object, s
   <img src="./test/result_fit_sed_mat/L_bb_evo.png" width="350">
 </p>
 
-If you have done the fit using mcmc, `Pyphot` will calculate the errors on the luminosity L. To avoid doing this again and again after the first time you ran `PhotoFit.` , set the `error_lum_ran` to `True`:
+If you have done the fit using mcmc, `PyPhot` will calculate the errors on the luminosity L. To avoid doing this again and again after the first time you ran `PhotoFit.`, set the `error_lum_ran` to `True`:
 
 ```python
 >>> PhotoFit.plot_L_in_time(Best)
