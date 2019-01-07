@@ -20,11 +20,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="interpolate_errors.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="interpolate_errors.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
+            <state relative-caret-position="480">
               <caret line="39" column="17" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="17" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fit_black_body_flux_filters_mcmc.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="5039">
+              <caret line="499" column="45" selection-start-line="499" selection-start-column="45" selection-end-line="499" selection-end-column="45" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fit_black_body_flux_filters.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1199">
+              <caret line="363" column="45" selection-start-line="363" selection-start-column="45" selection-end-line="363" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -56,21 +76,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="885">
-              <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="params.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="params.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PhotoFit/params.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
-              <caret line="42" column="49" selection-start-line="42" selection-start-column="49" selection-end-line="42" selection-end-column="49" />
+            <state relative-caret-position="465">
+              <caret line="43" column="24" selection-start-line="43" selection-start-column="24" selection-end-line="43" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -91,17 +101,17 @@
         <option value="$PROJECT_DIR$/PhotoFit/get_filter.py" />
         <option value="$PROJECT_DIR$/PhotoFit/energy_conversions.py" />
         <option value="$PROJECT_DIR$/PhotoFit/black_body_flux_density.py" />
-        <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fitter_general.py" />
         <option value="$PROJECT_DIR$/PhotoFit/extinction.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fitting_tools.py" />
         <option value="$PROJECT_DIR$/PhotoFit/calc_black_body_flux_filters.py" />
-        <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py" />
         <option value="$PROJECT_DIR$/PhotoFit/class_chi2.py" />
-        <option value="$PROJECT_DIR$/PhotoFit/params.py" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/PhotoFit/script.py" />
         <option value="$PROJECT_DIR$/PhotoFit/interpolate_errors.py" />
+        <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py" />
+        <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py" />
+        <option value="$PROJECT_DIR$/PhotoFit/params.py" />
       </list>
     </option>
   </component>
@@ -361,7 +371,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27205336" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2713121" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -586,13 +596,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-837">
-          <caret line="117" column="22" selection-start-line="117" selection-start-column="22" selection-end-line="117" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/fitting_tools.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="480">
@@ -604,13 +607,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="66" column="9" selection-start-line="66" selection-start-column="9" selection-end-line="66" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -651,10 +647,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/params.py">
+    <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="42" column="49" selection-start-line="42" selection-start-column="49" selection-end-line="42" selection-end-column="49" />
+        <state relative-caret-position="480">
+          <caret line="39" column="17" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1199">
+          <caret line="363" column="45" selection-start-line="363" selection-start-column="45" selection-end-line="363" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5039">
+          <caret line="499" column="45" selection-start-line="499" selection-start-column="45" selection-end-line="499" selection-end-column="45" />
           <folding />
         </state>
       </provider>
@@ -673,10 +685,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
+    <entry file="file://$PROJECT_DIR$/PhotoFit/params.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="39" column="17" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="17" />
+        <state relative-caret-position="465">
+          <caret line="43" column="24" selection-start-line="43" selection-start-column="24" selection-end-line="43" selection-end-column="24" />
           <folding />
         </state>
       </provider>

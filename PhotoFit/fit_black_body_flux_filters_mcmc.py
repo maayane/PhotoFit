@@ -28,9 +28,9 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 			- if fast=true, the best fit will be taken s the median posterior, not as the result of an optimization algoryhtm
 			- setting dilution factor is using the optimization algorythm, but on less combonations of parameters. It is an intermediate solution before moving to fast=true
 
-	Plots and output files: -plot best fit in .outputs_from_fit_black_body_flux_filters_function/fit_result.pdf in flux
+	Plots and output files: -plot best fit in .outputs_from_fit_black_body_flux_filters_function/fit_result.png in flux
 							- if show_mag_AB is True, same in mag AB
-							-plot chi2, coeff, and R in outputs_from_fit_black_body_flux_filters_function/fit_grid_results.pdf
+							-plot chi2, coeff, and R in outputs_from_fit_black_body_flux_filters_function/fit_grid_results.png
 							-save sorted_Xi_array in outputs_from_fit_black_body_flux_filters_function/Sorted_fir_results.txt
 	Tested : ?
 	    By : Maayane T. Soumagnac Nov 2016
@@ -175,10 +175,10 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	#Spectrum_flux_correct=np.empty(np.shape(spectrum_flux),dtype=object)
 	#print(np.shape(Spectrum_flux_correct))
 	##pdb.set_trace()
-	#Spectrum_flux_correct[:,0] = correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_pdf_file=None)[:,0]
+	#Spectrum_flux_correct[:,0] = correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_png_file=None)[:,0]
 	##spectrum_flux[:,0] #central wavelength in AA
-	#Spectrum_flux_correct[:,1] =correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_pdf_file=None)[:,1]
-	#Spectrum_flux_correct[:,2]=correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_pdf_file=None)[:,2]
+	#Spectrum_flux_correct[:,1] =correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_png_file=None)[:,1]
+	#Spectrum_flux_correct[:,2]=correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_png_file=None)[:,2]
 
 	#print('**********')
 	#print(Spectrum_flux_correct[:, 0])
@@ -195,12 +195,12 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 
 
 	# np.empty(np.shape(spectrum_flux)[0],dtype=object)
-	#print np.shape(correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_pdf_file=None))
+	#print np.shape(correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_png_file=None))
 	#pdb.set_trace()
 	#print spectrum_flux
-	#print correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_pdf_file=None)
+	#print correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_png_file=None)
 	#pdb.set_trace()
-	#Spectrum_error_correct[:] = correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_pdf_file=None)[:,2]
+	#Spectrum_error_correct[:] = correct_spectrum.correct_spectrum_for_redshift_and_extinction(spectrum_flux,comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_png_file=None)[:,2]
 	#print Spectrum_error_correct
 	#pdb.set_trace()
 	class model_black_body_dist_fixed(object):  #
@@ -273,8 +273,8 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 		ax.set_xlabel(xlabel)
 		ax.set_ylabel(ylabel)
 		pylab.legend(loc=1)
-		pylab.savefig(output_file_path + '/best_fit.pdf', facecolor='w', edgecolor='w',
-					  orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
+		pylab.savefig(output_file_path + '/best_fit.png', facecolor='w', edgecolor='w',
+					  orientation='portrait', papertype=None, format='png', transparent=False, bbox_inches=None,
 					  pad_inches=0.1)
 
 		if flatchain_path is not None:
@@ -328,8 +328,8 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 			ax.set_xlabel(xlabel)
 			ax.set_ylabel(ylabel)
 			pylab.legend(loc=1)
-			pylab.savefig(output_file_path + '/best_fit_with_chain.pdf', facecolor='w', edgecolor='w',
-						  orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
+			pylab.savefig(output_file_path + '/best_fit_with_chain.png', facecolor='w', edgecolor='w',
+						  orientation='portrait', papertype=None, format='png', transparent=False, bbox_inches=None,
 						  pad_inches=0.1)
 		# pylab.show()
 
@@ -350,7 +350,7 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 		output_file_path=output_mcmc, parameters_labels=['T', 'R'])
 	histos = fitter_general.plot_1D_marginalized_distribution(
 		flatchain_path=output_mcmc+'/flatchain.txt', bests=bests,
-		output_pdf_file_path=output_mcmc, output_txt_file_path=output_mcmc,parameters_labels=['T', 'R'], number_bins=500)
+		output_png_file_path=output_mcmc, output_txt_file_path=output_mcmc,parameters_labels=['T', 'R'], number_bins=500)
 
 	#print('I got here 0')
 	best_temp = bests[0]
@@ -433,8 +433,8 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	pylab.title('Spectrum (flux)')
 	pylab.grid()
 	pylab.legend(loc=1)
-	pylab.savefig(output_file+'/fit_result_FLux.pdf', facecolor='w', edgecolor='w',
-				  orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
+	pylab.savefig(output_file+'/fit_result_FLux.png', facecolor='w', edgecolor='w',
+				  orientation='portrait', papertype=None, format='png', transparent=False, bbox_inches=None,
 				  pad_inches=0.1)
 	#pylab.show()
 	if show_mag_AB==True:
@@ -457,8 +457,8 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 		pylab.grid()
 		pylab.title('Spectrum (mag)')
 		pylab.legend(loc=1)
-		pylab.savefig(output_file + '/fit_result_Mag.pdf', facecolor='w', edgecolor='w',
-					  orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
+		pylab.savefig(output_file + '/fit_result_Mag.png', facecolor='w', edgecolor='w',
+					  orientation='portrait', papertype=None, format='png', transparent=False, bbox_inches=None,
 					  pad_inches=0.1)
 
 	#Plot Xi_array fields
@@ -496,8 +496,8 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	if TempVec == None:
 		axarr[2].set_xscale('log')
 	#axarr[1].xaxis.set_major_formatter(x_formatter)
-	pylab.savefig(output_file+'/fit_grid_results.pdf', facecolor='w', edgecolor='w', orientation='portrait',
-				  papertype=None, format='pdf', transparent=False, bbox_inches=None, pad_inches=0.5)
+	pylab.savefig(output_file+'/fit_grid_results.png', facecolor='w', edgecolor='w', orientation='portrait',
+				  papertype=None, format='png', transparent=False, bbox_inches=None, pad_inches=0.5)
 
 	print('the best fit temperature is {0}'.format(best_temp)
 	if show_plot == True:

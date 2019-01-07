@@ -43,9 +43,9 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	 		-value of best temperature coeff1
 	 		-value of best radius
 	 		-value of best luminosity
-	Plots and output files: -plot best fit in .outputs_from_fit_black_body_flux_filters_function/fit_result.pdf in flux
+	Plots and output files: -plot best fit in .outputs_from_fit_black_body_flux_filters_function/fit_result.png in flux
 							- if show_mag_AB is True, same in mag AB
-							-plot chi2, coeff, and R in outputs_from_fit_black_body_flux_filters_function/fit_grid_results.pdf
+							-plot chi2, coeff, and R in outputs_from_fit_black_body_flux_filters_function/fit_grid_results.png
 							-save sorted_Xi_array in outputs_from_fit_black_body_flux_filters_function/Sorted_fir_results.txt
 	Tested : ?
 	    By : Maayane T. Soumagnac Nov 2016
@@ -162,7 +162,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	#Spectrum_correct=np.empty(np.shape(Spectrum),dtype=object)
 	#Spectrum_correct[:,0]=Spectrum[:,0]
 	#Spectrum_correct[:,1]=Spectrum[:,1]
-	#Spectrum_correct[:,2]=correct_spectrum.correct_spectrum_for_redshift_and_extinction(np.array(zip(central_wavelength, Spectrum[:,2])),comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_pdf_file=None)[:,1]
+	#Spectrum_correct[:,2]=correct_spectrum.correct_spectrum_for_redshift_and_extinction(np.array(zip(central_wavelength, Spectrum[:,2])),comments="#",WaveUnits='A',Ebv=Ebv,z=z,show_plot=False,title=None,output_png_file=None)[:,1]
 	'''
 	if show_mag_AB==True:
 			for i, s in enumerate(Filter_vector):
@@ -295,8 +295,8 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	pylab.title('Spectrum (flux)')
 	pylab.grid()
 	pylab.legend(loc=1)
-	pylab.savefig(output_file+'/fit_result_FLux.pdf', facecolor='w', edgecolor='w',
-				  orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
+	pylab.savefig(output_file+'/fit_result_FLux.png', facecolor='w', edgecolor='w',
+				  orientation='portrait', papertype=None, format='png', transparent=False, bbox_inches=None,
 				  pad_inches=0.1)
 	#pylab.show()
 	'''
@@ -320,8 +320,8 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 		pylab.grid()
 		pylab.title('Spectrum (mag)')
 		pylab.legend(loc=1)
-		pylab.savefig(output_file + '/fit_result_Mag.pdf', facecolor='w', edgecolor='w',
-					  orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
+		pylab.savefig(output_file + '/fit_result_Mag.png', facecolor='w', edgecolor='w',
+					  orientation='portrait', papertype=None, format='png', transparent=False, bbox_inches=None,
 					  pad_inches=0.1)
 
 	'''
@@ -360,8 +360,8 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	if TempVec is None:
 		axarr[2].set_xscale('log')
 	#axarr[1].xaxis.set_major_formatter(x_formatter)
-	pylab.savefig(output_file+'/fit_grid_results.pdf', facecolor='w', edgecolor='w', orientation='portrait',
-				  papertype=None, format='pdf', transparent=False, bbox_inches=None, pad_inches=0.5)
+	pylab.savefig(output_file+'/fit_grid_results.png', facecolor='w', edgecolor='w', orientation='portrait',
+				  papertype=None, format='png', transparent=False, bbox_inches=None, pad_inches=0.5)
 
 	print('the best fit temperature is {0}'.format(best_temp))
 	if show_plot == True:
