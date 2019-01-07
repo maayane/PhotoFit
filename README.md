@@ -84,6 +84,8 @@ The `Best` numpy array is stored in your output directory (defined in the `param
   <img src="./test/result_fit_sed_mat/day_1.359/fit_result_FLux.pdf" width="350">
 </p>
 
+![Image description](https://github.com/maayane/PhotoFit/blob/master/test/result_fit_sed_mat/day_1.359/SED_date_1.359.pdf)
+
 The results of the interpolation (see step 1. of [How does PhotoFit work](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)) are shown in a directory defined in your `params.py` file.
 ### Visualize the evolution of R and T
 
