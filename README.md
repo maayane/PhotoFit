@@ -157,59 +157,28 @@ Let's dive into the parameters file in full details. The file `params.py` contai
 ```
 after each edit!
 
-Below is a list of the paraeters with an explanation.
+Below is a list of the parameters to edit. If you do not edit them, PhotoFit will run on the test data of PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)).
 
-* `mcmc` - This is a **boolean** determines the fitting method (see step 3 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)). If set to `False`, it will use a linear fitting method. If `True`, it will run MCMC (much more time consuming, but with the advantage of providing error bars on) 
-* `output_file_mcmc` - This is a **string** determining the path of the directory where you intend to put your results, if `mcmc=True`. Default is `'./test/results_fit_sed_mcmc'`, for running `PhotoFit` on the test data.
-* `output_file_linear` - This is a **string** determining the path of the directory where you intend to put your results, if `mcmc=True`. Default is `'./test/result_fit_sed_mat'`, for running `PhotoFit` on the test data.
-* `output_file_interpolation` -  This is a **string** determining the path of the directory where `PhotoFit` wiill store the results of the interpolation step (see step 1 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)). Default is `'./test/results_interpolation'`, for running `PhotoFit` on the test data.
-* z =0#0.011855 #2018fif: 0.017189 #redshift to correct for.
-distance_modulus=33.51#2018fif: 34.31
-explosion_date=0# 2018fif: 2458351.653729907237
-EBV=0.035#2018fif: 0.13564
-data_file='./test/data_files/data_13dqy_formatted_for_package.txt'
-#2018fif: '/Users/maayanesoumagnac/PostDoc/projects/2018fif/data/data_ZTF_Swift_3_subtracted.txt' #must have at least the following fiels, and a header with the fields written as such: jd,flux,fluxerr,filter.
-# filter can be one of the following: ('UVW1','UVW2','UVM2','u_swift','v_swift','b_swift','g_sdss','r_sdss','i_sdss','z_sdss'
-# ,'r_cousin','i_cousin','h_2mass','j_2mass','u_johnson','b_johnson','v_johnson')
-dates_file='./test/data_files/13dqy_int_dates.txt'
-#2018fif:'/Users/maayanesoumagnac/PostDoc/projects/2018fif/dates.txt'
-lower_limit_on_flux=1e-40
-filters_directory='./PhotoFit/Filters'
-
-# Interpolation step
-already_run_interp_errors=dict() #don't touch this line
-already_run_interp_errors['UVW1']=True# set to False if the interpolation for this band has NOT been done yet. Otherwise, set to False to save time.
-already_run_interp_errors['UVW2']=True#
-already_run_interp_errors['UVM2']=True#
-already_run_interp_errors['u_swift']=False#
-already_run_interp_errors['b_swift']=False#
-already_run_interp_errors['v_swift']=False#
-already_run_interp_errors['r_sdss']=True#
-already_run_interp_errors['g_sdss']=True#
-already_run_interp_errors['i_sdss']=True#
-already_run_interp_errors['r_p48']=True#
-already_run_interp_errors['g_p48']=False#
-already_run_interp_errors['z_sdss']=True
-already_run_interp_errors['u_johnson']=True
-already_run_interp_errors['v_johnson']=True
-already_run_interp_errors['b_johnson']=True
-already_run_interp_errors['i_cousin']=True
-already_run_interp_errors['r_cousin']=True
-already_run_interp_errors['j_2mass']=True
-already_run_interp_errors['h_2mass']=True
-
-
-# In case you fit with a linear-fitting algorythm
-already_run_matrix=True
-num_iterations=100
-
-# In case you fit with mcmc
-already_run_mcmc=False
-nwalkers=100
-num_steps=350
-
-# In case you want to compare your R and T results with existing results from a file
-data_compare='./test/data_files/Yaron_2017_results.txt'#file with column#1: time from explosion, column#2: temperature (K), column#3:radius (cm)
+* `mcmc` - a **boolean** determining the fitting method (see step 3 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)). If set to `False`, it will use a linear fitting method. If `True`, it will run MCMC (much more time consuming, but with the advantage of providing error bars on) 
+* `output_file_mcmc` - a **string** determining the path of the directory where you intend to put your results, if `mcmc=True`. Default is `'./test/results_fit_sed_mcmc'`, for running `PhotoFit` on the test data.
+* `output_file_linear` - a **string** determining the path of the directory where you intend to put your results, if `mcmc=True`. Default is `'./test/result_fit_sed_mat'`, for running `PhotoFit` on the test data.
+* `output_file_interpolation` - a **string** determining the path of the directory where `PhotoFit` wiill store the results of the interpolation step (see step 1 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)). Default is `'./test/results_interpolation'`, for running `PhotoFit` on the test data.
+* `z` - a **float** with the redshift of your object (see step 2 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)).
+* `distance_modulus` - a **float** with the distance_modulus of your object
+* `explosion_date` - a **float** with the explosion date of your object, in the same units as in your data file.
+* `EBV` - a **float** with the extinction to correct for (see step 2 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)).
+* `data_file`- a **string** determining the path to your data file. The file must have four fields: time (in jd), flux (in erg/s/cm^2/A), errors on the flux and filter name. It must have a header **with the fields written in the following way**: jd,flux,fluxerr,filter (**PhotoFit will not run properly if the header is not written properly**). The filter names have to be from the following list ('UVW1','UVW2','UVM2','u_swift','v_swift','b_swift','g_sdss','r_sdss','i_sdss','z_sdss','r_cousin','i_cousin','h_2mass','j_2mass','u_johnson','b_johnson','v_johnson').
+* dates_file='./test/data_files/13dqy_int_dates.txt'
+* lower_limit_on_flux=1e-40
+* filters_directory='./PhotoFit/Filters'
+* already_run_interp_errors=dict() #don't touch this line
+* already_run_interp_errors[name of the filter] set to False if the interpolation for this band has NOT been done yet. Otherwise, set to False to save time.
+* already_run_matrix=True
+* num_iterations=100
+* already_run_mcmc=False
+* nwalkers=100
+* num_steps=350
+* data_compare= # In case you want to compare your R and T results with existing results from a file'./test/data_files/Yaron_2017_results.txt'#file with column#1: time from explosion, column#2: temperature (K), column#3:radius (cm)
 
 
 
