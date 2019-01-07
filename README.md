@@ -51,7 +51,7 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 
 ### Edit the params.py file
 
-The first step is to edit the content of the parameters file `params.py` as detailed in [this section](https://github.com/maayane/PhotoFit/blob/master/README.md#the-parameters-file-in-details). Unless you want to give it a try with the default parameters, which allow you to run `PhotoFit` on the test data from PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)), as explained [here](https://github.com/maayane/PhotoFit/blob/master/README.md#give-it-a-try-with-the-test-data).
+The first step is to edit the content of the parameters file `params.py` as detailed in [this section](https://github.com/maayane/PhotoFit/blob/master/README.md#the-parameters-file-in-details). Unless you want to give it a try with the default parameters, which allow you to run `PhotoFit` on the test data from PTF 13dqy ([Yaron et al 2017](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)), as explained [here](https://github.com/maayane/PhotoFit/blob/master/README.md#give-it-a-try-with-the-test-data).
 
 After every modification of `params.py`, don't forget to rerun the following command from your `PhotoFit` directory
 
@@ -157,7 +157,7 @@ Let's dive into the parameters file in full details. The file `params.py` contai
 after each edit!
 
 Below is a list of the parameters to edit. The parameters not detailed below are **not** to be edited.
-If you do not edit the parameters listed below and simply run `PhotoFit`, it will run on the test data of PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)) (see the [section on the test data](https://github.com/maayane/PhotoFit/blob/master/README.md#give-it-a-try-with-the-test-data)).
+If you do not edit the parameters listed below and simply run `PhotoFit`, it will run on the test data of PTF 13dqy ([Yaron et al 2017](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)) (see the [section on the test data](https://github.com/maayane/PhotoFit/blob/master/README.md#give-it-a-try-with-the-test-data)).
 
 * `mcmc` - a **boolean** determining the fitting method (see step 3 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)). If set to `False`, it will use a linear fitting method. If `True`, it will run MCMC (much more time consuming, but with the advantage of providing error bars on) 
 * `output_file_mcmc` - a **string** determining the path of the directory where you intend to put your results, if `mcmc=True`. Default is `'./test/results_fit_sed_mcmc'`, for running `PhotoFit` on the test data.
@@ -181,6 +181,6 @@ If you do not edit the parameters listed below and simply run `PhotoFit`, it wil
 
 ## Give it a try with the test data!
 
-All the figures above were obtained by running `PhotoFit` on the multiple-bands light curve of the Supernova PTF13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)). The data is available in the `test` directory (including the output of the time-consuming interpolation step). You can reproduce all these results and figures by running `PhotoFit` with the parameters file `params.py` as it is.
+All the figures above were obtained by running `PhotoFit` on the multiple-bands light curve of the Supernova PTF13dqy ([Yaron et al 2017](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)). The data is available in the `test` directory (including the output of the time-consuming interpolation step). You can reproduce all these results and figures by running `PhotoFit` with the parameters file `params.py` as it is.
 
 
