@@ -94,6 +94,23 @@ The results of the interpolation (see step 1. of [How does PhotoFit work](https:
 
 ### Visualize the evolution of R and T
 
+The simplest way to visualize the evolution of R and T is simply to run 
+
+```python
+>>> PhotoFit.plot_T_and_R_in_time(Best)
+```
+
+If you want to compare the evolution of R and T to the one of an other object, set the path to the file to be compared in the `params.py` file and run
+
+```python
+>>> PhotoFit.plot_T_and_R_in_time(Best,compare=True,label_comparision='PTF 13dqy')
+```
+
+<p align="center">
+  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/data_and_interpolation_dates.png" width="350">
+  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/Plot_w_interpolated_errors.png" width="350">
+</p>
+
 ### Visualize the evolution of L
 
 ```python
