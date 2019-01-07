@@ -20,11 +20,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="interpolate_errors.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="interpolate_errors.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="505">
-              <caret line="41" column="68" selection-start-line="41" selection-start-column="68" selection-end-line="41" selection-end-column="68" />
+            <state relative-caret-position="218">
+              <caret line="39" column="17" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -40,18 +40,17 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="script.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="script.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PhotoFit/script.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
-              <caret line="245" column="41" selection-start-line="245" selection-start-column="41" selection-end-line="245" selection-end-column="41" />
+            <state relative-caret-position="358">
+              <caret line="1191" column="103" selection-start-line="1191" selection-start-column="100" selection-end-line="1191" selection-end-column="103" />
               <folding>
                 <element signature="e#354#372#0" expanded="true" />
                 <element signature="e#4106#5899#0" expanded="false" />
                 <element signature="e#11664#21424#0" expanded="false" />
                 <element signature="e#21740#24705#0" expanded="false" />
                 <element signature="e#24082#24705#1" expanded="false" />
-                <element signature="e#33646#68509#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -60,8 +59,8 @@
       <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+            <state relative-caret-position="885">
+              <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -101,8 +100,8 @@
         <option value="$PROJECT_DIR$/PhotoFit/class_chi2.py" />
         <option value="$PROJECT_DIR$/PhotoFit/params.py" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/PhotoFit/interpolate_errors.py" />
         <option value="$PROJECT_DIR$/PhotoFit/script.py" />
+        <option value="$PROJECT_DIR$/PhotoFit/interpolate_errors.py" />
       </list>
     </option>
   </component>
@@ -137,6 +136,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -171,7 +171,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -391,6 +390,52 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="41" column="68" selection-start-line="41" selection-start-column="68" selection-end-line="41" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/class_chi2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="29" column="131" selection-start-line="29" selection-start-column="131" selection-end-line="29" selection-end-column="131" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/script.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#354#372#0" expanded="true" />
+            <element signature="e#4106#5899#0" expanded="false" />
+            <element signature="e#11664#21424#0" expanded="false" />
+            <element signature="e#21740#24705#0" expanded="false" />
+            <element signature="e#24082#24705#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="915">
+          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/params.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="630">
+          <caret line="42" column="49" selection-start-line="42" selection-start-column="49" selection-end-line="42" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2640">
           <caret line="183" column="9" selection-start-line="183" selection-start-column="9" selection-end-line="183" selection-end-column="9" />
           <folding />
@@ -415,7 +460,6 @@
             <element signature="e#11664#21424#0" expanded="false" />
             <element signature="e#21740#24705#0" expanded="false" />
             <element signature="e#24082#24705#1" expanded="false" />
-            <element signature="e#33646#68509#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -454,7 +498,6 @@
             <element signature="e#11664#21424#0" expanded="false" />
             <element signature="e#21740#24705#0" expanded="false" />
             <element signature="e#24082#24705#1" expanded="false" />
-            <element signature="e#33646#68509#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -602,8 +645,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+        <state relative-caret-position="885">
+          <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -616,26 +659,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="505">
-          <caret line="41" column="68" selection-start-line="41" selection-start-column="68" selection-end-line="41" selection-end-column="68" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/script.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="245" column="41" selection-start-line="245" selection-start-column="41" selection-end-line="245" selection-end-column="41" />
+        <state relative-caret-position="358">
+          <caret line="1191" column="103" selection-start-line="1191" selection-start-column="100" selection-end-line="1191" selection-end-column="103" />
           <folding>
             <element signature="e#354#372#0" expanded="true" />
             <element signature="e#4106#5899#0" expanded="false" />
             <element signature="e#11664#21424#0" expanded="false" />
             <element signature="e#21740#24705#0" expanded="false" />
             <element signature="e#24082#24705#1" expanded="false" />
-            <element signature="e#33646#68509#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="39" column="17" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -39,8 +39,8 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
         if title is not None:
             pylab.title(title)
         pylab.legend()
-        pylab.savefig(output_path+'/data_and_interpolation_dates.pdf',
-                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+        pylab.savefig(output_path+'/data_and_interpolation_dates.png',
+                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                       bbox_inches=None, pad_inches=0.5)
     #pylab.show()
     #print('data is',data)
@@ -166,11 +166,11 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
 
             histos = fitter_general.plot_1D_marginalized_distribution(
                         flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt', bests=bests,
-                output_pdf_file_path=output_path+'/error_calc_'+str(i)+'th_point',output_txt_file_path=output_path+'/error_calc_'+str(i)+'th_point', parameters_labels=['a', 'b'], number_bins=2000)
+                output_png_file_path=output_path+'/error_calc_'+str(i)+'th_point',output_txt_file_path=output_path+'/error_calc_'+str(i)+'th_point', parameters_labels=['a', 'b'], number_bins=2000)
             #pylab.show()
 
 
-            #def plot_1D_marginalized_distribution(flatchain_path, bests=None, output_pdf_file_path='.',
+            #def plot_1D_marginalized_distribution(flatchain_path, bests=None, output_png_file_path='.',
             #                                      output_txt_file_path='.', parameters_labels=None, number_bins=None):
 
             # plot le best et l erreur.
@@ -217,8 +217,8 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
             pylab.plot(x_on_which_to_interpolate[0], Results_array[2], 'go', label='best b in mcmc fit')
 
         pylab.legend()
-        pylab.savefig(output_path+'/Plot_w_interpolated_errors.pdf',
-            facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+        pylab.savefig(output_path+'/Plot_w_interpolated_errors.png',
+            facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
             bbox_inches=None, pad_inches=0.5)
         if title is not None:
             pylab.title(title)

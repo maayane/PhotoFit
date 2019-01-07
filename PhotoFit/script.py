@@ -243,8 +243,8 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
                 pylab.ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                 pylab.xlabel(r'wavelength [$\AA$]', fontsize=20)
                 pylab.tight_layout()
-                pylab.savefig(output + '/day_'+str(round(j['time'],3))+'/SED_date_'+str(round(j['time'],3))+'.pdf',
-                              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf',
+                pylab.savefig(output + '/day_'+str(round(j['time'],3))+'/SED_date_'+str(round(j['time'],3))+'.png',
+                              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png',
                               transparent=False,
                               bbox_inches=None, pad_inches=0.5)
 
@@ -420,8 +420,8 @@ def plot_T_and_R_in_time(Best,compare=False,label_comparision=None):
     pylab.grid()
     #pylab.legend()
     pylab.xlim(0, np.max(Best[i, 0]) + 1)
-    pylab.savefig(output + '/T_bb_evo.pdf',
-                  facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+    pylab.savefig(output + '/T_bb_evo.png',
+                  facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                   bbox_inches=None, pad_inches=0.5)
     #pylab.show()
 
@@ -440,8 +440,8 @@ def plot_T_and_R_in_time(Best,compare=False,label_comparision=None):
     pylab.grid()
     #pylab.legend()
     pylab.xlim(0,np.max(Best[i, 0])+1)
-    pylab.savefig(output+'/r_bb_evo.pdf',
-                  facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+    pylab.savefig(output+'/r_bb_evo.png',
+                  facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                   bbox_inches=None, pad_inches=0.5)
 
     pylab.show()
@@ -458,8 +458,8 @@ def plot_T_and_R_in_time(Best,compare=False,label_comparision=None):
     ax.set_xscale("log")
     ax.set_yscale("log")
     #pylab.legend()
-    #pylab.savefig(output+'/L_bb_evo_log.pdf',
-    #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+    #pylab.savefig(output+'/L_bb_evo_log.png',
+    #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
     #              bbox_inches=None, pad_inches=0.5)
     pylab.show()
     '''
@@ -570,7 +570,7 @@ def plot_L_in_time(Best,error_lum_ran=False):
                 print('i is',i)
                 #print('file is output+/day_' + str(round(j['time'], 3)) + '/flatchain.txt')
                 output_txt_file_path=output+'/results_errors_lumi/day_' + str(round(j['time'], 3))
-                output_pdf_file_path=output_txt_file_path
+                output_png_file_path=output_txt_file_path
                 my_path=Path(output_txt_file_path)
                 if my_path.is_dir()==False:
                     os.mkdir(output_txt_file_path)
@@ -578,7 +578,7 @@ def plot_L_in_time(Best,error_lum_ran=False):
                 radii_early=np.genfromtxt(output+'/day_' + str(round(j['time'], 3))+'/flatchain.txt')[:,1]
                 luminosities_early=energy_conversions.convert_energy(4*math.pi*np.power(radii_early*1e-2,2)*sigma_Boltzmann*np.power(temperatures_early,4),'J','erg')
                 #histos de luminosities
-                histos=fitter_general.plot_1D_marginalized_distribution(luminosities_early, bests=None, output_pdf_file_path=output_pdf_file_path, output_txt_file_path=output_txt_file_path,
+                histos=fitter_general.plot_1D_marginalized_distribution(luminosities_early, bests=None, output_png_file_path=output_png_file_path, output_txt_file_path=output_txt_file_path,
                                                   parameters_labels=None, number_bins=1000)
         for i, j in enumerate(Spectra):
             errors_luminosity_early[i,0]=round(j['time'],3)
@@ -602,8 +602,8 @@ def plot_L_in_time(Best,error_lum_ran=False):
             pylab.vlines(j['time'],errors_luminosity_early[i,1],errors_luminosity_early[i,2],color='blue')
         pylab.grid(True, which="both")
         pylab.tight_layout()
-        pylab.savefig(output+'/L_bb_evo.pdf',
-                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+        pylab.savefig(output+'/L_bb_evo.png',
+                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                       bbox_inches=None, pad_inches=0.5)
     else:
         print('Because you did not use mcmc, I am plotting L without errors. To use mcmc change the "mcmc" parameter in params.py and re-run calculate_T_and_R_in_time')
@@ -620,8 +620,8 @@ def plot_L_in_time(Best,error_lum_ran=False):
         pylab.yticks(fontsize=16)
         pylab.grid(True, which="both")
         pylab.tight_layout()
-        pylab.savefig(output + '/L_bb_evo.pdf',
-                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf',
+        pylab.savefig(output + '/L_bb_evo.png',
+                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png',
                       transparent=False,
                       bbox_inches=None, pad_inches=0.5)
 
@@ -809,12 +809,12 @@ def plot_SEDs(Best,number_of_plot=9):
         number=0
         for name in os.listdir(output):
             #print('os.path.splitext(name)[1] is ',os.path.splitext(name)[1])
-            if os.path.splitext(name)[1] not in ['.pdf','.txt']:
-                #print('it is neither .pdf or .txt')
+            if os.path.splitext(name)[1] not in ['.png','.txt']:
+                #print('it is neither .png or .txt')
                 number=number+1
                 #print(name)
             #else:
-                #print('it is pdf or txt')
+                #print('it is png or txt')
 
         print('there are {0} directories in the output file'.format(number))
         a=number//9
@@ -970,8 +970,8 @@ def plot_SEDs(Best,number_of_plot=9):
                 #axes2d[k,i].set_ylim(1e-17,1e-15)
                 # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                 # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
-                # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.pdf',
-                #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+                # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.png',
+                #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                 #              bbox_inches=None, pad_inches=0.5)
                 # axes2d[k,i].show()
         #ax = pylab.gca()
@@ -993,20 +993,20 @@ def plot_SEDs(Best,number_of_plot=9):
         axes2d[1,0].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
         #plt.tight_layout()
         fig.subplots_adjust(left=0.2)
-        pylab.savefig(output + '/2D_SEDs_9.pdf',
-                          facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+        pylab.savefig(output + '/2D_SEDs_9.png',
+                          facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                           bbox_inches=None, pad_inches=1.5)
         plt.show()
     elif number_of_plot==16:
         number = 0
         for name in os.listdir(output):
             #print('os.path.splitext(name)[1] is ', os.path.splitext(name)[1])
-            if os.path.splitext(name)[1] not in ['.pdf', '.txt']:
-                # print('it is neither .pdf or .txt')
+            if os.path.splitext(name)[1] not in ['.png', '.txt']:
+                # print('it is neither .png or .txt')
                 number = number + 1
                 #print(name)
                 # else:
-                # print('it is pdf or txt')
+                # print('it is png or txt')
 
         print('there are {0} directories in the output file'.format(number))
         a = number // 16
@@ -1166,8 +1166,8 @@ def plot_SEDs(Best,number_of_plot=9):
                 # axes2d[k,i].set_ylim(1e-17,1e-15)
                 # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                 # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
-                # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.pdf',
-                #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+                # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.png',
+                #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                 #              bbox_inches=None, pad_inches=0.5)
                 # axes2d[k,i].show()
         #axes2d[1, 3].legend(loc='lower right',bbox_to_anchor=(1.5, 0.5))
@@ -1188,8 +1188,8 @@ def plot_SEDs(Best,number_of_plot=9):
         #art.append(lgd)
         #plt.tight_layout()
         fig.subplots_adjust(left=0.2)
-        pylab.savefig(output + '/2D_SEDs_16.pdf',
-                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf',
+        pylab.savefig(output + '/2D_SEDs_16.png',
+                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png',
                       transparent=False,
                       bbox_inches=None, pad_inches=0.5)
         plt.show()
