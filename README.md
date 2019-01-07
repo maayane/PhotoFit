@@ -157,7 +157,8 @@ Let's dive into the parameters file in full details. The file `params.py` contai
 ```
 after each edit!
 
-Below is a list of the parameters to edit. If you do not edit them, PhotoFit will run on the test data of PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)).
+Below is a list of the parameters to edit. The parameters not detailed below are **not** to be edited.
+If you do not edit the parameters listed below and simply run `PhotoFit`, it will run on the test data of PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)).
 
 * `mcmc` - a **boolean** determining the fitting method (see step 3 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)). If set to `False`, it will use a linear fitting method. If `True`, it will run MCMC (much more time consuming, but with the advantage of providing error bars on) 
 * `output_file_mcmc` - a **string** determining the path of the directory where you intend to put your results, if `mcmc=True`. Default is `'./test/results_fit_sed_mcmc'`, for running `PhotoFit` on the test data.
@@ -168,17 +169,15 @@ Below is a list of the parameters to edit. If you do not edit them, PhotoFit wil
 * `explosion_date` - a **float** with the explosion date of your object, in the same units as in your data file.
 * `EBV` - a **float** with the extinction to correct for (see step 2 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)).
 * `data_file`- a **string** determining the path to your data file. The file must have four fields: time (in jd), flux (in erg/s/cm^2/A), errors on the flux and filter name. It must have a header **with the fields written in the following way**: jd,flux,fluxerr,filter (**PhotoFit will not run properly if the header is not written properly**). The filter names have to be from the following list ('UVW1','UVW2','UVM2','u_swift','v_swift','b_swift','g_sdss','r_sdss','i_sdss','z_sdss','r_cousin','i_cousin','h_2mass','j_2mass','u_johnson','b_johnson','v_johnson').
-* dates_file='./test/data_files/13dqy_int_dates.txt'
-* lower_limit_on_flux=1e-40
-* filters_directory='./PhotoFit/Filters'
-* already_run_interp_errors=dict() #don't touch this line
-* already_run_interp_errors[name of the filter] set to False if the interpolation for this band has NOT been done yet. Otherwise, set to False to save time.
-* already_run_matrix=True
-* num_iterations=100
-* already_run_mcmc=False
-* nwalkers=100
-* num_steps=350
-* data_compare= # In case you want to compare your R and T results with existing results from a file'./test/data_files/Yaron_2017_results.txt'#file with column#1: time from explosion, column#2: temperature (K), column#3:radius (cm)
+* `dates_file` - a **string** determining the path to a file with the common epochs (in jd) at which you want to interpolate the data (see step 1 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)).
+* `lower_limit_on_flux` - a **float**. Only fluxes values above this limit will be considered as real points. This is important in case you have e.g. mag=99 in you original data, as wrong fluxes values can mess up the interpolation. 
+* `already_run_interp_errors[name of the filter]` set to False if the interpolation for this band has NOT been done yet. Otherwise, set to False to save time.
+* `already_run_matrix`=True
+* `num_iterations`=100
+* `already_run_mcmc`=False
+* `nwalkers`=100
+* `num_steps`=350
+* `data_compare`= # In case you want to compare your R and T results with existing results from a file'./test/data_files/Yaron_2017_results.txt'#file with column#1: time from explosion, column#2: temperature (K), column#3:radius (cm)
 
 
 
