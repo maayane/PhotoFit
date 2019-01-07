@@ -29,7 +29,7 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 (~30 min per epoch for 100 walkers and 350 steps )
     - A linear fit with a grid of temperatures. The advantage of this method is its speed. The disadvantage is the lack of error bars.
 
-## How to install the `PhotoFit` code?
+## How to install `PhotoFit`?
 
 ### pip
 
@@ -47,9 +47,11 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 * `matplotlib`
 * `pyphot`
 
-## How to run the `PhotoFit` code?
+## How to run `PhotoFit`?
 
 ### Edit the params.py file
+
+The content of the parameters file `params.py` is fully detailed in the section [The parameters file in details](https://github.com/maayane/PhotoFit/blob/master/README.md#the-parameters-file-in-details).
 
 After every modification of `params.py`, rerun
 
@@ -150,6 +152,8 @@ plot_SEDs(Best,number_of_plot=16)
 ## The parameters file in details
 
 ## Give it a try with the test data!
+
+All the figure above are for the object PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)). We have made avaiblable the data for you in the `test` directory. You can reproduce all these results and figures running `PhotoFit` with the parameters file `params.py` as it is.
 
 
 
