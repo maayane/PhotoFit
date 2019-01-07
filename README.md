@@ -80,8 +80,8 @@ And if you want the code to tell you more about what it is doing at each step, y
 The `Best` numpy array is stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates one sub-directory per epoch, with several files and plots in it.
 
 <p align="center">
-  <img src="./test/result_fit_sed_mat/day_1.359/SED_date_1.359.pdf" width="350">
-  <img src="./test/result_fit_sed_mat/day_1.359/fit_result_FLux.pdf" width="350">
+  <img src="./test/result_fit_sed_mat/day_1.359/SED_date_1.359.pdf" width="350",raw=True>
+  <img src="./test/result_fit_sed_mat/day_1.359/fit_result_FLux.pdf" width="350",raw=True>
 </p>
 
 The results of the interpolation (see step 1. of [How does PhotoFit work](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)) are shown in a directory defined in your `params.py` file.
