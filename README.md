@@ -153,8 +153,6 @@ plot_SEDs(Best,number_of_plot=16)
 
 ## Give it a try with the test data!
 
-All the figure above are for the object PTF 13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)). We have made avaiblable the data for you in the `test` directory. You can reproduce all these results and figures running `PhotoFit` with the parameters file `params.py` as it is.
-
-
+All the figures above were obtained by running `PhotoFit` on the multiple-bands light curve of the Supernova PTF13dqy ([Yaron et al 2018](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)). The data is available in the `test` directory (including the output of the time-consuming interpolation step). You can reproduce all these results and figures by running `PhotoFit` with the parameters file `params.py` as it is.
 
 
