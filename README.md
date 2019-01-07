@@ -129,10 +129,23 @@ If you have done the fit using mcmc, `Pyphot` will calculate the errors on the l
 
 ### Visualize the spectral energy distributions (SEDs) at each epoch
 
+To visualize all the SEDs on one 2-D plot, run
+
 ```python
->>> import PhotoFit
->>> PhotoFit.calculate_T_and_R_in_time()
+>>> plot_SEDs(Best)  
 ```
+<p align="center">
+  <img src="./test/result_fit_sed_mat/2D_SEDs_9.png" width="350">
+</p>
+
+The default number of plots is 9 (PhotoFit will pick epochs evenly spread over the total range of time). You can show 16 SEDs instead by editing the `number_of_plot` parameter:
+
+```python
+plot_SEDs(Best,number_of_plot=16)  
+```
+<p align="center">
+  <img src="./test/result_fit_sed_mat/2D_SEDs_16.png" width="350">
+</p>
 
 ## The parameters file in details
 
