@@ -41,7 +41,7 @@ already_run_interp_errors['h_2mass']=True
 
 
 # In case you fit with a linear-fitting algorythm
-already_run_matrix=False
+already_run_matrix=True
 num_iterations=100
 
 # In case you fit with mcmc
