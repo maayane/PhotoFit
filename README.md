@@ -80,15 +80,15 @@ And if you want the code to tell you more about what it is doing at each step, y
 The `Best` numpy array, containing the time evolution of T and R, is stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates in your output directory one sub-directory per epoch, with several files and plots in it. In particular, the plot stored in `SED_date_X.XXX.pdf`(left) shows the infered SED at epoch X.XXX and the plot stored in `fit_result_FLux.pdf` (right) shows the data and best-fit model superimposed.
 
 <p align="center">
-  <img src="./test/result_fit_sed_mat/day_1.359/SED_date_1.359.pdf" width="350">
-  <img src="./test/result_fit_sed_mat/day_1.359/fit_result_FLux.pdf" width="350">
+  <img src="./test/result_fit_sed_mat/day_1.359/SED_date_1.359.png" width="350">
+  <img src="./test/result_fit_sed_mat/day_1.359/fit_result_FLux.png" width="350">
 </p>
 
 The results of the interpolation (see step 1. of [How does PhotoFit work](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)) are stored in a dedicated directory defined in the `params.py` file. For a good interpolation, the green and blue points on the plot stored in `Plot_w_interpolated_errors.pdf` (right) must be almost exactely or exactely superimposed.
 
 <p align="center">
-  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/data_and_interpolation_dates.pdf" width="350">
-  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/Plot_w_interpolated_errors.pdf" width="350">
+  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/data_and_interpolation_dates.png" width="350">
+  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/Plot_w_interpolated_errors.png" width="350">
 </p>
 
 
