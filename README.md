@@ -171,15 +171,13 @@ If you do not edit the parameters listed below and simply run `PhotoFit`, it wil
 * `data_file`- a **string** determining the path to your data file. The file must have four fields: time (in jd), flux (in erg/s/cm^2/A), errors on the flux and filter name. It must have a header **with the fields written in the following way**: jd,flux,fluxerr,filter (**PhotoFit will not run properly if the header is not written properly**). The filter names have to be from the following list ('UVW1','UVW2','UVM2','u_swift','v_swift','b_swift','g_sdss','r_sdss','i_sdss','z_sdss','r_cousin','i_cousin','h_2mass','j_2mass','u_johnson','b_johnson','v_johnson').
 * `dates_file` - a **string** determining the path to a file with the common epochs (in jd) at which you want to interpolate the data (see step 1 of the section [How does PhotoFit work?](https://github.com/maayane/PhotoFit/blob/master/README.md#how-does-photofit-work)).
 * `lower_limit_on_flux` - a **float**. Only fluxes values above this limit will be considered as real points. This is important in case you have e.g. mag=99 in you original data, as wrong fluxes values can mess up the interpolation. 
-* `already_run_interp_errors[name of the filter]` set to False if the interpolation for this band has NOT been done yet. Otherwise, set to False to save time.
-* `already_run_matrix`=True
-* `num_iterations`=100
-* `already_run_mcmc`=False
-* `nwalkers`=100
-* `num_steps`=350
-* `data_compare`= # In case you want to compare your R and T results with existing results from a file'./test/data_files/Yaron_2017_results.txt'#file with column#1: time from explosion, column#2: temperature (K), column#3:radius (cm)
-
-
+* `already_run_interp_errors[name of the filter]`- a **boolean**, that allows you to save time and not re-run the interpolation step at every run of `PhotoFit`. Set this parameter to `False` if the interpolation for this band has NOT been done yet. The interpolation step has already been performed for the test data, so you can simply leave it as `False` for testing the code. 
+* `already_run_matrix`- a **boolean**. This is only to be edited if `mcmc=False`, i.e. if you are using the linear fit method. Set to `True` after the first run, if you want e.g. to visualize the results stored in `Results.txt`, to avoid redoing the fit. The fit has already been performed for the test data, so you can simply leave it as `False` for testing the code. 
+* `num_iterations`- a **float**. This is only to be edited if `mcmc=False`, i.e. if you are using the linear fit method. Determines the number of temperatures in the grid. 
+* `already_run_mcmc` - a  **boolean**. This is only to be edited if `mcmc=True`, i.e. if you are using the mcmc fit method. Set to `True` after the first run, if you want e.g. to visualize the results stored in `Results.txt`, to avoid redoing the fit.
+* `nwalkers` -  a **float**. This is only to be edited if `mcmc=True`, i.e. if you are using the mcmc fit method. Determines the number of walkers in the mcmc. See the [emcee documentation](http://dfm.io/emcee/current/) for details.
+* `num_steps` - a **float**. This is only to be edited if `mcmc=True`, i.e. if you are using the mcmc fit method. Determines the number of walkers in the mcmc. See the [emcee documentation](http://dfm.io/emcee/current/) for details.
+* `data_compare` - a **string**. This is in case you want to compare your R and T results with existing results from a file. This parameters determines the path to this file, which needs to have no header and the following format: column#1 - time from explosion, column#2 - temperature (K), column#3 -radius (cm). The default parameter will make you compare your results with the supernova PTF 13dqy. 
 
 
 ## Give it a try with the test data!
