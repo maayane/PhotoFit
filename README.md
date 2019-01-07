@@ -1,5 +1,5 @@
 # PhotoFit
-Calculating the evolution in time of the effective radius and effective temperature from multiple-band photometric light-curves (assuming blackbody SEDs).
+This package allows you to calculate and visualize the evolution in time of the effective radius, temperature and luminosity of a supernova from multiple-bands photometric light-curves.
 
 THIS IS STILL UNDER CONSTRUCTION (Please wait for 7.01.2018 before installing anything)
 
@@ -16,20 +16,20 @@ THIS IS STILL UNDER CONSTRUCTION (Please wait for 7.01.2018 before installing an
 
 ### How does PhotoFit work?
 
-1. Your data are usually taken at different dates for each band. The first thing to do is to define common epochs on which
-the data will be interpolated, and calculate the interpolated flux and (more tricky) the interpolated errors. `PhotoFit` does this task using Monte Carlo Markov Chains simulations.
-Although this task can be time-consuming (~0.5 min per band and per epoch), your can set the parameters (in the parameters file `params.py`) to only do this once for a given data set.
-At the end of this first step, there is one SED per epoch.
+1. Measurements in different bands are usually taken at different epochs. The first task completed by `PhotoFit` is to interpolate the flux and (more tricky) the errors on
+common epochs defined by the user. `PhotoFit` does this task using Monte Carlo Markov Chains (MCMC) simulations. This first step can be time-consuming (~0.5 min per band and per epoch),
+but you can set the parameters (in the parameters file `params.py`) to only do this once for a given data set.
+At the end of this first step, there is one spectral energy distribution (SED) to fit per epoch.
 
 2. `PhotoFit` then fits each SED with a blackbody model that has been corrected for:
     - the extinction: `PhotoFit` does this using Schlay & Finkbeiner (2011) and using the extinction curves of Cardelli et al. (1989).
     - the redshift
     - the effect of the filters transmission curves: `PhotoFit` does this using the `pyphot` package for synthetic photometry.
 
-3. The fit itself can be done in two different ways (to choose from in the parameters file params.py):
-    - Monte Carlo Markov Chain (with emcee). The advantage of this option is it gives you error bars on T and R. The disadvantage is that it is time-consuming
+3. The fit itself can be done in two different ways (to be chosen by the user and defined in the `params.py` file):
+    - Monte Carlo Markov Chain simulations (with emcee). The advantage of this option is it gives you error bars on T and R. The disadvantage is that it is time-consuming
 (~30 min per epoch for 100 walkers and 350 steps )
-    - A linear fit with a grid of temperatures. The advantage is the speed. The disadvantage is you loose the error bars.
+    - A linear fit with a grid of temperatures. The advantage of this method is its speed. The disadvantage is the lack of error bars.
 
 ## How to install the `PhotoFit` code?
 

@@ -98,27 +98,6 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
 
     for k in data_dicts.keys():
         already_run_interp_errors[k] = params.already_run_interp_errors[k]
-    '''
-    already_run_interp_errors['UVW1']=params.already_run_interp_errors_UVW1
-    already_run_interp_errors['UVW2']=params.already_run_interp_errors_UVW2
-    already_run_interp_errors['UVM2']=params.already_run_interp_errors_UVM2
-    already_run_interp_errors['u_swift']=params.already_run_interp_errors_u_swift
-    already_run_interp_errors['b_swift']=params.already_run_interp_errors_b_swift
-    already_run_interp_errors['v_swift']=params.already_run_interp_errors_v_swift
-    already_run_interp_errors['r_sdss']=params.already_run_interp_errors_r_sdss
-    already_run_interp_errors['g_sdss']=params.already_run_interp_errors_g_sdss
-    already_run_interp_errors['i_sdss']=params.already_run_interp_errors_i_sdss
-    already_run_interp_errors['z_sdss']=params.already_run_interp_errors_z_sdss
-    already_run_interp_errors['r_p48']=params.already_run_interp_errors_r_p48
-    already_run_interp_errors['g_p48']=params.already_run_interp_errors_g_p48
-    already_run_interp_errors['u_johnson']=params.already_run_interp_errors_u_johnson
-    already_run_interp_errors['v_johnson']=params.already_run_interp_errors_v_johnson
-    already_run_interp_errors['b_johnson'] = params.already_run_interp_errors_b_johnson
-    already_run_interp_errors['i_cousin'] = params.already_run_interp_errors_i_cousin
-    already_run_interp_errors['r_cousin'] = params.already_run_interp_errors_r_cousin
-    already_run_interp_errors['j_2mass'] = params.already_run_interp_errors_i_cousin
-    already_run_interp_errors['h_2mass'] = params.already_run_interp_errors_r_cousin
-    '''
 
     ### Interpolate all data on the interpolation dates dates ####
 
@@ -149,8 +128,6 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
         #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
         #print('JD_basis_interpolation[k] is',JD_basis_interpolation[k]-explosion_date)
 
-    #print("interp['UVW2'] is",interp['UVW2'])
-    #pdb.set_trace()
 
     Spectra=[]
     if verbose == True:
@@ -266,6 +243,11 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
                 pylab.ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                 pylab.xlabel(r'wavelength [$\AA$]', fontsize=20)
                 pylab.tight_layout()
+                pylab.savefig(output + '/day_'+str(round(j['time'],3))+'/SED_date_'+str(round(j['time'],3))+'.pdf',
+                              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf',
+                              transparent=False,
+                              bbox_inches=None, pad_inches=0.5)
+
             #pylab.show()
             #pdb.set_trace()
 

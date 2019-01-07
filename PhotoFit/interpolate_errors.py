@@ -39,6 +39,9 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
         if title is not None:
             pylab.title(title)
         pylab.legend()
+        pylab.savefig(output_path+'/data_and_interpolation_dates.pdf',
+                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='pdf', transparent=False,
+                      bbox_inches=None, pad_inches=0.5)
     #pylab.show()
     #print('data is',data)
     Results_array=np.empty((np.shape(x_on_which_to_interpolate)[0],5))
