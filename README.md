@@ -1,8 +1,6 @@
 # PhotoFit
 This package allows you to calculate and visualize the evolution in time of the effective radius, temperature and luminosity of a supernova from multiple-bands photometric light-curves.
 
-THIS IS STILL UNDER CONSTRUCTION (Please wait for 7.01.2018 before installing anything)
-
 [![PyPI](https://img.shields.io/pypi/v/SLAB-Diffusion.svg?style=flat-square)](https://pypi.python.org/pypi/SLAB-Diffusion)
 
 ```python
@@ -69,9 +67,7 @@ The simplest way to run PhotoFit is
 ```
 `Best` is a numpy array where the first column is the time (jd), the second column is the temperature (K) and the third column is the radius (cm).
 
-By default, this will show you several plots by the time it finishes running:
-
-If you do not want to see and save these plots, you can set `show_underlying_plots` to `False`, i.e. run
+By default, the code show and save the plots. If you do not want to see and save these plots, you can set `show_underlying_plots` to `False`, i.e. run
 
 ```python
 >>> Best=PhotoFit.calculate_T_and_R_in_time(show_underlying_plots=False)
@@ -81,8 +77,14 @@ And if you want the code to tell you more about what it is doing at each step, y
 ```python
 >>> Best=PhotoFit.calculate_T_and_R_in_time(verbose=True)
 ```
-The result is stored in the `Results.txt` file of your output directory (defined in the `params.py` file). In addition to this file, the code
-creates in this directory one sub-directory per epoch, with several files, the most important of which being `fit_result_FLux.pdf`, with a plot of
+The results (evolution of T and R) are stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates one sub-directory per epoch, with several files and plots in it.
+
+<p align="center">
+  <img src="./test/result_fit_sed_mat/day_1.359/SED_date_1.359.pdf" width="350">
+</p>
+
+
+being `fit_result_FLux.pdf`, with a plot of
 the data and the best fit:
 
 show plot
