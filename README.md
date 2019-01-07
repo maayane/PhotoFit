@@ -77,19 +77,14 @@ And if you want the code to tell you more about what it is doing at each step, y
 ```python
 >>> Best=PhotoFit.calculate_T_and_R_in_time(verbose=True)
 ```
-The results (evolution of T and R) are stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates one sub-directory per epoch, with several files and plots in it.
+The `Best` numpy array is stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates one sub-directory per epoch, with several files and plots in it.
 
 <p align="center">
   <img src="./test/result_fit_sed_mat/day_1.359/SED_date_1.359.pdf" width="350">
+  <img src="./test/result_fit_sed_mat/day_1.359/fit_result_FLux.pdf" width="350">
 </p>
 
-
-being `fit_result_FLux.pdf`, with a plot of
-the data and the best fit:
-
-show plot
-
-
+The results of the interpolation (see step 1. of [How does PhotoFit work](docs/CONTRIBUTING.md)) are shown 
 ### Visualize the evolution of R and T
 
 ### Visualize the evolution of L
