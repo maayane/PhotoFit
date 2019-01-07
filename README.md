@@ -1,7 +1,7 @@
 # PhotoFit
 This package is for calculating and visualizing the evolution in time of the effective radius, temperature and luminosity of a supernova (or any target assumed to behave as a blackbody) from multiple-bands photometry.
 
-[![PyPI]((https://img.shields.io/pypi/v/PhotoFit.svg?style=flat-square)](https://pypi.org/project/PhotoFit/)
+[![PyPI](https://img.shields.io/pypi/v/PhotoFit.svg?style=flat-square)](https://pypi.python.org/pypi/PhotoFit)
 
 ```python
 >>> import PhotoFit
