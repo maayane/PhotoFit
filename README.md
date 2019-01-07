@@ -107,15 +107,24 @@ If you want to compare the evolution of R and T to the one of an other object, s
 ```
 
 <p align="center">
-  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/data_and_interpolation_dates.png" width="350">
-  <img src="./test/results_interpolation/errors_interpolation_results_j_2mass/Plot_w_interpolated_errors.png" width="350">
+  <img src="PhotoFit/test/result_fit_sed_mat/r_bb_evo.png" width="350">
+  <img src="PhotoFit/test/result_fit_sed_mat/T_bb_evo.png" width="350">
 </p>
 
 ### Visualize the evolution of L
 
 ```python
->>> import PhotoFit
->>> PhotoFit.()
+>>> PhotoFit.plot_L_in_time(Best)
+```
+
+<p align="center">
+  <img src="PhotoFit/test/result_fit_sed_mat/L_bb_evo.png" width="350">
+</p>
+
+If you have done the fit using mcmc, `Pyphot` will calculate the errors on the luminosity L. To avoid doing this again and again after the first time you ran `PhotoFit.` , set the `error_lum_ran` to `True`:
+
+```python
+>>> PhotoFit.plot_L_in_time(Best)
 ```
 
 ### Visualize the spectral energy distributions (SEDs) at each epoch
