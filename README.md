@@ -135,7 +135,7 @@ To visualize all the SEDs on one 2-D plot, run
 >>> plot_SEDs(Best)  
 ```
 <p align="center">
-  <img src="./test/result_fit_sed_mat/2D_SEDs_9.png" width="350">
+  <img src="./test/result_fit_sed_mat/2D_SEDs_9.png" width="550">
 </p>
 
 The default number of plots is 9 (PhotoFit will pick epochs evenly spread over the total range of time). You can show 16 SEDs instead by editing the `number_of_plot` parameter:
@@ -144,7 +144,7 @@ The default number of plots is 9 (PhotoFit will pick epochs evenly spread over t
 plot_SEDs(Best,number_of_plot=16)  
 ```
 <p align="center">
-  <img src="./test/result_fit_sed_mat/2D_SEDs_16.png" width="350">
+  <img src="./test/result_fit_sed_mat/2D_SEDs_16.png" width="550">
 </p>
 
 ## The parameters file in details
