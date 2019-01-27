@@ -26,46 +26,64 @@ from . import black_body_flux_density
 from . import distances_conversions
 from . import energy_conversions
 from . import fitter_general
-from . import params
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 __all__=['calculate_T_and_R_in_time','plot_T_and_R_in_time','plot_L_in_time','plot_SEDs']
 
-sigma_Boltzmann = 5.670367e-8
+#mcmc=params.mcmc
 
-mcmc=params.mcmc
+#output_file_mcmc=params.output_file_mcmc
+#output_file_linear=params.output_file_linear
+#output_file_interpolation=params.output_file_interpolation
 
-output_file_mcmc=params.output_file_mcmc
-output_file_linear=params.output_file_linear
-output_file_interpolation=params.output_file_interpolation
+#filters_directroy=params.filters_directory
 
-filters_directroy=params.filters_directory
-
-if mcmc==True:
-    output=output_file_mcmc
-else:
-    output=output_file_linear
-if os.path.exists(output):
-    print('the output directory, '+output + ' exists already')
-else:
-    os.mkdir(output)
+#if mcmc==True:
+#    output=output_file_mcmc
+#else:
+#    output=output_file_linear
+#if os.path.exists(output):
+#    print('the output directory, '+output + ' exists already')
+#else:
+#    os.mkdir(output)
 
 ########## Informations on the object ##########
 
-redshift = params.z
-distance_modulus=params.distance_modulus
-distance_pc=distances_conversions.DM_to_pc(distance_modulus)   # sn distance in pc
-explosion_date=params.explosion_date
-EBV=params.EBV
+#redshift = params.z
+#distance_modulus=params.distance_modulus
+#distance_pc=distances_conversions.DM_to_pc(distance_modulus)   # sn distance in pc
+#explosion_date=params.explosion_date
+#EBV=params.EBV
 
 ########################################### Read and process the photometric data ############################################
 
-data_dico=read_data_from_file.read_data_into_numpy_array(params.data_file,header=True,delimiter=',',no_repeat_rows=True)[2]
 # make sure you don't have cases with repeated x,y, and different yerr
-lower_limit_on_flux=params.lower_limit_on_flux
+#lower_limit_on_flux=params.lower_limit_on_flux
+def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_errors_from_param=None,already_run_mcmc=None,already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,distance_modulus=None,explosion_date=None,EBV=None,output=None,filters_directory=None,mcmc=False,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,num_steps=None,nwalkers=None):
 
-def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
+    if data_file is None:
+        print('you need to procide a data_file')
+        exit()
+    if dates_file is None:
+        print('you need to procide a dates file')
+        exit()
+    if already_run_interp_errors_from_param is None:
+        print('you need to procide a already_run_interp_errors_from_param array')
+        exit()
+    if already_run_mcmc is None:
+        print('you need to procide a already_run_mcmc param')
+        exit()
+    if already_run_matrix is None:
+        print('you need to procide a already_run_matrix')
+        exit()
+
+    distance_pc = distances_conversions.DM_to_pc(distance_modulus)
+
+    data_dico = \
+    read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
+
     data_dicts=dict()
     for i,j in enumerate(data_dico['filter']):
         data_dicts[j]=dict()
@@ -85,7 +103,7 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
 
     ##### definition of interpolation dates
 
-    interpolation_dates=np.genfromtxt(params.dates_file)
+    interpolation_dates=np.genfromtxt(dates_file)#param.dates_file
 
     print('I am interpolating on dates',interpolation_dates-explosion_date)
 
@@ -97,7 +115,7 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
     interp=dict()
 
     for k in data_dicts.keys():
-        already_run_interp_errors[k] = params.already_run_interp_errors[k]
+        already_run_interp_errors[k] = already_run_interp_errors_from_param[k]#params.already_run_interp_errors[k]
 
     ### Interpolate all data on the interpolation dates dates ####
 
@@ -176,7 +194,7 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
     lib = pyphot.get_library()
     #print("Library contains: ", len(lib), " filters")
 
-    [P,wavelengths_filter]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directroy)
+    [P,wavelengths_filter]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
     if verbose==True:
         print('wavelengths are',wavelengths_filter)
 
@@ -253,9 +271,9 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
 
     ################################################# Fit black body using mcmc/linear fit ###############################
 
-    already_run_mcmc=params.already_run_mcmc
+    already_run_mcmc=already_run_mcmc#params.already_run_mcmc
     already_run_fit=[False]*len(Spectra) # maybe will be changed in the future
-    already_run_matrix=params.already_run_matrix
+    already_run_matrix=already_run_matrix#params.already_run_matrix
 
     if mcmc==True:
         fast=[False]*len(Spectra)
@@ -321,7 +339,7 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
                 hitemp = 2e4
                 hirad = 2e15
 
-            num_iterations=params.num_iterations
+            num_iterations=num_iterations
             #math.log10(3000), math.log10(hitemp)
 
             if mcmc==True:
@@ -334,8 +352,8 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
                     else:
                         [best_temp, best_radius, best_luminosity, best_coeff] = fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc \
                             (Spectrum_right_format,
-                             triangle_plot_title=r'$JD-t_{ref}=$' + str(round(j['time'] - explosion_date, 2)), nwalkers=params.nwalkers,
-                             num_steps=params.num_steps, num_winners=20, already_run_mcmc=already_run_mcmc,
+                             triangle_plot_title=r'$JD-t_{ref}=$' + str(round(j['time'] - explosion_date, 2)), nwalkers=nwalkers,
+                             num_steps=num_steps, num_winners=20, already_run_mcmc=already_run_mcmc,
                              already_run_calc_all_chis=False, Temp_prior=np.array([7000, 35000]),
                              Radius_prior=np.array([1e12, 1e15]), initial_conditions=np.array([15000, 8e13]),
                              distance_pc=distance_pc,
@@ -367,7 +385,7 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
                     [Xi_array, best_temp, index_min, best_coeff, best_radius,best_luminosity]=fit_black_body_flux_filters.fit_black_body_flux_filters(
                         Spectrum_right_format,TempVec=np.logspace(math.log10(3000),math.log10(hitemp),num_iterations),num_temp_iterations=None,
                         distance=distance_pc,uncertainties=Spectrum_right_format[:,3],Ebv=EBV,z=redshift,output_file_path=output+'/day_'+str(round(j['time'],3))
-                        ,path_to_txt_file=output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt',filters_directory=params.filters_directory)
+                        ,path_to_txt_file=output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt',filters_directory=filters_directory)
                 else:
                     best_temp=np.genfromtxt(output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt')[1]
                     best_radius=np.genfromtxt(output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt')[4]
@@ -395,14 +413,17 @@ def calculate_T_and_R_in_time(show_underlying_plots=True,verbose=False):
         pylab.show()
     return Best #JD, best T, lower sigma_T, upper sigma_T,best R, lower sigma_R, upper sigma_R, best L
 
-def plot_T_and_R_in_time(Best,compare=False,label_comparision=None):
+def plot_T_and_R_in_time(Best,data_compare=None,compare=False,label_comparision=None,output=None):
 
+    #if data_compare is None:
+    #    print('you need to provide a "data_compare" parameter')
+    #    exit()
     #Best_comare=np.genfromtxt('/Users/maayanesoumagnac/PostDoc/projects/2018fif/comparision_with_others/results_fit_sed_mat_PTF13dqy_test/Results.txt')
 
     if compare==True:
-        if os.path.isfile(params.data_compare)==False:
-            print('I do not find any file at the location of the data to compare,',params.data_compare)
-        Best_compare = np.genfromtxt(params.data_compare)
+        if os.path.isfile(data_compare)==False:
+            print('I do not find any file at the location of the data to compare,',data_compare)
+        Best_compare = np.genfromtxt(data_compare)
 
     #####################################   Plot best T and best R with error bars, compare with other methods ###############
     pylab.figure()
@@ -464,8 +485,10 @@ def plot_T_and_R_in_time(Best,compare=False,label_comparision=None):
     pylab.show()
     '''
 
-def plot_L_in_time(Best,error_lum_ran=False):
+def plot_L_in_time(Best,dates_file=None,error_lum_ran=False,explosion_date=None,output=None,mcmc=False,output_file_interpolation=None):
     ################ L #######
+    sigma_Boltzmann = 5.670367e-8
+
     if mcmc==True:
         data_dicts = dict()
         for i, j in enumerate(data_dico['filter']):
@@ -494,8 +517,10 @@ def plot_L_in_time(Best,error_lum_ran=False):
         ########################################### Make the spectrum to fit for each epoch ############################################
 
         ##### definition of interpolation dates
-
-        interpolation_dates = np.genfromtxt(params.dates_file)
+        if dates_file is None:
+            print('you need to provide a dates_file')
+            exit()
+        interpolation_dates = np.genfromtxt(dates_file)
         condition = dict()
         JD_basis_interpolation = dict()
         already_run_interp_errors = dict()
@@ -628,7 +653,23 @@ def plot_L_in_time(Best,error_lum_ran=False):
 
     plt.show()
 
-def plot_SEDs(Best,number_of_plot=9):
+def plot_SEDs(Best,data_file=None,lower_limit_on_flux=None,dates_file=None,already_run_interp_errors_from_params=None, number_of_plot=9,redshift=None,distance_modulus=None,explosion_date=None,output=None,filters_directory=None,output_file_interpolation=None,EBV=None):
+
+    distance_pc = distances_conversions.DM_to_pc(distance_modulus)
+
+    if dates_file is None:
+        print('you need to provide a dates file')
+        exit()
+    if data_file is None:
+        print('you need to provide a data file')
+        exit()
+    if already_run_interp_errors_from_params is None:
+        print('you need to provide a already_run_interp_errors_from_params array')
+        exit()
+
+    data_dico = \
+        read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
+
     color = dict()
     color['UVW1'] = 'blue'
     color['UVW2'] = 'black'
@@ -720,7 +761,7 @@ def plot_SEDs(Best,number_of_plot=9):
 
     ##### definition of interpolation dates
 
-    interpolation_dates = np.genfromtxt(params.dates_file)
+    interpolation_dates = np.genfromtxt(dates_file)
     condition = dict()
     JD_basis_interpolation = dict()
     already_run_interp_errors = dict()
@@ -729,7 +770,7 @@ def plot_SEDs(Best,number_of_plot=9):
     interp = dict()
 
     for k in data_dicts.keys():
-        already_run_interp_errors[k] = params.already_run_interp_errors[k]
+        already_run_interp_errors[k] = already_run_interp_errors_from_params[k]
 
     ### Interpolate all data on the interpolation dates dates ####
     for k in data_dicts.keys():
@@ -798,7 +839,7 @@ def plot_SEDs(Best,number_of_plot=9):
     lib = pyphot.get_library()
     #print("Library contains: ", len(lib), " filters")
 
-    [P,wavelengths_filter]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directroy)
+    [P,wavelengths_filter]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
     #print('wavelengths are',wavelengths_filter)
 
     #n=len([name for name in os.listdir(output)])
