@@ -3,11 +3,6 @@ This package is for calculating and visualizing the evolution in time of the eff
 
 [![PyPI](https://img.shields.io/pypi/v/PhotoFit.svg?style=flat-square)](https://pypi.python.org/pypi/PhotoFit)
 
-```python
->>> import PhotoFit
->>> PhotoFit.calculate_T_and_R_in_time()
-```
-
 ## Documenation
 
 `PhotoFit` is a package to model the effective radius and temperature from multiple-bands photometry of a supernova.
