@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 sigma_Boltzmann=5.670367e-8
 
-def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_winners=20,already_run_mcmc=False,already_run_calc_all_chis=False,Temp_prior=None,Radius_prior=None,initial_conditions=None,distance_pc=None,Ebv=None,R_ext=None,ndof=None,show_plot=False,output_mcmc=None,show_mag_AB=True,z=0,triangle_plot_title=None,path_to_txt_file=None,fast=False,dilution_factor=10):
+def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_winners=20,already_run_mcmc=False,already_run_calc_all_chis=False,Temp_prior=None,Radius_prior=None,initial_conditions=None,distance_pc=None,Ebv=None,R_ext=None,ndof=None,show_plot=False,output_mcmc=None,show_mag_AB=True,z=0,triangle_plot_title=None,path_to_txt_file=None,fast=False,dilution_factor=10,filters_directory=None):
 	"""Description: Fit a black-body spectrum alpha*F_bb to an observed spectrum, given as fuxes through a set of filters. Uses emcee, as opposed to fit_black_body_flux_filters
 	that uses a grid of T and a linear fit for alpha.
 	Input  :- Spectrun N-4 np array filter family, filter name, flux, error on flux
@@ -64,7 +64,7 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	#P_vector[:,1]=Filter_vector[:,1]
 	#print(P_vector)
 	#pdb.set_trace()
-	[P_vectorx,effective_wavelength]=get_filter.make_filter_object(Filter_vector)
+	[P_vectorx,effective_wavelength]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
 	print('the shape of Filter vector is',np.shape(Filter_vector)[0])
 	P_vector=np.empty((np.shape(Filter_vector)[0],3),dtype=object)
 	print(np.shape(P_vector))
@@ -350,7 +350,7 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 		output_file_path=output_mcmc, parameters_labels=['T', 'R'])
 	histos = fitter_general.plot_1D_marginalized_distribution(
 		flatchain_path=output_mcmc+'/flatchain.txt', bests=bests,
-		output_png_file_path=output_mcmc, output_txt_file_path=output_mcmc,parameters_labels=['T', 'R'], number_bins=500)
+		output_pdf_file_path=output_mcmc, output_txt_file_path=output_mcmc,parameters_labels=['T', 'R'], number_bins=500)
 
 	#print('I got here 0')
 	best_temp = bests[0]

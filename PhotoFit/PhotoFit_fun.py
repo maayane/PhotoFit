@@ -61,8 +61,15 @@ __all__=['calculate_T_and_R_in_time','plot_T_and_R_in_time','plot_L_in_time','pl
 
 # make sure you don't have cases with repeated x,y, and different yerr
 #lower_limit_on_flux=params.lower_limit_on_flux
-def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_errors_from_param=None,already_run_mcmc=None,already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,distance_modulus=None,explosion_date=None,EBV=None,output=None,filters_directory=None,mcmc=False,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,num_steps=None,nwalkers=None):
+def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_errors_from_param=None,already_run_mcmc=None,
+                              already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,
+                              distance_modulus=None,explosion_date=None,EBV=None,output=None,filters_directory=None,
+                              mcmc=False,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,
+                              num_steps=None,nwalkers=None,csm=False,already_run_fit=None):
 
+    #print('num_steps is',num_steps)
+    #print('nwalkers is',nwalkers)
+    #pdb.set_trace()
     if data_file is None:
         print('you need to procide a data_file')
         exit()
@@ -105,8 +112,8 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
 
     interpolation_dates=np.genfromtxt(dates_file)#param.dates_file
 
-    print('I am interpolating on dates',interpolation_dates-explosion_date)
-
+    print('I am interpolating on dates-explosion dates',interpolation_dates-explosion_date)
+    print('I am interpolating on dates', interpolation_dates)
     condition=dict()
     JD_basis_interpolation=dict()
     already_run_interp_errors=dict()
@@ -119,6 +126,11 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
 
     ### Interpolate all data on the interpolation dates dates ####
 
+    #print('data_dicts.keys() are',data_dicts.keys())
+
+    if os.path.exists(output_file_interpolation) == False:
+        os.mkdir(output_file_interpolation)
+
     for k in data_dicts.keys():
         if verbose==True:
             print('I am looking at the {0} band of the data'.format(k))
@@ -128,23 +140,33 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
         if verbose == True:
             print('The interpolation dates relevant to this band are {1}'.format(k,JD_basis_interpolation[k]-explosion_date))
         #print('and interpolating on {0}'.format(interpolation_dates-explosion_date))
-        if show_underlying_plots == True:
-            plot = True
-        else:
-            plot=False
-        a=np.array(list(zip(data_dicts[k]['jd'],data_dicts[k]['flux'],data_dicts[k]['fluxerr'])))
-        jd_flux_fluxerr[k]=a[a[:, 0].argsort()]
-        output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
-        if os.path.exists(output_path)==False:
-            os.mkdir(output_path)
-        interp_and_errors_array[k]=interpolate_errors.interpolate_errors\
-        (jd_flux_fluxerr[k],JD_basis_interpolation[k],output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k),
-         already_run=already_run_interp_errors[k],plot=plot,show_plot=False,title='{0}'.format(k))#array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
-        interp[k]=dict()
-        for i,j in enumerate(JD_basis_interpolation[k]):
-            interp[k][str(round(j-explosion_date,8))]=interp_and_errors_array[k][i,:]
-        #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
-        #print('JD_basis_interpolation[k] is',JD_basis_interpolation[k]-explosion_date)
+        print('len(JD_basis_interpolation[k]) is',len(JD_basis_interpolation[k]))
+        if len(JD_basis_interpolation[k])>0:
+
+            if show_underlying_plots == True:
+                plot = True
+            else:
+                plot=False
+            a=np.array(list(zip(data_dicts[k]['jd'],data_dicts[k]['flux'],data_dicts[k]['fluxerr'])))
+            jd_flux_fluxerr[k]=a[a[:, 0].argsort()]
+            output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
+            if os.path.exists(output_path)==False:
+                os.mkdir(output_path)
+            interp_and_errors_array[k]=interpolate_errors.interpolate_errors\
+            (jd_flux_fluxerr[k],JD_basis_interpolation[k],output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k),
+             already_run=already_run_interp_errors[k],plot=plot,show_plot=False,title='{0}'.format(k))#array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+            interp[k]=dict()
+            print('interp_and_errors_array[k] is',interp_and_errors_array[k])
+            print('np.shape(interp_and_errors_array[k]) is',np.shape(interp_and_errors_array[k]))
+            print('k is',k)
+
+            for i, j in enumerate(JD_basis_interpolation[k]):
+                if interp_and_errors_array[k].ndim==1:
+                    interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
+                else:
+                    interp[k][str(round(j-explosion_date,8))]=interp_and_errors_array[k][i,:]
+            #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
+            #print('JD_basis_interpolation[k] is',JD_basis_interpolation[k]-explosion_date)
 
 
     Spectra=[]
@@ -158,9 +180,10 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
         epoch['time']=round(interpolation_dates[i]-explosion_date,8)#jd_flux_fluxerr_UVW2[2,0]#
         #print('epoch[time] is',str(epoch['time']))
         for k in data_dicts.keys():
-            if str(epoch['time']) in interp[k].keys():
-                epoch[k]=interp[k][str(epoch['time'])][1] #flux
-                epoch[k+'_err']=[interp[k][str(epoch['time'])][3],interp[k][str(epoch['time'])][4]] # lower and higher limit of 2 sigma area. the error is half of this
+            if len(JD_basis_interpolation[k]) > 0:
+                if str(epoch['time']) in interp[k].keys():
+                    epoch[k]=interp[k][str(epoch['time'])][1] #flux
+                    epoch[k+'_err']=[interp[k][str(epoch['time'])][3],interp[k][str(epoch['time'])][4]] # lower and higher limit of 2 sigma area. the error is half of this
         Spectra.append(epoch)
 
     #for i,j in enumerate(Spectra):
@@ -261,6 +284,10 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 pylab.ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                 pylab.xlabel(r'wavelength [$\AA$]', fontsize=20)
                 pylab.tight_layout()
+                if os.path.exists(output + '/day_' + str(round(j['time'], 3))):
+                    print(output + '/day_' + str(round(j['time'], 3)) + 'exists')
+                else:
+                    os.mkdir(output + '/day_' + str(round(j['time'], 3)))
                 pylab.savefig(output + '/day_'+str(round(j['time'],3))+'/SED_date_'+str(round(j['time'],3))+'.png',
                               facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png',
                               transparent=False,
@@ -272,7 +299,10 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     ################################################# Fit black body using mcmc/linear fit ###############################
 
     already_run_mcmc=already_run_mcmc#params.already_run_mcmc
-    already_run_fit=[False]*len(Spectra) # maybe will be changed in the future
+    if already_run_fit is None:
+        already_run_fit=[False]*len(Spectra)
+    else:
+        already_run_fit=already_run_fit
     already_run_matrix=already_run_matrix#params.already_run_matrix
 
     if mcmc==True:
@@ -329,15 +359,28 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 Spectrum.append(np.array(['2MASS', 'j_2mass', j['j_2mass'],  max(j['j_2mass_err'][1]-j['j_2mass'],j['j_2mass']-j['j_2mass_err'][0])],dtype=object))
 
             Spectrum_right_format=np.array(Spectrum)
-            if (j['time']< 1):
-                hitemp = 3e5
-                hirad=1e15
-            elif(j['time'] < 2):
-                hitemp = 5e4
-                hirad = 1e15
+            if csm==False:
+                if (j['time']< 1):
+                    hitemp = 3e5
+                    hirad=1e15
+                elif(j['time'] < 2):
+                    hitemp = 5e4
+                    hirad = 1e15
+                else:
+                    hitemp = 2e4
+                    hirad = 2e15
             else:
-                hitemp = 2e4
-                hirad = 2e15
+                if (j['time']< 1):
+                    hitemp = 3e5
+                    hirad=7e15
+                elif(j['time'] < 2):
+                    hitemp = 5e4
+                    hirad = 7e15
+                else:
+                    hitemp = 2e4
+                    hirad = 8e15
+            #print('hitemp is',hitemp)
+            #pdb.set_trace()
 
             num_iterations=num_iterations
             #math.log10(3000), math.log10(hitemp)
@@ -346,9 +389,10 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 if already_run_fit[i]==False:
                     if fast[i]==False:
                         [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
-                        (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=100,num_steps=300,num_winners=20,
+                        (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
                          already_run_mcmc=already_run_mcmc,already_run_calc_all_chis=False,Temp_prior=np.array([3000,hitemp]),
-                         Radius_prior=np.array([1e14,hirad]),initial_conditions=np.array([15000,3e14]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=z,path_to_txt_file=None,fast=fast[i],dilution_factor=10)
+                         Radius_prior=np.array([1e14,hirad]),initial_conditions=np.array([15000,3e14]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
+                         path_to_txt_file=None,fast=fast[i],dilution_factor=10,filters_directory=filters_directory)
                     else:
                         [best_temp, best_radius, best_luminosity, best_coeff] = fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc \
                             (Spectrum_right_format,
@@ -440,7 +484,8 @@ def plot_T_and_R_in_time(Best,data_compare=None,compare=False,label_comparision=
     pylab.ylabel(r'$T_{BB}\; [K]$')
     pylab.grid()
     #pylab.legend()
-    pylab.xlim(0, np.max(Best[i, 0]) + 1)
+    #pylab.xlim(np.min(Best[i, 0]) - 1, np.max(Best[i, 0]) + 1)
+    #pylab.xlim(0, np.max(Best[i, 0]) + 1)
     pylab.savefig(output + '/T_bb_evo.png',
                   facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                   bbox_inches=None, pad_inches=0.5)
@@ -460,7 +505,7 @@ def plot_T_and_R_in_time(Best,data_compare=None,compare=False,label_comparision=
     pylab.ylabel(r'$r_{BB}\; [cm]$')
     pylab.grid()
     #pylab.legend()
-    pylab.xlim(0,np.max(Best[i, 0])+1)
+    #pylab.xlim(np.min(Best[i, 0])-1,np.max(Best[i, 0])+1)
     pylab.savefig(output+'/r_bb_evo.png',
                   facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
                   bbox_inches=None, pad_inches=0.5)
@@ -485,9 +530,12 @@ def plot_T_and_R_in_time(Best,data_compare=None,compare=False,label_comparision=
     pylab.show()
     '''
 
-def plot_L_in_time(Best,dates_file=None,error_lum_ran=False,explosion_date=None,output=None,mcmc=False,output_file_interpolation=None):
+def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,error_lum_ran=False,explosion_date=None,output=None,mcmc=False,output_file_interpolation=None):
     ################ L #######
     sigma_Boltzmann = 5.670367e-8
+
+    data_dico = \
+        read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
 
     if mcmc==True:
         data_dicts = dict()
@@ -550,22 +598,23 @@ def plot_L_in_time(Best,dates_file=None,error_lum_ran=False,explosion_date=None,
             print('JD basis interp. of {0} over the interpolation days are {1}'.format(k, JD_basis_interpolation[
                 k] - explosion_date))
             print('and interpolating on {0}'.format(interpolation_dates - explosion_date))
-            a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
-            jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
-            output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
-            if os.path.exists(output_path):
-                print(output_path + 'exists')
-            else:
-                os.mkdir(output_path)
-            interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
-                (jd_flux_fluxerr[k], JD_basis_interpolation[k],
-                 output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-                 already_run=already_run_interp_errors[k], show_plot=False,
-                 title='{0} on the interpolation dates'.format(
-                     k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
-            interp[k] = dict()
-            for i, j in enumerate(JD_basis_interpolation[k]):
-                interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+            if len(JD_basis_interpolation[k]) > 0:
+                a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
+                jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
+                output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
+                if os.path.exists(output_path):
+                    print(output_path + 'exists')
+                else:
+                    os.mkdir(output_path)
+                interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                     already_run=already_run_interp_errors[k], show_plot=False,
+                     title='{0} on the interpolation dates'.format(
+                         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                interp[k] = dict()
+                for i, j in enumerate(JD_basis_interpolation[k]):
+                    interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
 
         Spectra = []
 
@@ -577,9 +626,10 @@ def plot_L_in_time(Best,dates_file=None,error_lum_ran=False,explosion_date=None,
             epoch['time'] = round(interpolation_dates[i] - explosion_date, 8)  # jd_flux_fluxerr_UVW2[2,0]#
             # print('epoch[time] is',str(epoch['time']))
             for k in data_dicts.keys():
-                if str(epoch['time']) in interp[k].keys():
-                    epoch[k] = interp[k][str(epoch['time'])][1]  # flux
-                    epoch[k + '_err'] = [interp[k][str(epoch['time'])][3], interp[k][str(epoch['time'])][4]]  # fluxerr
+                if len(JD_basis_interpolation[k]) > 0:
+                    if str(epoch['time']) in interp[k].keys():
+                        epoch[k] = interp[k][str(epoch['time'])][1]  # flux
+                        epoch[k + '_err'] = [interp[k][str(epoch['time'])][3], interp[k][str(epoch['time'])][4]]  # fluxerr
             Spectra.append(epoch)
 
         path_to_errors=Path(output+'/results_errors_lumi')
@@ -603,7 +653,7 @@ def plot_L_in_time(Best,dates_file=None,error_lum_ran=False,explosion_date=None,
                 radii_early=np.genfromtxt(output+'/day_' + str(round(j['time'], 3))+'/flatchain.txt')[:,1]
                 luminosities_early=energy_conversions.convert_energy(4*math.pi*np.power(radii_early*1e-2,2)*sigma_Boltzmann*np.power(temperatures_early,4),'J','erg')
                 #histos de luminosities
-                histos=fitter_general.plot_1D_marginalized_distribution(luminosities_early, bests=None, output_png_file_path=output_png_file_path, output_txt_file_path=output_txt_file_path,
+                histos=fitter_general.plot_1D_marginalized_distribution(luminosities_early, bests=None, output_pdf_file_path=output_png_file_path, output_txt_file_path=output_txt_file_path,
                                                   parameters_labels=None, number_bins=1000)
         for i, j in enumerate(Spectra):
             errors_luminosity_early[i,0]=round(j['time'],3)
@@ -653,7 +703,7 @@ def plot_L_in_time(Best,dates_file=None,error_lum_ran=False,explosion_date=None,
 
     plt.show()
 
-def plot_SEDs(Best,data_file=None,lower_limit_on_flux=None,dates_file=None,already_run_interp_errors_from_params=None, number_of_plot=9,redshift=None,distance_modulus=None,explosion_date=None,output=None,filters_directory=None,output_file_interpolation=None,EBV=None):
+def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux=None,dates_file=None,already_run_interp_errors_from_params=None, number_of_plot=9,redshift=None,distance_modulus=None,explosion_date=None,output=None,filters_directory=None,output_file_interpolation=None,EBV=None):
 
     distance_pc = distances_conversions.DM_to_pc(distance_modulus)
 
@@ -774,6 +824,7 @@ def plot_SEDs(Best,data_file=None,lower_limit_on_flux=None,dates_file=None,alrea
 
     ### Interpolate all data on the interpolation dates dates ####
     for k in data_dicts.keys():
+
         #print('I am looking at the {0} band of the data'.format(k))
         #print('the days of {0} are {1}'.format(k, data_dicts[k]['jd'] - explosion_date))
         condition[k] = np.logical_and(interpolation_dates >= np.min(data_dicts[k]['jd']),
@@ -782,20 +833,43 @@ def plot_SEDs(Best,data_file=None,lower_limit_on_flux=None,dates_file=None,alrea
         #print('JD basis interp. of {0} over the interpolation days are {1}'.format(k, JD_basis_interpolation[
         #    k] - explosion_date))
         #print('and interpolating on {0}'.format(interpolation_dates - explosion_date))
-        a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
-        jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
-        output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
-        if os.path.exists==False:
-            os.mkdir(output_path)
-        interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
-            (jd_flux_fluxerr[k], JD_basis_interpolation[k],
-             output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-             already_run=already_run_interp_errors[k], plot=False, show_plot=False,
-             title='{0} on the interpolation dates'.format(
-                 k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
-        interp[k] = dict()
-        for i, j in enumerate(JD_basis_interpolation[k]):
-            interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+        if already_interpolated!=True:
+            if len(JD_basis_interpolation[k]) > 0:
+                a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
+                jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
+                output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
+                if os.path.exists==False:
+                    os.mkdir(output_path)
+                interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                     already_run=already_run_interp_errors[k], plot=False, show_plot=False,
+                     title='{0} on the interpolation dates'.format(
+                         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                interp[k] = dict()
+                for i, j in enumerate(JD_basis_interpolation[k]):
+                    interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+        else:
+            if len(JD_basis_interpolation[k]) > 0:
+                a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
+                jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
+                output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
+                if os.path.exists == False:
+                    os.mkdir(output_path)
+                interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                     already_run=already_interpolated, plot=False, show_plot=False,
+                     title='{0} on the interpolation dates'.format(
+                         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                interp[k] = dict()
+                for i, j in enumerate(JD_basis_interpolation[k]):
+                    if interp_and_errors_array[k].ndim == 1:
+                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
+                    else:
+                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+                    #interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+
 
     Spectra = []
 
@@ -807,9 +881,10 @@ def plot_SEDs(Best,data_file=None,lower_limit_on_flux=None,dates_file=None,alrea
         epoch['time'] = round(interpolation_dates[i] - explosion_date, 8)  # jd_flux_fluxerr_UVW2[2,0]#
         # print('epoch[time] is',str(epoch['time']))
         for k in data_dicts.keys():
-            if str(epoch['time']) in interp[k].keys():
-                epoch[k] = interp[k][str(epoch['time'])][1]  # flux
-                epoch[k + '_err'] = [interp[k][str(epoch['time'])][3], interp[k][str(epoch['time'])][4]]  # fluxerr
+            if len(JD_basis_interpolation[k]) > 0:
+                if str(epoch['time']) in interp[k].keys():
+                    epoch[k] = interp[k][str(epoch['time'])][1]  # flux
+                    epoch[k + '_err'] = [interp[k][str(epoch['time'])][3], interp[k][str(epoch['time'])][4]]  # fluxerr
         Spectra.append(epoch)
 
     ########################################### Filters definition ###########################################
@@ -851,193 +926,387 @@ def plot_SEDs(Best,data_file=None,lower_limit_on_flux=None,dates_file=None,alrea
         for name in os.listdir(output):
             #print('os.path.splitext(name)[1] is ',os.path.splitext(name)[1])
             if os.path.splitext(name)[1] not in ['.png','.txt']:
-                #print('it is neither .png or .txt')
-                number=number+1
+                if name[0]=='d':#directories starting with "day"
+                    #print('it is neither .png or .txt')
+                    number=number+1
                 #print(name)
             #else:
                 #print('it is png or txt')
 
         print('there are {0} directories in the output file'.format(number))
-        a=number//9
-        print('I will take every {0} file from this directory'.format(a))
-        indexes=range(number)[0::a]
+
+        indexes=range(number)
         #for i in indexes:
         #    print(i)
         #print(indexes)
-        fig, axes2d = plt.subplots(nrows=3, ncols=3,
-                                   sharex=True, sharey=True,
-                                   figsize=(10, 10))
-        Spectra2D = np.empty((3, 3), dtype=object)
-        for i,j in enumerate( Spectra2D[0:3, 0]):
-            Spectra2D[i, 0] = Spectra[indexes[i]]
-        for i, j in enumerate(Spectra2D[0:3, 1]):
-            Spectra2D[i, 1] = Spectra[indexes[i+3]]
-        for i, j in enumerate(Spectra2D[0:3, 2]):
-            Spectra2D[i, 2] = Spectra[indexes[i+6]]
+        if number>9:
+            a = number // 9
+            print('I will take every {0} file from this directory'.format(a))
+            indexes = range(number)[0::a]
+            fig, axes2d = plt.subplots(nrows=3, ncols=3,
+                                       sharex=True, sharey=True,
+                                       figsize=(10, 10))
+            Spectra2D = np.empty((3, 3), dtype=object)
+            for i,j in enumerate( Spectra2D[0:3, 0]):
+                Spectra2D[i, 0] = Spectra[indexes[i]]
+            for i, j in enumerate(Spectra2D[0:3, 1]):
+                Spectra2D[i, 1] = Spectra[indexes[i+3]]
+            for i, j in enumerate(Spectra2D[0:3, 2]):
+                Spectra2D[i, 2] = Spectra[indexes[i+6]]
 
 
-        Result_T2D = np.empty((3, 3), dtype=object)
-        #for i,j in enumerate(Spectra2)
-        Result_T2D[0:3, 0] = Best[indexes[0:3], 1]
-        Result_T2D[0:3, 1] = Best[indexes[3:6], 1]
-        Result_T2D[0:3, 2] = Best[indexes[6:9], 1]
+            Result_T2D = np.empty((3, 3), dtype=object)
+            #for i,j in enumerate(Spectra2)
+            Result_T2D[0:3, 0] = Best[indexes[0:3], 1]
+            Result_T2D[0:3, 1] = Best[indexes[3:6], 1]
+            Result_T2D[0:3, 2] = Best[indexes[6:9], 1]
 
 
-        Result_R2D = np.empty((3, 3), dtype=object)
-        Result_R2D[0:3, 0] = Best[indexes[0:3], 4]
-        Result_R2D[0:3, 1] = Best[indexes[3:6], 4]
-        Result_R2D[0:3, 2] = Best[indexes[6:9], 4]
-        bands_in_legend=[]
-        line=np.empty((3,3))
-        for i, row in enumerate(Spectra2D):
-            for k, j in enumerate(row):
-                # print(i)
-                #print(j['time'])
-                #print(j.keys())
-                axes2d[k, i].plot(np.arange(1e-7, 3e-6, 1e-9) * 1e10,
-                                  black_body_flux_density.black_body_flux_density(Result_T2D[i, k], np.arange(1e-7, 3e-6, 1e-9),
-                                                                                  'P',
-                                                                                  distance_pc=distance_pc,
-                                                                                  Radius=distances_conversions.cm_to_solar_radius(
-                                                                                      Result_R2D[i, k]), redshift=redshift, Ebv=EBV)[
-                                      2][:, 1], 'k-')
-                if 'UVW1' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['UVW1']], [j['UVW1']], color=color['UVW1'], marker=symbol['UVW1'],label='UW1')
-                    axes2d[k, i].vlines(wavelengths_filter['UVW1'], j['UVW1_err'][0], j['UVW1_err'][1])
-                    if 'UVW1' not in bands_in_legend:
-                        bands_in_legend.append('UVW1')
-                    # axes2d[k,i].errorbar([wavelengths_filter['UVW1']], [j['UVW1']],yerr=[j['UVW1_err']], color='purple',fmt='o', label='UVW1')
-                if 'UVW2' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['UVW2']], [j['UVW2']], color=color['UVW2'], marker=symbol['UVW2'],label='UW2')  # , label='UVW2')
-                    axes2d[k, i].vlines(wavelengths_filter['UVW2'], j['UVW2_err'][0], j['UVW2_err'][1])
-                    if 'UVW2' not in bands_in_legend:
-                        bands_in_legend.append('UVW2')
-                    # axes2d[k,i].errorbar([wavelengths_filter['UVW2']], [j['UVW2']],yerr=[j['UVW2_err']], color='k',fmt='o', label='UVW2')
-                if 'UVM2' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['UVM2']], [j['UVM2']], color=color['UVM2'], marker=symbol['UVM2'],label='UM2')  # , label='UVM2')
-                    axes2d[k, i].vlines(wavelengths_filter['UVM2'], j['UVM2_err'][0], j['UVM2_err'][1])
-                    if 'UVM2' not in bands_in_legend:
-                        bands_in_legend.append('UVM2')
-                if 'r_p48' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['r_p48']], [j['r_p48']], color=color['r_p48'],marker=symbol['r_p48'],label='P48 r')  # ,label='P48 r')
-                    axes2d[k, i].vlines(wavelengths_filter['r_p48'], j['r_p48_err'][0], j['r_p48_err'][1])
-                    if 'r_p48' not in bands_in_legend:
-                        bands_in_legend.append('r_p48')
-                if 'g_p48' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['g_p48']], [j['g_p48']], color=color['g_p48'],marker=symbol['g_p48'],label='P48 g')  # ,label='P48 g')
-                    axes2d[k, i].vlines(wavelengths_filter['g_p48'], j['g_p48_err'][0], j['g_p48_err'][1])
-                    if 'g_p48' not in bands_in_legend:
-                        bands_in_legend.append('g_p48')
-                if 'g_sdss' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['g_sdss']], [j['g_sdss']], color=color['g_sdss'],marker=symbol['g_sdss'],label='P60 g')  # ,label='P60 g')
-                    axes2d[k, i].vlines(wavelengths_filter['g_sdss'], j['g_sdss_err'][0], j['g_sdss_err'][1])
-                    if 'g_sdss' not in bands_in_legend:
-                        bands_in_legend.append('g_sdss')
-                if 'i_sdss' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['i_sdss']], [j['i_sdss']], color=color['i_sdss'],marker=symbol['i_sdss'],label='P60 i')  # ,label='P60 i')
-                    axes2d[k, i].vlines(wavelengths_filter['i_sdss'], j['i_sdss_err'][0], j['i_sdss_err'][1])
-                    if 'i_sdss' not in bands_in_legend:
-                        bands_in_legend.append('i_sdss')
-                if 'r_sdss' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['r_sdss']], [j['r_sdss']], color=color['r_sdss'],marker=symbol['r_sdss'],label='P60 r')  # ,label='P60 r')
-                    axes2d[k, i].vlines(wavelengths_filter['r_sdss'], j['r_sdss_err'][0], j['r_sdss_err'][1])
-                    if 'r_sdss' not in bands_in_legend:
-                        bands_in_legend.append('r_sdss')
-                if 'z_sdss' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['z_sdss']], [j['z_sdss']], color=color['z_sdss'],
-                                      marker=symbol['z_sdss'], label='P60 z')  # ,label='P60 r')
-                    axes2d[k, i].vlines(wavelengths_filter['z_sdss'], j['z_sdss_err'][0], j['z_sdss_err'][1])
-                    if 'z_sdss' not in bands_in_legend:
-                        bands_in_legend.append('z_sdss')
-                if 'u_swift' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['u_swift']], [j['u_swift']], color=color['u_swift'],marker=symbol['u_swift'],label='u')  # ,label='u')
-                    axes2d[k, i].vlines(wavelengths_filter['u_swift'], j['u_swift_err'][0], j['u_swift_err'][1])
-                    if 'u_swift' not in bands_in_legend:
-                        bands_in_legend.append('u_swift')
-                if 'v_swift' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['v_swift']], [j['v_swift']], color=color['v_swift'],marker=symbol['v_swift'],label='V')  # ,label='v_swift')
-                    axes2d[k, i].vlines(wavelengths_filter['v_swift'], j['v_swift_err'][0], j['v_swift_err'][1])
-                    if 'v_swift' not in bands_in_legend:
-                        bands_in_legend.append('v_swift')
-                if 'b_swift' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['b_swift']], [j['b_swift']], color=color['b_swift'],marker=symbol['b_swift'],label='B')  # ,label='b_swift')
-                    axes2d[k, i].vlines(wavelengths_filter['b_swift'], j['b_swift_err'][0], j['b_swift_err'][1])
-                    if 'b_swift' not in bands_in_legend:
-                        bands_in_legend.append('b_swift')
-                if 'b_johnson' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['b_johnson']], [j['b_johnson']],color=color['b_johnson'],marker=symbol['b_johnson'],label='B')  # ,label='b_swift')
-                    axes2d[k, i].vlines(wavelengths_filter['b_johnson'], j['b_johnson_err'][0], j['b_johnson_err'][1])
-                    if 'b_johnson' not in bands_in_legend:
-                        bands_in_legend.append('b_johnson')
-                if 'v_johnson' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['v_johnson']], [j['v_johnson']],color=color['v_johnson'],marker=symbol['v_johnson'],label='V')  # ,label='b_swift')
-                    axes2d[k, i].vlines(wavelengths_filter['v_johnson'], j['v_johnson_err'][0], j['v_johnson_err'][1])
-                    if 'v_johnson' not in bands_in_legend:
-                        bands_in_legend.append('v_johnson')
-                if 'u_johnson' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['u_johnson']], [j['u_johnson']],color=color['u_johnson'],marker=symbol['u_johnson'],label='U')  # ,label='b_swift')
-                    axes2d[k, i].vlines(wavelengths_filter['u_johnson'], j['u_johnson_err'][0], j['u_johnson_err'][1])
-                    if 'u_johnson' not in bands_in_legend:
-                        bands_in_legend.append('u_johnson')
-                if 'i_cousin' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['i_cousin']], [j['i_cousin']], color=color['i_cousin'],
-                                      marker=symbol['i_cousin'], label='P60 r')  # ,label='P60 r')
-                    axes2d[k, i].vlines(wavelengths_filter['i_cousin'], j['i_cousin_err'][0], j['i_cousin_err'][1])
-                    if 'i_cousin' not in bands_in_legend:
-                        bands_in_legend.append('i_cousin')
-                if 'r_cousin' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['r_cousin']], [j['r_cousin']], color=color['r_cousin'],
-                                      marker=symbol['r_cousin'], label='P60 r')  # ,label='P60 r')
-                    axes2d[k, i].vlines(wavelengths_filter['r_cousin'], j['r_cousin_err'][0], j['r_cousin_err'][1])
-                    if 'r_cousin' not in bands_in_legend:
-                        bands_in_legend.append('r_cousin')
-                if 'j_2mass' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['j_2mass']], [j['j_2mass']], color=color['j_2mass'],
-                                      marker=symbol['j_2mass'], label='P60 r')  # ,label='P60 r')
-                    axes2d[k, i].vlines(wavelengths_filter['j_2mass'], j['j_2mass_err'][0], j['j_2mass_err'][1])
-                    if 'j_2mass' not in bands_in_legend:
-                        bands_in_legend.append('j_2mass')
-                if 'h_2mass' in j.keys():
-                    axes2d[k, i].plot([wavelengths_filter['h_2mass']], [j['h_2mass']], color=color['h_2mass'],
-                                      marker=symbol['h_2mass'], label='P60 r')  # ,label='P60 r')
-                    axes2d[k, i].vlines(wavelengths_filter['h_2mass'], j['h_2mass_err'][0], j['h_2mass_err'][1])
-                    if 'h_2mass' not in bands_in_legend:
-                        bands_in_legend.append('h_2mass')
-                axes2d[k, i].set_xscale("log", nonposx='clip')
-                axes2d[k, i].set_yscale("log", nonposx='clip')
-                #axes2d[k, i].legend(loc='top right')
-                axes2d[k, i].grid()
-                axes2d[k, i].set_title(r'JD-t$_0$={0}'.format(round(j['time'],2)))
-                #axes2d[k,i].set_ylim(1e-17,1e-15)
-                # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
-                # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
-                # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.png',
-                #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
-                #              bbox_inches=None, pad_inches=0.5)
-                # axes2d[k,i].show()
-        #ax = pylab.gca()
-        #box = ax.get_position()
-        #ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-        #axes2d[1, 2 ].legend(loc='lower right',bbox_to_anchor=(1.2, 0.5))
-        #art=[]
+            Result_R2D = np.empty((3, 3), dtype=object)
+            Result_R2D[0:3, 0] = Best[indexes[0:3], 4]
+            Result_R2D[0:3, 1] = Best[indexes[3:6], 4]
+            Result_R2D[0:3, 2] = Best[indexes[6:9], 4]
+            bands_in_legend=[]
+            line=np.empty((3,3))
 
-        from matplotlib.lines import Line2D
-        #handles, labels = plt.gca().get_legend_handles_labels()
-        #print(handles)
-        #fig.legend(handles, labels, loc='lower left')
-        labels=[name_bands[i] for i in bands_in_legend]
-        lines = [Line2D([0], [0], color=color[i],marker=symbol[i] ) for i in bands_in_legend]
-        fig.legend(lines,labels,loc='lower left')
-        #axes2d[1, 1].legend(loc='lower center', bbox_to_anchor = (0.5, -0.3),ncol=8)
-        #art.append(lgd)
-        axes2d[2,1].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
-        axes2d[1,0].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
-        #plt.tight_layout()
-        fig.subplots_adjust(left=0.2)
-        pylab.savefig(output + '/2D_SEDs_9.png',
-                          facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
+            for i, row in enumerate(Spectra2D):
+                for k, j in enumerate(row):
+                    # print(i)
+                    #print(j['time'])
+                    #print(j.keys())
+                    axes2d[k, i].plot(np.arange(1e-7, 3e-6, 1e-9) * 1e10,
+                                      black_body_flux_density.black_body_flux_density(Result_T2D[i, k], np.arange(1e-7, 3e-6, 1e-9),
+                                                                                      'P',
+                                                                                      distance_pc=distance_pc,
+                                                                                      Radius=distances_conversions.cm_to_solar_radius(
+                                                                                          Result_R2D[i, k]), redshift=redshift, Ebv=EBV)[
+                                          2][:, 1], 'k-')
+                    if 'UVW1' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['UVW1']], [j['UVW1']], color=color['UVW1'], marker=symbol['UVW1'],label='UW1')
+                        axes2d[k, i].vlines(wavelengths_filter['UVW1'], j['UVW1_err'][0], j['UVW1_err'][1])
+                        if 'UVW1' not in bands_in_legend:
+                            bands_in_legend.append('UVW1')
+                        # axes2d[k,i].errorbar([wavelengths_filter['UVW1']], [j['UVW1']],yerr=[j['UVW1_err']], color='purple',fmt='o', label='UVW1')
+                    if 'UVW2' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['UVW2']], [j['UVW2']], color=color['UVW2'], marker=symbol['UVW2'],label='UW2')  # , label='UVW2')
+                        axes2d[k, i].vlines(wavelengths_filter['UVW2'], j['UVW2_err'][0], j['UVW2_err'][1])
+                        if 'UVW2' not in bands_in_legend:
+                            bands_in_legend.append('UVW2')
+                        # axes2d[k,i].errorbar([wavelengths_filter['UVW2']], [j['UVW2']],yerr=[j['UVW2_err']], color='k',fmt='o', label='UVW2')
+                    if 'UVM2' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['UVM2']], [j['UVM2']], color=color['UVM2'], marker=symbol['UVM2'],label='UM2')  # , label='UVM2')
+                        axes2d[k, i].vlines(wavelengths_filter['UVM2'], j['UVM2_err'][0], j['UVM2_err'][1])
+                        if 'UVM2' not in bands_in_legend:
+                            bands_in_legend.append('UVM2')
+                    if 'r_p48' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['r_p48']], [j['r_p48']], color=color['r_p48'],marker=symbol['r_p48'],label='P48 r')  # ,label='P48 r')
+                        axes2d[k, i].vlines(wavelengths_filter['r_p48'], j['r_p48_err'][0], j['r_p48_err'][1])
+                        if 'r_p48' not in bands_in_legend:
+                            bands_in_legend.append('r_p48')
+                    if 'g_p48' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['g_p48']], [j['g_p48']], color=color['g_p48'],marker=symbol['g_p48'],label='P48 g')  # ,label='P48 g')
+                        axes2d[k, i].vlines(wavelengths_filter['g_p48'], j['g_p48_err'][0], j['g_p48_err'][1])
+                        if 'g_p48' not in bands_in_legend:
+                            bands_in_legend.append('g_p48')
+                    if 'g_sdss' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['g_sdss']], [j['g_sdss']], color=color['g_sdss'],marker=symbol['g_sdss'],label='P60 g')  # ,label='P60 g')
+                        axes2d[k, i].vlines(wavelengths_filter['g_sdss'], j['g_sdss_err'][0], j['g_sdss_err'][1])
+                        if 'g_sdss' not in bands_in_legend:
+                            bands_in_legend.append('g_sdss')
+                    if 'i_sdss' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['i_sdss']], [j['i_sdss']], color=color['i_sdss'],marker=symbol['i_sdss'],label='P60 i')  # ,label='P60 i')
+                        axes2d[k, i].vlines(wavelengths_filter['i_sdss'], j['i_sdss_err'][0], j['i_sdss_err'][1])
+                        if 'i_sdss' not in bands_in_legend:
+                            bands_in_legend.append('i_sdss')
+                    if 'r_sdss' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['r_sdss']], [j['r_sdss']], color=color['r_sdss'],marker=symbol['r_sdss'],label='P60 r')  # ,label='P60 r')
+                        axes2d[k, i].vlines(wavelengths_filter['r_sdss'], j['r_sdss_err'][0], j['r_sdss_err'][1])
+                        if 'r_sdss' not in bands_in_legend:
+                            bands_in_legend.append('r_sdss')
+                    if 'z_sdss' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['z_sdss']], [j['z_sdss']], color=color['z_sdss'],
+                                          marker=symbol['z_sdss'], label='P60 z')  # ,label='P60 r')
+                        axes2d[k, i].vlines(wavelengths_filter['z_sdss'], j['z_sdss_err'][0], j['z_sdss_err'][1])
+                        if 'z_sdss' not in bands_in_legend:
+                            bands_in_legend.append('z_sdss')
+                    if 'u_swift' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['u_swift']], [j['u_swift']], color=color['u_swift'],marker=symbol['u_swift'],label='u')  # ,label='u')
+                        axes2d[k, i].vlines(wavelengths_filter['u_swift'], j['u_swift_err'][0], j['u_swift_err'][1])
+                        if 'u_swift' not in bands_in_legend:
+                            bands_in_legend.append('u_swift')
+                    if 'v_swift' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['v_swift']], [j['v_swift']], color=color['v_swift'],marker=symbol['v_swift'],label='V')  # ,label='v_swift')
+                        axes2d[k, i].vlines(wavelengths_filter['v_swift'], j['v_swift_err'][0], j['v_swift_err'][1])
+                        if 'v_swift' not in bands_in_legend:
+                            bands_in_legend.append('v_swift')
+                    if 'b_swift' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['b_swift']], [j['b_swift']], color=color['b_swift'],marker=symbol['b_swift'],label='B')  # ,label='b_swift')
+                        axes2d[k, i].vlines(wavelengths_filter['b_swift'], j['b_swift_err'][0], j['b_swift_err'][1])
+                        if 'b_swift' not in bands_in_legend:
+                            bands_in_legend.append('b_swift')
+                    if 'b_johnson' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['b_johnson']], [j['b_johnson']],color=color['b_johnson'],marker=symbol['b_johnson'],label='B')  # ,label='b_swift')
+                        axes2d[k, i].vlines(wavelengths_filter['b_johnson'], j['b_johnson_err'][0], j['b_johnson_err'][1])
+                        if 'b_johnson' not in bands_in_legend:
+                            bands_in_legend.append('b_johnson')
+                    if 'v_johnson' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['v_johnson']], [j['v_johnson']],color=color['v_johnson'],marker=symbol['v_johnson'],label='V')  # ,label='b_swift')
+                        axes2d[k, i].vlines(wavelengths_filter['v_johnson'], j['v_johnson_err'][0], j['v_johnson_err'][1])
+                        if 'v_johnson' not in bands_in_legend:
+                            bands_in_legend.append('v_johnson')
+                    if 'u_johnson' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['u_johnson']], [j['u_johnson']],color=color['u_johnson'],marker=symbol['u_johnson'],label='U')  # ,label='b_swift')
+                        axes2d[k, i].vlines(wavelengths_filter['u_johnson'], j['u_johnson_err'][0], j['u_johnson_err'][1])
+                        if 'u_johnson' not in bands_in_legend:
+                            bands_in_legend.append('u_johnson')
+                    if 'i_cousin' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['i_cousin']], [j['i_cousin']], color=color['i_cousin'],
+                                          marker=symbol['i_cousin'], label='P60 r')  # ,label='P60 r')
+                        axes2d[k, i].vlines(wavelengths_filter['i_cousin'], j['i_cousin_err'][0], j['i_cousin_err'][1])
+                        if 'i_cousin' not in bands_in_legend:
+                            bands_in_legend.append('i_cousin')
+                    if 'r_cousin' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['r_cousin']], [j['r_cousin']], color=color['r_cousin'],
+                                          marker=symbol['r_cousin'], label='P60 r')  # ,label='P60 r')
+                        axes2d[k, i].vlines(wavelengths_filter['r_cousin'], j['r_cousin_err'][0], j['r_cousin_err'][1])
+                        if 'r_cousin' not in bands_in_legend:
+                            bands_in_legend.append('r_cousin')
+                    if 'j_2mass' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['j_2mass']], [j['j_2mass']], color=color['j_2mass'],
+                                          marker=symbol['j_2mass'], label='P60 r')  # ,label='P60 r')
+                        axes2d[k, i].vlines(wavelengths_filter['j_2mass'], j['j_2mass_err'][0], j['j_2mass_err'][1])
+                        if 'j_2mass' not in bands_in_legend:
+                            bands_in_legend.append('j_2mass')
+                    if 'h_2mass' in j.keys():
+                        axes2d[k, i].plot([wavelengths_filter['h_2mass']], [j['h_2mass']], color=color['h_2mass'],
+                                          marker=symbol['h_2mass'], label='P60 r')  # ,label='P60 r')
+                        axes2d[k, i].vlines(wavelengths_filter['h_2mass'], j['h_2mass_err'][0], j['h_2mass_err'][1])
+                        if 'h_2mass' not in bands_in_legend:
+                            bands_in_legend.append('h_2mass')
+                    axes2d[k, i].set_xscale("log", nonposx='clip')
+                    axes2d[k, i].set_yscale("log", nonposx='clip')
+                    #axes2d[k, i].legend(loc='top right')
+                    axes2d[k, i].grid()
+                    axes2d[k, i].set_title(r'JD-t$_0$={0}'.format(round(j['time'],2)))
+                    #axes2d[k,i].set_ylim(1e-17,1e-15)
+                    # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
+                    # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
+                    # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.png',
+                    #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
+                    #              bbox_inches=None, pad_inches=0.5)
+                    # axes2d[k,i].show()
+            #ax = pylab.gca()
+            #box = ax.get_position()
+            #ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            #axes2d[1, 2 ].legend(loc='lower right',bbox_to_anchor=(1.2, 0.5))
+            #art=[]
+
+            from matplotlib.lines import Line2D
+            #handles, labels = plt.gca().get_legend_handles_labels()
+            #print(handles)
+            #fig.legend(handles, labels, loc='lower left')
+            labels=[name_bands[i] for i in bands_in_legend]
+            lines = [Line2D([0], [0], color=color[i],marker=symbol[i] ) for i in bands_in_legend]
+            fig.legend(lines,labels,loc='lower left')
+            #axes2d[1, 1].legend(loc='lower center', bbox_to_anchor = (0.5, -0.3),ncol=8)
+            #art.append(lgd)
+            axes2d[2,1].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
+            axes2d[1,0].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
+            #plt.tight_layout()
+            fig.subplots_adjust(left=0.2)
+            pylab.savefig(output + '/2D_SEDs_9.png',
+                              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
+                              bbox_inches=None, pad_inches=1.5)
+            plt.show()
+        else:
+            print('number is',number)
+            fig, axes2d = plt.subplots(nrows=number, ncols=1,
+                                       sharex=True, sharey=True,
+                                       figsize=(10, 10))
+            #print('the shape of axes2d is '.format(axes2d))
+            #pdb.set_trace()
+            Spectra2D = np.empty((number, 1), dtype=object)
+            print(np.shape(Spectra2D))
+            print(np.shape(Spectra))
+            for i, j in enumerate(Spectra2D):
+                Spectra2D[i] = Spectra[i]
+
+            # Result_T2D = np.empty((number, 1), dtype=object)
+            # for i,j in enumerate(Spectra2)
+            Result_T2D = Best[:, 1]
+            Result_R2D = Best[:, 4]
+            bands_in_legend = []
+            #line = np.empty((3, 3))
+            for i, row in enumerate(Spectra2D):
+                for k, j in enumerate(row):
+                    print(i)
+                    # print(j['time'])
+                    # print(j.keys())
+                    axes2d[i].plot(np.arange(1e-7, 3e-6, 1e-9) * 1e10,
+                                      black_body_flux_density.black_body_flux_density(Result_T2D[i],
+                                                                                      np.arange(1e-7, 3e-6, 1e-9),
+                                                                                      'P',
+                                                                                      distance_pc=distance_pc,
+                                                                                      Radius=distances_conversions.cm_to_solar_radius(
+                                                                                          Result_R2D[i]),
+                                                                                      redshift=redshift, Ebv=EBV)[
+                                          2][:, 1], 'k-')
+                    if 'UVW1' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['UVW1']], [j['UVW1']], color=color['UVW1'],
+                                          marker=symbol['UVW1'], label='UW1')
+                        axes2d[i].vlines(wavelengths_filter['UVW1'], j['UVW1_err'][0], j['UVW1_err'][1])
+                        if 'UVW1' not in bands_in_legend:
+                            bands_in_legend.append('UVW1')
+                            # axes2d[k,i].errorbar([wavelengths_filter['UVW1']], [j['UVW1']],yerr=[j['UVW1_err']], color='purple',fmt='o', label='UVW1')
+                    if 'UVW2' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['UVW2']], [j['UVW2']], color=color['UVW2'],
+                                          marker=symbol['UVW2'], label='UW2')  # , label='UVW2')
+                        axes2d[i].vlines(wavelengths_filter['UVW2'], j['UVW2_err'][0], j['UVW2_err'][1])
+                        if 'UVW2' not in bands_in_legend:
+                            bands_in_legend.append('UVW2')
+                            # axes2d[k,i].errorbar([wavelengths_filter['UVW2']], [j['UVW2']],yerr=[j['UVW2_err']], color='k',fmt='o', label='UVW2')
+                    if 'UVM2' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['UVM2']], [j['UVM2']], color=color['UVM2'],
+                                          marker=symbol['UVM2'], label='UM2')  # , label='UVM2')
+                        axes2d[i].vlines(wavelengths_filter['UVM2'], j['UVM2_err'][0], j['UVM2_err'][1])
+                        if 'UVM2' not in bands_in_legend:
+                            bands_in_legend.append('UVM2')
+                    if 'r_p48' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['r_p48']], [j['r_p48']], color=color['r_p48'],
+                                          marker=symbol['r_p48'], label='P48 r')  # ,label='P48 r')
+                        axes2d[i].vlines(wavelengths_filter['r_p48'], j['r_p48_err'][0], j['r_p48_err'][1])
+                        if 'r_p48' not in bands_in_legend:
+                            bands_in_legend.append('r_p48')
+                    if 'g_p48' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['g_p48']], [j['g_p48']], color=color['g_p48'],
+                                          marker=symbol['g_p48'], label='P48 g')  # ,label='P48 g')
+                        axes2d[i].vlines(wavelengths_filter['g_p48'], j['g_p48_err'][0], j['g_p48_err'][1])
+                        if 'g_p48' not in bands_in_legend:
+                            bands_in_legend.append('g_p48')
+                    if 'g_sdss' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['g_sdss']], [j['g_sdss']], color=color['g_sdss'],
+                                          marker=symbol['g_sdss'], label='P60 g')  # ,label='P60 g')
+                        axes2d[i].vlines(wavelengths_filter['g_sdss'], j['g_sdss_err'][0], j['g_sdss_err'][1])
+                        if 'g_sdss' not in bands_in_legend:
+                            bands_in_legend.append('g_sdss')
+                    if 'i_sdss' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['i_sdss']], [j['i_sdss']], color=color['i_sdss'],
+                                          marker=symbol['i_sdss'], label='P60 i')  # ,label='P60 i')
+                        axes2d[i].vlines(wavelengths_filter['i_sdss'], j['i_sdss_err'][0], j['i_sdss_err'][1])
+                        if 'i_sdss' not in bands_in_legend:
+                            bands_in_legend.append('i_sdss')
+                    if 'r_sdss' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['r_sdss']], [j['r_sdss']], color=color['r_sdss'],
+                                          marker=symbol['r_sdss'], label='P60 r')  # ,label='P60 r')
+                        axes2d[i].vlines(wavelengths_filter['r_sdss'], j['r_sdss_err'][0], j['r_sdss_err'][1])
+                        if 'r_sdss' not in bands_in_legend:
+                            bands_in_legend.append('r_sdss')
+                    if 'z_sdss' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['z_sdss']], [j['z_sdss']], color=color['z_sdss'],
+                                          marker=symbol['z_sdss'], label='P60 z')  # ,label='P60 r')
+                        axes2d[i].vlines(wavelengths_filter['z_sdss'], j['z_sdss_err'][0], j['z_sdss_err'][1])
+                        if 'z_sdss' not in bands_in_legend:
+                            bands_in_legend.append('z_sdss')
+                    if 'u_swift' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['u_swift']], [j['u_swift']], color=color['u_swift'],
+                                          marker=symbol['u_swift'], label='u')  # ,label='u')
+                        axes2d[i].vlines(wavelengths_filter['u_swift'], j['u_swift_err'][0], j['u_swift_err'][1])
+                        if 'u_swift' not in bands_in_legend:
+                            bands_in_legend.append('u_swift')
+                    if 'v_swift' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['v_swift']], [j['v_swift']], color=color['v_swift'],
+                                          marker=symbol['v_swift'], label='V')  # ,label='v_swift')
+                        axes2d[i].vlines(wavelengths_filter['v_swift'], j['v_swift_err'][0], j['v_swift_err'][1])
+                        if 'v_swift' not in bands_in_legend:
+                            bands_in_legend.append('v_swift')
+                    if 'b_swift' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['b_swift']], [j['b_swift']], color=color['b_swift'],
+                                          marker=symbol['b_swift'], label='B')  # ,label='b_swift')
+                        axes2d[i].vlines(wavelengths_filter['b_swift'], j['b_swift_err'][0], j['b_swift_err'][1])
+                        if 'b_swift' not in bands_in_legend:
+                            bands_in_legend.append('b_swift')
+                    if 'b_johnson' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['b_johnson']], [j['b_johnson']], color=color['b_johnson'],
+                                          marker=symbol['b_johnson'], label='B')  # ,label='b_swift')
+                        axes2d[i].vlines(wavelengths_filter['b_johnson'], j['b_johnson_err'][0],
+                                            j['b_johnson_err'][1])
+                        if 'b_johnson' not in bands_in_legend:
+                            bands_in_legend.append('b_johnson')
+                    if 'v_johnson' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['v_johnson']], [j['v_johnson']], color=color['v_johnson'],
+                                          marker=symbol['v_johnson'], label='V')  # ,label='b_swift')
+                        axes2d[i].vlines(wavelengths_filter['v_johnson'], j['v_johnson_err'][0],
+                                            j['v_johnson_err'][1])
+                        if 'v_johnson' not in bands_in_legend:
+                            bands_in_legend.append('v_johnson')
+                    if 'u_johnson' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['u_johnson']], [j['u_johnson']], color=color['u_johnson'],
+                                          marker=symbol['u_johnson'], label='U')  # ,label='b_swift')
+                        axes2d[i].vlines(wavelengths_filter['u_johnson'], j['u_johnson_err'][0],
+                                            j['u_johnson_err'][1])
+                        if 'u_johnson' not in bands_in_legend:
+                            bands_in_legend.append('u_johnson')
+                    if 'i_cousin' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['i_cousin']], [j['i_cousin']], color=color['i_cousin'],
+                                          marker=symbol['i_cousin'], label='P60 r')  # ,label='P60 r')
+                        axes2d[i].vlines(wavelengths_filter['i_cousin'], j['i_cousin_err'][0], j['i_cousin_err'][1])
+                        if 'i_cousin' not in bands_in_legend:
+                            bands_in_legend.append('i_cousin')
+                    if 'r_cousin' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['r_cousin']], [j['r_cousin']], color=color['r_cousin'],
+                                          marker=symbol['r_cousin'], label='P60 r')  # ,label='P60 r')
+                        axes2d[i].vlines(wavelengths_filter['r_cousin'], j['r_cousin_err'][0], j['r_cousin_err'][1])
+                        if 'r_cousin' not in bands_in_legend:
+                            bands_in_legend.append('r_cousin')
+                    if 'j_2mass' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['j_2mass']], [j['j_2mass']], color=color['j_2mass'],
+                                          marker=symbol['j_2mass'], label='P60 r')  # ,label='P60 r')
+                        axes2d[i].vlines(wavelengths_filter['j_2mass'], j['j_2mass_err'][0], j['j_2mass_err'][1])
+                        if 'j_2mass' not in bands_in_legend:
+                            bands_in_legend.append('j_2mass')
+                    if 'h_2mass' in j.keys():
+                        axes2d[i].plot([wavelengths_filter['h_2mass']], [j['h_2mass']], color=color['h_2mass'],
+                                          marker=symbol['h_2mass'], label='P60 r')  # ,label='P60 r')
+                        axes2d[i].vlines(wavelengths_filter['h_2mass'], j['h_2mass_err'][0], j['h_2mass_err'][1])
+                        if 'h_2mass' not in bands_in_legend:
+                            bands_in_legend.append('h_2mass')
+                    axes2d[i].set_xscale("log", nonposx='clip')
+                    axes2d[i].set_yscale("log", nonposx='clip')
+                    # axes2d[k, i].legend(loc='top right')
+                    axes2d[i].grid()
+                    axes2d[i].set_title(r'JD-t$_0$={0}'.format(round(j['time'], 2)))
+                    # axes2d[k,i].set_ylim(1e-17,1e-15)
+                    # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
+                    # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
+                    # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.png',
+                    #              facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
+                    #              bbox_inches=None, pad_inches=0.5)
+                    # axes2d[k,i].show()
+            # ax = pylab.gca()
+            # box = ax.get_position()
+            # ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            # axes2d[1, 2 ].legend(loc='lower right',bbox_to_anchor=(1.2, 0.5))
+            # art=[]
+
+            from matplotlib.lines import Line2D
+            # handles, labels = plt.gca().get_legend_handles_labels()
+            # print(handles)
+            # fig.legend(handles, labels, loc='lower left')
+            labels = [name_bands[i] for i in bands_in_legend]
+            lines = [Line2D([0], [0], color=color[i], marker=symbol[i]) for i in bands_in_legend]
+            fig.legend(lines, labels, loc='lower left')
+            # axes2d[1, 1].legend(loc='lower center', bbox_to_anchor = (0.5, -0.3),ncol=8)
+            # art.append(lgd)
+            axes2d[number-1].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
+            axes2d[1].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
+            # plt.tight_layout()
+            fig.subplots_adjust(left=0.2)
+            pylab.savefig(output + '/2D_SEDs_9.png',
+                          facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png',
+                          transparent=False,
                           bbox_inches=None, pad_inches=1.5)
-        plt.show()
+            plt.show()
+
     elif number_of_plot==16:
         number = 0
         for name in os.listdir(output):

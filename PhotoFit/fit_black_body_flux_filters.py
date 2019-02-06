@@ -66,11 +66,11 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 		output_file='./outputs_from_fit_black_body_flux_filters_function'
 	else:
 		if os.path.exists(str(output_file_path)):
-			logger.info('output_path/txt_files did exist, I am removing it and creating a new one')
-			shutil.rmtree(output_file_path)
+			logger.info('output_path did exist')
+			#shutil.rmtree(output_file_path)
 		else:
 			logger.info('the output file file did not exist yet. I am creating it now')
-		os.makedirs(output_file_path)
+			os.makedirs(output_file_path)
 		output_file=output_file_path
 
 	#******************** convert waveunits into meters ***********************
