@@ -57,6 +57,7 @@ The first step is to edit the content of the parameters file `params.py` as deta
 The simplest way to run PhotoFit is
 ```python
 >>> import PhotoFit
+>>> import params_test as params
 >>>Best=PhotoFit_fun.calculate_T_and_R_in_time(data_file=params.data_file,dates_file=params.dates_file,already_run_interp_errors_from_param=params.already_run_interp_errors,already_run_mcmc=params.already_run_mcmc,already_run_matrix=params.already_run_matrix,num_iterations=params.num_iterations,show_underlying_plots=True,verbose=False,redshift=params.z,distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,EBV=params.EBV,output=params.output,filters_directory=params.filters_directory,mcmc=params.mcmc,output_file_interpolation=params.output_file_interpolation,lower_limit_on_flux=params.lower_limit_on_flux,csm=params.csm,num_steps=params.num_steps,nwalkers=params.nwalkers)
 ```
 
