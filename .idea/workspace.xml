@@ -42,11 +42,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PhotoFit_fun.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="PhotoFit_fun.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="547">
-              <caret line="1510" column="0" selection-start-line="1510" selection-start-column="0" selection-end-line="1510" selection-end-column="0" />
+            <state relative-caret-position="435">
+              <caret line="29" column="39" selection-start-line="29" selection-start-column="39" selection-end-line="29" selection-end-column="39" />
               <folding>
                 <element signature="e#354#372#0" expanded="true" />
                 <element signature="e#992#1009#0" expanded="false" />
@@ -59,6 +59,28 @@
                 <element signature="e#48270#61738#0" expanded="false" />
                 <element signature="e#75626#89362#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="script_test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/script_test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="405">
+              <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#33#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="params_test.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test/params_test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="870">
+              <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -91,11 +113,12 @@
         <option value="$PROJECT_DIR$/PhotoFit/fun.py" />
         <option value="$PROJECT_DIR$/script_test.py" />
         <option value="$PROJECT_DIR$/test/params.py" />
-        <option value="$PROJECT_DIR$/test/script_test.py" />
         <option value="$PROJECT_DIR$/PhotoFit/interpolate_errors.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py" />
         <option value="$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py" />
+        <option value="$PROJECT_DIR$/test/script_test.py" />
+        <option value="$PROJECT_DIR$/test/params_test.py" />
       </list>
     </option>
   </component>
@@ -147,6 +170,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="PhotoFit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PhotoFit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PhotoFit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -380,7 +417,6 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/test/script_test.py</url>
-          <line>20</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
@@ -389,13 +425,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7305">
-          <caret line="499" column="45" selection-start-line="499" selection-start-column="45" selection-end-line="499" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5235">
@@ -616,16 +645,6 @@
     <entry file="file://$PROJECT_DIR$/script_test.py" />
     <entry file="file://$PROJECT_DIR$/PhotoFit/fun.py" />
     <entry file="file://$PROJECT_DIR$/test/params.py" />
-    <entry file="file://$PROJECT_DIR$/test/script_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#33#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/get_filter.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -689,8 +708,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="547">
-          <caret line="1510" column="0" selection-start-line="1510" selection-start-column="0" selection-end-line="1510" selection-end-column="0" />
+        <state relative-caret-position="435">
+          <caret line="29" column="39" selection-start-line="29" selection-start-column="39" selection-end-line="29" selection-end-column="39" />
           <folding>
             <element signature="e#354#372#0" expanded="true" />
             <element signature="e#992#1009#0" expanded="false" />
@@ -703,6 +722,24 @@
             <element signature="e#48270#61738#0" expanded="false" />
             <element signature="e#75626#89362#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/script_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/params_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="870">
+          <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

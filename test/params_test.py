@@ -1,11 +1,23 @@
-## Parameters used in script.py ##
-
+## Parameters used in script_test.py ##
 
 mcmc=False# if False, plot with linear fit. If True, plots with mcmc
+
+########## Definition of the output file ##########
 
 output_file_mcmc='./results_fit_sed_mcmc'
 output_file_linear='./result_fit_sed_mat'
 output_file_interpolation='./results_interpolation'
+if mcmc==True:
+    output=output_file_mcmc
+else:
+    output=output_file_linear
+if os.path.exists(output):
+    print('the output directory, '+output + ' exists already')
+else:
+    os.mkdir(output)
+
+########## Definition of the object parameters ##########
+
 z =0
 distance_modulus=33.51
 explosion_date=0 #in principle, this has to be in jd. For the test data it is in jd-explosion dates

@@ -9,7 +9,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='PhotoFit',
-    version='0.0.2',
+    version='0.0.3',
     #description=''
     #long_description=long_description,
     #long_description_content_type='text/markdown',    
