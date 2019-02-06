@@ -36,7 +36,6 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 `pip install PhotoFit`
 
 ### Python version
-* `python 2`: higher than `2.7.10`
 * `python 3`
 
 ### Required python packages
@@ -53,31 +52,20 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 
 The first step is to edit the content of the parameters file `params.py` as detailed in [this section](https://github.com/maayane/PhotoFit/blob/master/README.md#the-parameters-file-in-details). Unless you want to give it a try with the default parameters, which allow you to run `PhotoFit` on the test data from PTF 13dqy ([Yaron et al 2017](https://ui.adsabs.harvard.edu/#abs/2017NatPh..13..510Y/abstract)), as explained [here](https://github.com/maayane/PhotoFit/blob/master/README.md#give-it-a-try-with-the-test-data).
 
-After every modification of `params.py`, don't forget to rerun the following command from your `PhotoFit` directory
-
-```python
->>> python setup.py install
-```
-
 ### Calculate the evolution of R and T
 
 The simplest way to run PhotoFit is
 ```python
 >>> import PhotoFit
->>> Best=PhotoFit.calculate_T_and_R_in_time()
+>>>Best=PhotoFit_fun.calculate_T_and_R_in_time(data_file=params.data_file,dates_file=params.dates_file,already_run_interp_errors_from_param=params.already_run_interp_errors,already_run_mcmc=params.already_run_mcmc,already_run_matrix=params.already_run_matrix,num_iterations=params.num_iterations,show_underlying_plots=True,verbose=False,redshift=params.z,distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,EBV=params.EBV,output=params.output,filters_directory=params.filters_directory,mcmc=params.mcmc,output_file_interpolation=params.output_file_interpolation,lower_limit_on_flux=params.lower_limit_on_flux,csm=params.csm,num_steps=params.num_steps,nwalkers=params.nwalkers)
 ```
+
 `Best` is a numpy array of which the first column is the time (jd), the second column is the temperature (K) and the third column is the radius (cm).
 
-By default, the code shows and save plots generated while running. They are interesting, but if you do not want to see or save them, you can set `show_underlying_plots` to `False`, i.e. run
+By default, the code shows and save plots generated while running. They are interesting, but if you do not want to see or save them, you can set `show_underlying_plots` to `False`
 
-```python
->>> Best=PhotoFit.calculate_T_and_R_in_time(show_underlying_plots=False)
-```
 And if you want the code to tell you more about what it is doing at each step, you can set `verbose` to `True`:
 
-```python
->>> Best=PhotoFit.calculate_T_and_R_in_time(verbose=True)
-```
 The `Best` numpy array, containing the time evolution of T and R, is stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates in your output directory one sub-directory per epoch, with several files and plots. In particular, the plot stored in `SED_date_X.XXX.pdf`(left) shows the infered SED at epoch X.XXX and the plot stored in `fit_result_FLux.pdf` (right) shows the data and best-fit model superimposed.
 
 <p align="center">
@@ -98,13 +86,15 @@ The results of the interpolation (see step 1. of [How does PhotoFit work](https:
 The simplest way to visualize the evolution of R and T is simply to run 
 
 ```python
->>> PhotoFit.plot_T_and_R_in_time(Best)
+>>> PhotoFit_fun.plot_T_and_R_in_time(Best,output=params.output)
+
 ```
 
 If you want to compare the temperature and radius to those of another object, just tell `PhotoFit` where to look for this additional data (buy setting the  `data_compare` pparameter in `params.py`) and run
 
 ```python
->>> PhotoFit.plot_T_and_R_in_time(Best,compare=True,label_comparision='PTF 13dqy')
+>>> PhotoFit_fun.plot_T_and_R_in_time(Best,data_compare=params.data_compare,compare=False,label_comparision='PTF13dqy',output=params.output)
+
 ```
 
 <p align="center">
@@ -115,7 +105,8 @@ If you want to compare the temperature and radius to those of another object, ju
 ### Visualize the evolution of L
 
 ```python
->>> PhotoFit.plot_L_in_time(Best)
+>>>PhotoFit_fun.plot_L_in_time(Best,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,dates_file=params.dates_file,error_lum_ran=False,explosion_date=params.explosion_date,output=params.output,mcmc=params.mcmc,output_file_interpolation=params.output_file_interpolation)
+
 ```
 
 <p align="center">
@@ -124,16 +115,13 @@ If you want to compare the temperature and radius to those of another object, ju
 
 If you have done the fit using mcmc, `PyPhot` will calculate the errors on the luminosity L. To avoid doing this again and again after the first time you ran `PhotoFit.`, set the `error_lum_ran` to `True`:
 
-```python
->>> PhotoFit.plot_L_in_time(Best)
-```
-
 ### Visualize the spectral energy distributions (SEDs) at each epoch
 
 To visualize all the SEDs on one 2-D plot, run
 
 ```python
->>> plot_SEDs(Best)  
+>>>PhotoFit_fun.plot_SEDs(Best,already_interpolated=True,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,dates_file=params.dates_file,already_run_interp_errors_from_params=params.already_run_interp_errors,number_of_plot=9,redshift=params.z,distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,output=params.output,filters_directory=params.filters_directory,output_file_interpolation=params.output_file_interpolation,EBV=params.EBV)
+ 
 ```
 <p align="center">
   <img src="./test/result_fit_sed_mat/2D_SEDs_9.png" width="550">
