@@ -24,6 +24,10 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 (~30 min per epoch for 100 walkers and 350 steps)
     - A linear fit with a grid of temperatures. The advantage of this method is its speed. The disadvantage is the lack of error bars.
 
+## Credit
+
+If you are using PhotoFit, please reference the appendix of Soumagnac et al. 2019 (in preparation)
+
 ## How to install `PhotoFit`?
 
 ### pip
