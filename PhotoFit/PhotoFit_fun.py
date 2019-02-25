@@ -703,7 +703,8 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
 
     plt.show()
 
-def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux=None,dates_file=None,already_run_interp_errors_from_params=None, number_of_plot=9,redshift=None,distance_modulus=None,explosion_date=None,output=None,filters_directory=None,output_file_interpolation=None,EBV=None):
+def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux=None,dates_file=None,already_run_interp_errors_from_params=None, number_of_plot=9,redshift=None,distance_modulus=None,explosion_date=None,output=None,
+              filters_directory=None,output_file_interpolation=None,EBV=None,ylim=None):
 
     distance_pc = distances_conversions.DM_to_pc(distance_modulus)
 
@@ -1138,6 +1139,8 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
             bands_in_legend = []
             #line = np.empty((3, 3))
             for i, row in enumerate(Spectra2D):
+                print('ble')
+                pdb.set_trace()
                 for k, j in enumerate(row):
                     print(i)
                     # print(j['time'])
@@ -1275,7 +1278,8 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                     # axes2d[k, i].legend(loc='top right')
                     axes2d[i].grid()
                     axes2d[i].set_title(r'JD-t$_0$={0}'.format(round(j['time'], 2)))
-                    # axes2d[k,i].set_ylim(1e-17,1e-15)
+                    if ylim is not None:
+                        axes2d[i].set_ylim(ylim[0],ylim[1])
                     # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                     # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
                     # axes2d[k,i].savefig('results_fit_sed_mat/day_'+str(round(j['time'],3))+'/spectrum.png',
@@ -1473,6 +1477,8 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                 # axes2d[k, i].legend(loc='top right')
                 axes2d[k, i].grid()
                 axes2d[k, i].set_title(r'JD-t$_0$={0}'.format(round(j['time'], 2)))
+                if ylim is not None:
+                    axes2d[i].set_ylim(ylim[0], ylim[1])
                 # axes2d[k,i].set_ylim(1e-17,1e-15)
                 # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                 # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
