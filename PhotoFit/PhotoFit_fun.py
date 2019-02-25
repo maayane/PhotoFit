@@ -1279,6 +1279,8 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                     axes2d[i].grid()
                     axes2d[i].set_title(r'JD-t$_0$={0}'.format(round(j['time'], 2)))
                     if ylim is not None:
+                        print('ylim is not none!')
+                        print('ylim is',ylim)
                         axes2d[i].set_ylim(ylim[0],ylim[1])
                     # axes2d[k,i].set_ylabel('flux $F\; [erg/s/cm^2/\AA]$', fontsize=20)
                     # axes2d[k,i].set_xlabel(r'wavelength [$\AA$]', fontsize=20)
