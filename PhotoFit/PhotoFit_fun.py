@@ -1139,8 +1139,8 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
             bands_in_legend = []
             #line = np.empty((3, 3))
             for i, row in enumerate(Spectra2D):
-                print('ble')
-                pdb.set_trace()
+                #print('ble')
+                #pdb.set_trace()
                 for k, j in enumerate(row):
                     print(i)
                     # print(j['time'])
@@ -1511,9 +1511,5 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
         plt.show()
     else:
         print('Sorry, the number of plots can be either 9 or 16')
-
-
-
-
 
 
