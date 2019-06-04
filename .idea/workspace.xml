@@ -20,11 +20,34 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="PhotoFit_fun.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-304">
+              <caret line="1131" column="51" selection-start-line="1131" selection-start-column="51" selection-end-line="1131" selection-end-column="51" />
+              <folding>
+                <element signature="e#354#372#0" expanded="true" />
+                <element signature="e#1023#1040#0" expanded="false" />
+                <element signature="e#25924#29064#0" expanded="false" />
+                <element signature="e#28441#29064#1" expanded="false" />
+                <element signature="e#39285#39341#0" expanded="false" />
+                <element signature="e#39376#39431#0" expanded="false" />
+                <element signature="e#39494#39583#0" expanded="false" />
+                <element signature="e#41799#43072#0" expanded="false" />
+                <element signature="e#44507#45662#0" expanded="false" />
+                <element signature="e#45689#47131#0" expanded="false" />
+                <element signature="e#81959#94287#0" expanded="false" />
+                <element signature="e#110648#123820#1" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="script_test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/script_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
-              <caret line="63" column="3" selection-start-line="63" selection-start-column="3" selection-end-line="63" selection-end-column="3" />
+            <state relative-caret-position="293">
+              <caret line="38" column="22" selection-start-line="38" selection-start-column="22" selection-end-line="38" selection-end-column="22" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
               </folding>
@@ -32,11 +55,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="params_test.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="params_test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/params_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
-              <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+            <state relative-caret-position="326">
+              <caret line="39" column="30" selection-start-line="39" selection-start-column="30" selection-end-line="39" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -78,19 +101,20 @@
         <option value="$PROJECT_DIR$/PhotoFit/calc_black_body_flux_filters.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py" />
         <option value="$PROJECT_DIR$/PhotoFit/get_filter.py" />
-        <option value="$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py" />
         <option value="$PROJECT_DIR$/PhotoFit/params.py" />
         <option value="$PROJECT_DIR$/PhotoFit/test.py" />
         <option value="$PROJECT_DIR$/PhotoFit/script_test.py" />
-        <option value="$PROJECT_DIR$/test/script_test.py" />
         <option value="$PROJECT_DIR$/test/params_test.py" />
+        <option value="$PROJECT_DIR$/test/script_test.py" />
+        <option value="$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
+    <option name="x" value="51" />
+    <option name="y" value="140" />
     <option name="width" value="1440" />
-    <option name="height" value="600" />
+    <option name="height" value="743" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -324,7 +348,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="600" extended-state="0" />
+    <frame x="51" y="140" width="1440" height="743" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3298611" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -646,36 +670,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="67" column="90" selection-start-line="67" selection-start-column="89" selection-end-line="67" selection-end-column="90" />
-          <folding>
-            <element signature="e#354#372#0" expanded="true" />
-            <element signature="e#1023#1040#0" expanded="false" />
-            <element signature="e#2526#25818#0" expanded="false" />
-            <element signature="e#25924#29064#0" expanded="false" />
-            <element signature="e#28441#29064#1" expanded="false" />
-            <element signature="e#39066#110641#0" expanded="false" />
-            <element signature="e#39285#39341#0" expanded="false" />
-            <element signature="e#39376#39431#0" expanded="false" />
-            <element signature="e#39494#39583#0" expanded="false" />
-            <element signature="e#41799#43072#0" expanded="false" />
-            <element signature="e#44507#45662#0" expanded="false" />
-            <element signature="e#45689#47131#0" expanded="false" />
-            <element signature="e#51551#63433#0" expanded="false" />
-            <element signature="e#81955#94283#0" expanded="false" />
-            <element signature="e#110644#123816#1" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/script_test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
           <folding>
-            <element signature="e#0#33#0" expanded="true" />
+            <element signature="e#0#33#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -688,21 +688,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test/params_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="326">
+          <caret line="39" column="30" selection-start-line="39" selection-start-column="30" selection-end-line="39" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/test/script_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
-          <caret line="63" column="3" selection-start-line="63" selection-start-column="3" selection-end-line="63" selection-end-column="3" />
+        <state relative-caret-position="293">
+          <caret line="38" column="22" selection-start-line="38" selection-start-column="22" selection-end-line="38" selection-end-column="22" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/params_test.py">
+    <entry file="file://$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="-304">
+          <caret line="1131" column="51" selection-start-line="1131" selection-start-column="51" selection-end-line="1131" selection-end-column="51" />
+          <folding>
+            <element signature="e#354#372#0" expanded="true" />
+            <element signature="e#1023#1040#0" expanded="false" />
+            <element signature="e#25924#29064#0" expanded="false" />
+            <element signature="e#28441#29064#1" expanded="false" />
+            <element signature="e#39285#39341#0" expanded="false" />
+            <element signature="e#39376#39431#0" expanded="false" />
+            <element signature="e#39494#39583#0" expanded="false" />
+            <element signature="e#41799#43072#0" expanded="false" />
+            <element signature="e#44507#45662#0" expanded="false" />
+            <element signature="e#45689#47131#0" expanded="false" />
+            <element signature="e#81959#94287#0" expanded="false" />
+            <element signature="e#110648#123820#1" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

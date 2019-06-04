@@ -36,7 +36,7 @@ PhotoFit_fun.plot_SEDs(Best,already_interpolated=True,data_file=params.data_file
 
 '''
 from PhotoFit import PhotoFit_fun
-import params_test as params
+import params_test asx params
 import os
 
 ########################################### Calculate the evolution of T and R ############################################

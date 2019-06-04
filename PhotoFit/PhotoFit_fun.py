@@ -1128,8 +1128,8 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                         axes2d[k, i].vlines(wavelengths_filter['h_2mass'], j['h_2mass_err'][0], j['h_2mass_err'][1])
                         if 'h_2mass' not in bands_in_legend:
                             bands_in_legend.append('h_2mass')
-                    axes2d[k, i].set_xscale("log", nonposx='clip')
-                    axes2d[k, i].set_yscale("log", nonposx='clip')
+                    axes2d[k, i].set_xscale("log")#, nonposx='clip')
+                    axes2d[k, i].set_yscale("log")#, nonposx='clip')
                     #axes2d[k, i].legend(loc='top right')
                     axes2d[k, i].grid()
                     axes2d[k, i].set_title(r'JD-t$_0$={0}'.format(round(j['time'],2)))
