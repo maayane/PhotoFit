@@ -96,23 +96,41 @@ def make_filter_object(Filter_vector,filters_directory,central=True,verbose=Fals
     #print("P_vector['filter_object'] is",P_vector['filter_object'])
     #pdb.set_trace()
     for i, j in enumerate(Filter_vector):
+        '''
         if j[0].lower() == 'ptf_p48':
             #print(j[1])
-            if j[1].lower() == 'g_p48':
+            if j[1].lower() == 'g_p48_ptf':
                 if verbose == True:
                     print('You gave the G filter of the PTF_P48 family')
                 #pdb.set_trace()
                 Transmission = np.genfromtxt(
-                    filters_directory+'/PTF_G.rtf', delimiter=None)
+                    '/Users/maayanesoumagnac/Maayane_Astro_python_library/data/filters/PTF_G.rtf', delimiter=None)
                 P = pyphot.Filter(Transmission[:, 0], Transmission[:, 1], name='PTF_P48_G', dtype='photon', unit='Angstrom')
-
-        if j[0].lower() == 'ptf_p48':
-            if j[1].lower() == 'r_p48':
+            elif j[1].lower() == 'r_p48_ptf':
                 if verbose==True:
                     print('You gave the R filter of the PTF_P48 family')
                 Transmission = np.genfromtxt(
-                    filters_directory+'/P48_R_T.rtf', delimiter=None)
+                    '/Users/maayanesoumagnac/Maayane_Astro_python_library/data/filters/P48_R_T.rtf', delimiter=None)
                 P = pyphot.Filter(Transmission[:, 0], Transmission[:, 1], name='PTF_P48_R', dtype='photon', unit='Angstrom')
+        '''
+        if j[0].lower() == 'ztf_p48':
+            #print(j[1])
+            if j[1].lower() == 'g_p48':
+                if verbose == True:
+                    print('You gave the G filter of the ztf_P48 family')
+                #pdb.set_trace()
+                Transmission = np.genfromtxt(filters_directory+'/ZTF_g_fromgithub_AA.txt', delimiter=None)
+                P = pyphot.Filter(Transmission[:, 0], Transmission[:, 1], name='ZTF_P48_G', dtype='photon', unit='Angstrom')
+            elif j[1].lower() == 'r_p48':
+                if verbose==True:
+                    print('You gave the R filter of the ZTF_P48 family')
+                Transmission = np.genfromtxt(filters_directory+'/ZTF_r_fromgithub_AA.txt', delimiter=None)
+                P = pyphot.Filter(Transmission[:, 0], Transmission[:, 1], name='ZTF_P48_R', dtype='photon', unit='Angstrom')
+            elif j[1].lower() == 'i_p48':
+                if verbose==True:
+                    print('You gave the I filter of the ZTF_P48 family')
+                Transmission = np.genfromtxt(filters_directory+'/ZTF_i_fromgithub_AA_reorder.txt', delimiter=None)
+                P = pyphot.Filter(Transmission[:, 0], Transmission[:, 1], name='ZTF_P48_I', dtype='photon', unit='Angstrom')
         elif j[0].lower() == 'swift':
             if j[1].lower() == 'uvw1':
                 if verbose == True:

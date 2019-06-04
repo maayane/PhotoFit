@@ -92,6 +92,8 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
     if Filter_vector is not None:
         #print('filters_directory:',filters_directory)
         [P, wav]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
+        #print(P,wav)
+        #pdb.set_trace()
         output_array = np.empty([np.shape(Filter_vector)[0], 4], dtype=object)
         string = np.empty(np.shape(Filter_vector)[0], dtype=object)
         for i,j in enumerate(Filter_vector):
@@ -126,6 +128,8 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
             #P_vector['filter_name'] = Filter_vector[:, 1]
             #P_vector['filter_object'] = []
             fluxes = P['filter_object'][i].get_flux(black_body_spectrum[:, 0]*1e10, black_body_spectrum[:, 1])
+            #print(fluxes)
+            #pdb.set_trace()
             output_array[i,0]=Filter_vector[i,0]
             output_array[i,1]=Filter_vector[i,1]
             output_array[i, 2] = P['filter_object'][i].cl.item()#le eff_wl de Eran (auquel je veux pouvoir comparer) est le cl de pyphot

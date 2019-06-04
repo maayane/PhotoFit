@@ -17,6 +17,7 @@ import shutil
 import logging
 import pyphot
 from . import get_filter
+import pdb
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -266,6 +267,10 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 		pylab.plot(central_wavelength, Spectrum_correct[:, 2], 'bo', label=r'data corrected for extinction')
 	'''
 	#This is in case there are 2 param in model l1*black_body+l2: pylab.plot(Spectrum_corrected[:,0]*1e9,best_coeff1*black_body_flux_density.black_body_flux_density(best_temp, Spectrum_corrected[:, 0], 'P')[0][:,1]+best_coeff2,'-b',label='best fit')
+	#print(best_coeff1*calc_black_body_flux_filters.calc_black_body_flux_filters(best_temp,np.arange(1e-7, 3e-6, 1e-9),Filter_vector=Filter_vector,filters_directory=filters_directory,Radius=None,distance_pc=None,output_plot=False,output_txt=False,z=z,Ebv=Ebv)[:,3])
+	#pdb.set_trace()
+	#print(Filter_vector)
+	#pdb.set_trace()
 	if z!=0:
 		pylab.plot(spectrum_flux[:,0],
 			   best_coeff1 * calc_black_body_flux_filters.calc_black_body_flux_filters(best_temp,np.arange(1e-7, 3e-6, 1e-9),Filter_vector=Filter_vector,filters_directory=filters_directory,Radius=None,distance_pc=None,output_plot=False,output_txt=False,z=z,Ebv=Ebv)[:,3]
