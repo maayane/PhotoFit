@@ -1,11 +1,12 @@
+import os
 ## Parameters used in script_test.py ##
 
 mcmc=False# if False, plot with linear fit. If True, plots with mcmc
 
 ########## Definition of the output file ##########
 
-output_file_mcmc='./test/results_fit_sed_mcmc'
-output_file_linear='./test/result_fit_sed_mat'
+output_file_mcmc='./results_fit_sed_mcmc'
+output_file_linear='./result_fit_sed_mat'
 output_file_interpolation='./test/results_interpolation'
 if mcmc==True:
     output=output_file_mcmc
@@ -30,7 +31,7 @@ data_file='./data_files/data_13dqy_formatted_for_package.txt' #must have at leas
 dates_file='./data_files/13dqy_int_dates.txt'
 
 lower_limit_on_flux=1e-40
-filters_directory='./PhotoFit/Filters' #put the path to the Filters directory here
+filters_directory='../PhotoFit/Filters' #put the path to the Filters directory here
 
 # Interpolation step
 already_run_interp_errors=dict() #don't touch this line
@@ -63,6 +64,9 @@ num_iterations=100
 already_run_mcmc=False
 nwalkers=100
 num_steps=350
+
+# In both case: either None or a list of Boolean of size the number of epoched, where True is for epochs already ran and False is for epoch left to run
+already_run_fit=None
 
 # In case you want to compare your R and T results with existing results from a file
 data_compare='./data_files/Yaron_2017_results.txt'#file with column#1: time from explosion, column#2: temperature (K), column#3:radius (cm)
