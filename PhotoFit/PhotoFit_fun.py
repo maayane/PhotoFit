@@ -394,7 +394,7 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 if (j['time']< 1):
                     hitemp = 3e5
                     hirad=7e15
-                elif(j['time'] < 2):
+                elif(j['time'] < 3):
                     hitemp = 5e4
                     hirad = 7e15
                 else:
@@ -1069,9 +1069,9 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                         if 'z_sdss' not in bands_in_legend:
                             bands_in_legend.append('z_sdss')
                     if 'u_sdss' in j.keys():
-                        axes2d[i].plot([wavelengths_filter['u_sdss']], [j['u_sdss']], color=color['u_sdss'],
+                        axes2d[k, i].plot([wavelengths_filter['u_sdss']], [j['u_sdss']], color=color['u_sdss'],
                                           marker=symbol['u_sdss'], label='P60 u')  # ,label='P60 r')
-                        axes2d[i].vlines(wavelengths_filter['u_sdss'], j['u_sdss_err'][0], j['u_sdss_err'][1])
+                        axes2d[k, i].vlines(wavelengths_filter['u_sdss'], j['u_sdss_err'][0], j['u_sdss_err'][1])
                         if 'u_sdss' not in bands_in_legend:
                             bands_in_legend.append('u_sdss')
                     if 'u_swift' in j.keys():
