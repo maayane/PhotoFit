@@ -78,7 +78,7 @@ def emcee_1_param(model_1param,prior_param1,data,uncertainties,initial_condition
             samples = np.genfromtxt(flatchain_path)
     return samples
 '''
-def emcee_n_param(ndim,model_nparam, prior_param, data, uncertainties, initial_conditions, nwalkers=100,num_steps=200,flatchain_path=None,already_run=False):
+def emcee_n_param(ndim,model_nparam, prior_param, data, uncertainties, initial_conditions, nwalkers=100,num_steps=200,flatchain_path=None,already_run=False,verbose=False):
     """Description: given data, uncertainties, and priors on a and b, run emcee to fit the data with the model a(x-xref)^n (0 for x smaller than xref)
     Input  :-model_nparam a class like in the models.py file, that has a model_array method
             -a tuple where every element is a 2-1 array with the prior
@@ -178,7 +178,8 @@ def emcee_n_param(ndim,model_nparam, prior_param, data, uncertainties, initial_c
         return lp + myloglike(theta)
 
     if already_run != True:
-        print('*** EMCEE run ***')
+        if verbose==True:
+            print('*** EMCEE run ***')
         #ndim = 1
         sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob)
         pos = np.zeros((nwalkers, ndim))
@@ -201,9 +202,10 @@ def emcee_n_param(ndim,model_nparam, prior_param, data, uncertainties, initial_c
                 exit()
         #print(pos)
         for i in range(ndim):
-            print('the min of pos is', np.min(pos[:, i]))
-            print('the max of pos is', np.max(pos[:, i]))
-            print('the prior is', prior_param[i])
+            if verbose ==True:
+                print('the min of pos is', np.min(pos[:, i]))
+                print('the max of pos is', np.max(pos[:, i]))
+                print('the prior is', prior_param[i])
         #pos, prob, state = sampler.run_mcmc(pos, 100)
         #sampler.reset()
         sampler.run_mcmc(pos, num_steps)
@@ -221,7 +223,7 @@ def emcee_n_param(ndim,model_nparam, prior_param, data, uncertainties, initial_c
             samples = np.genfromtxt(flatchain_path)
     return samples
 
-def calc_best_fit_n_param(ndim,model_nparam,flatchain_path,data,uncertainties,winners=50,output_file_path=None,bounds=None,already_run_calc_all_chis=False,show_plots=True,dilution_factor=0):
+def calc_best_fit_n_param(ndim,model_nparam,flatchain_path,data,uncertainties,winners=50,output_file_path=None,bounds=None,already_run_calc_all_chis=False,show_plots=False,dilution_factor=0,verbose=False):
     """Description:
         -Input  :
         -Output : a numpy array with [best params, chi2]
@@ -233,7 +235,8 @@ def calc_best_fit_n_param(ndim,model_nparam,flatchain_path,data,uncertainties,wi
             URL :
         Example: best=fitter_general.calc_best_fit_n_param()
         Reliable:  """
-    print('*** Calculation of the maximum likelihood values ***')
+    if verbose==True:
+        print('*** Calculation of the maximum likelihood values ***')
     samples=np.genfromtxt(flatchain_path,delimiter=None,dtype=float)
     if output_file_path==None:
         output_file_path='.'
@@ -241,7 +244,8 @@ def calc_best_fit_n_param(ndim,model_nparam,flatchain_path,data,uncertainties,wi
     #### 1. calculate the chi2 of all the parameters combinations of the chain, store this in file_path_to_all_chain_chis/all_param_and_chis_of_chain.txt'
     if already_run_calc_all_chis != True:
         if dilution_factor==0:
-            print('I am calculating the chi value for each combination of parameters in the chain')
+            if verbose == True:
+                print('I am calculating the chi value for each combination of parameters in the chain')
             chis = np.zeros((np.shape(samples)[0], ndim+1))
             for i, line in enumerate(samples):
                 # print('i am a line {0}'.format(i)
@@ -268,7 +272,8 @@ def calc_best_fit_n_param(ndim,model_nparam,flatchain_path,data,uncertainties,wi
                 chis[i, 0:ndim] = samples[i, 0:ndim]
                 chis[i, ndim] = my_objective.chi_square_value()
         else:
-            print('I am calculating the chi value for every {0} combination of parameters in the chain'.format(dilution_factor))
+            if verbose == True:
+                print('I am calculating the chi value for every {0} combination of parameters in the chain'.format(dilution_factor))
             samples_diluted=samples[::dilution_factor].copy()
             chis = np.zeros((np.shape(samples_diluted)[0], ndim + 1))
             for i, line in enumerate(samples_diluted):
@@ -436,9 +441,10 @@ def calc_best_fit_n_param(ndim,model_nparam,flatchain_path,data,uncertainties,wi
         pylab.savefig(output_file_path + '/opt_chis_plot.pdf', facecolor='w', edgecolor='w', orientation='portrait',
                       papertype=None, format='pdf',
                       transparent=False, bbox_inches=None, pad_inches=0.1)
-    print(maxiparam_good_size)
-    print('the best fit param are {0} and the corrisponding chi^2 is {1}'.format(maxiparam_good_size[0,:ndim],maxiparam_good_size[0, ndim]))
-    print('the reduced chi^2 is {0}'.format(round(maxiparam_good_size[0, ndim] / (np.shape(data)[0] - ndim), 4)))
+    #print(maxiparam_good_size)
+    if verbose==True:
+        print('the best fit param are {0} and the corrisponding chi^2 is {1}'.format(maxiparam_good_size[0,:ndim],maxiparam_good_size[0, ndim]))
+        print('the reduced chi^2 is {0}'.format(round(maxiparam_good_size[0, ndim] / (np.shape(data)[0] - ndim), 4)))
     #print('the denominator is',(np.shape(data)[0] - ndim)
     #print ndim
     #print np.shape(data)[0]
@@ -608,7 +614,7 @@ def plot_opt_fit_n_param(ndim, model_nparam,bests,data,flatchain_path=None,uncer
                   pad_inches=0.1)
     #pylab.show()
 
-def plot_2D_distributions(flatchain_path,bests=None,output_file_path='.',parameters_labels=None,title=None):
+def plot_2D_distributions(flatchain_path,bests=None,output_file_path='.',parameters_labels=None,title=None,verbose=False):
     """Description: Given a chain, plots the 2-D marginalized distributions.
     Input  :-flatchain_Path: the path to the chain.
             -bests (optional):a numpy array with values of the parameters to be shown on the plots (ex: calculated best-fit values, true known values, etc)
@@ -622,7 +628,8 @@ def plot_2D_distributions(flatchain_path,bests=None,output_file_path='.',paramet
         URL :
     Example: samples=fitter_powerlaw.fitter_powerlaw(np.array([0.,5.]),np.array([0.,5.]),my_data,uncertainties=errors*np.ones(50),flatchain_path='./flatchain_2_test.txt',already_run=True)
     Reliable:  """
-    print('*** Plots of the 2D distributions ***')
+    if verbose == True:
+        print('*** Plots of the 2D distributions ***')
     samples=np.genfromtxt(flatchain_path)
     #if output_file_path==None:
     #    output_file_path='.'
@@ -664,7 +671,7 @@ def plot_2D_distributions(flatchain_path,bests=None,output_file_path='.',paramet
         pylab.tight_layout()
         fig.savefig(output_file_path)
 
-def plot_1D_marginalized_distribution(flatchain_path, bests=None,output_pdf_file_path='.',output_txt_file_path='.', parameters_labels=None,number_bins=None):
+def plot_1D_marginalized_distribution(flatchain_path, bests=None,output_pdf_file_path='.',output_txt_file_path='.', parameters_labels=None,number_bins=None,verbose=False,title='marginalized posterior'):
         """Description: Given a chain, plots the 1-D marginalized distributions.
         Input  :-flatchain_Path: the path to the chain.
                 -bests (optional):a numpy array with values of the parameters to be shown on the plots (ex: calculated best-fit values, true known values, etc)
@@ -683,20 +690,25 @@ def plot_1D_marginalized_distribution(flatchain_path, bests=None,output_pdf_file
         #    output_file_path = '.'
         #if number_bins == None:
         #    number_bins = 100
-        print('*** Plots of the 1D distributions ***')
+        if verbose == True:
+            print('*** Plots of the 1D distributions ***')
         if isinstance(flatchain_path,np.ndarray)==True:
-            print('you gave flatchain_path as a numpy array')
+            if verbose==True:
+                print('you gave flatchain_path as a numpy array')
             if len(np.shape(flatchain_path)) < 2:
-                print('1D array')
-                print(np.shape(flatchain_path))
+                if verbose==True:
+                    print('1D array')
+                    print(np.shape(flatchain_path))
                 sample=np.zeros((np.shape(flatchain_path)[0],1))
                 sample[:,0]=flatchain_path
             else:
                 sample=flatchain_path
-            print (np.shape(sample))
-            print(sample)
+            if verbose == True:
+                print (np.shape(sample))
+                print(sample)
         elif isinstance(flatchain_path,str):
-            print('you gave flatchain_path as an actual path')
+            if verbose == True:
+                print('you gave flatchain_path as an actual path')
             sample = np.loadtxt(flatchain_path)
         if bests is None:
             sigma = np.zeros((np.shape(sample)[1], 4))
@@ -704,9 +716,11 @@ def plot_1D_marginalized_distribution(flatchain_path, bests=None,output_pdf_file
             sigma = np.zeros((np.shape(sample)[1], 5))
         for j in range(np.shape(sample)[1]):
             if parameters_labels is None:
-                print('I am plotting the histogram for the parameter number {0}'.format(j))
+                if verbose == True:
+                    print('I am plotting the histogram for the parameter number {0}'.format(j))
             else:
-                print('I am plotting the histogram for the parameter {0}'.format(parameters_labels[j]))
+                if verbose == True:
+                    print('I am plotting the histogram for the parameter {0}'.format(parameters_labels[j]))
 
             pylab.figure()
             n, bin, patches = pylab.hist(sample[:, j], bins=number_bins, alpha=0.5, color='orange')
@@ -725,33 +739,38 @@ def plot_1D_marginalized_distribution(flatchain_path, bests=None,output_pdf_file
                     #print np.shape(n)
                     #print sum(n[:i])
                     #print bin2[i]
-                    print('i is ',i)
-                    print('bin2 is of shape',np.shape(bin2))
-                    print('sun(n[:i]) is',sum(n[:i]))
+                    if verbose == True:
+                        print('i is ',i)
+                        print('bin2 is of shape',np.shape(bin2))
+                        print('sun(n[:i]) is',sum(n[:i]))
                     nlower = bin[i]
-                    print('at the {0}th bin, i.e. at b={1}, the ration float(sum(n[:i]))/sum(n) is {2} and the 16percent limit has been reached'.format(
-                        i, bin2[i], float(sum(n[:i])) / sum(n)))
+                    if verbose == True:
+                        print('at the {0}th bin, i.e. at b={1}, the ration float(sum(n[:i]))/sum(n) is {2} and the 16percent limit has been reached'.format(
+                            i, bin2[i], float(sum(n[:i])) / sum(n)))
                     break
             for i, b in enumerate(bin):
                 if float(sum(n[:i])) / sum(n) >= 0.84:
                     nupper = bin[i]
-                    print('the rached ratio is {0}'.format(float(sum(n[:i])) / sum(n)))
+                    if verbose == True:
+                        print('the rached ratio is {0}'.format(float(sum(n[:i])) / sum(n)))
                     #print('i is ',i
                     #print('bin2 is of shape',np.shape(bin2)
                     #print bin2[i]
                     #print('sun(n[:i]) is',sum(n[:i])
-                    print('at the {0}th bin, i.e. at b={1}, the ration float(sum(n[:i]))/sum(n) is {2} and the 16percent upper limit has been reached'.format(
+                    if verbose == True:
+                        print('at the {0}th bin, i.e. at b={1}, the ration float(sum(n[:i]))/sum(n) is {2} and the 16percent upper limit has been reached'.format(
                         i, bin2[i], float(sum(n[:i])) / sum(n)))
                     break
             for i, b in enumerate(bin):
                 if float(sum(n[:i])) / sum(n) >= 0.5:
                     nmedian = bin[i]
-                    print('the rached ratio is {0}'.format(float(sum(n[:i])) / sum(n)))
+                    if verbose == True:
+                        print('the rached ratio is {0}'.format(float(sum(n[:i])) / sum(n)))
                     #print('i is ',i
                     #print('bin2 is of shape',np.shape(bin2)
                     #print bin2[i]
                     #print('sun(n[:i]) is',sum(n[:i])
-                    print('at the {0}th bin, i.e. at b={1}, the ration float(sum(n[:i]))/sum(n) is {2} and the 50percent upper limit has been reached'.format(
+                        print('at the {0}th bin, i.e. at b={1}, the ration float(sum(n[:i]))/sum(n) is {2} and the 50percent upper limit has been reached'.format(
                         i, bin2[i], float(sum(n[:i])) / sum(n)))
                     break
             pylab.plot(bin2, n, color='k')
@@ -762,6 +781,7 @@ def plot_1D_marginalized_distribution(flatchain_path, bests=None,output_pdf_file
             pylab.axvline(nupper, color='r', linestyle='dashed', linewidth=3, label=r'$1\sigma$-range upper limit')
             pylab.legend(fontsize = 'x-small')
             pylab.ylabel('Marginalized Posterior Distribution')
+            pylab.title(title)
             if parameters_labels!=None:
                 pylab.xlabel(parameters_labels[j])
                 pylab.savefig(output_pdf_file_path + '/histo_param_' + parameters_labels[j] + '.pdf', facecolor='w', edgecolor='w',
@@ -771,6 +791,7 @@ def plot_1D_marginalized_distribution(flatchain_path, bests=None,output_pdf_file
                 pylab.savefig(output_pdf_file_path + '/histo_param_'+str(j)+'.pdf', facecolor='w', edgecolor='w',
                           orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
                           pad_inches=0.1)
+            pylab.close()
             if bests is None:
                 sigma[j, :] = nlower, nupper, float(nupper - nlower) / 2,nmedian
                 np.savetxt(output_txt_file_path + '/1sigma.txt', sigma, header='lower 1sigma, upper 1sigma, diff/2,median')

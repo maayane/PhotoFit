@@ -87,7 +87,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	lib = pyphot.get_library()
 	#print('The filters library contains {0} filters'.format(len(lib)))
 	#print('from which the following filters are used here:')
-	print('Filter_vector:',Filter_vector)
+	#print('Filter_vector:',Filter_vector)
 	[P_vectorx, effective_wavelength] = get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
 	#print('the shape of Filter vector is', np.shape(Filter_vector)[0])
 	P_vector = np.empty((np.shape(Filter_vector)[0], 3), dtype=object)
@@ -209,7 +209,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 		for i, j in enumerate(Temp):
 			index = i  #
 			print('*********************')
-			print('i=',i)
+			print('Linear fit: iteration {0}/{1}'.format(i+1,len(Temp)))
 			print('*********************')
 			A = np.array(
 				calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9), Filter_vector=Filter_vector,

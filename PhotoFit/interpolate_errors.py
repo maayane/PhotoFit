@@ -10,7 +10,7 @@ from scipy.interpolate import interp1d
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_run=False,plot=True,show_plot=True,title=None):
+def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_run=False,show_plot=True,title=None,verbose=False,band_name='unknown'):
     """Description: given a value, select the line of array with the first colomn closest to the value
     Input  :- N-3 array with the known x position, y positions, errors
             - an M-1 array with the x positions on which to interpolate
@@ -25,21 +25,22 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
     #print('we will interpolate {0} on {1}'.format(data,x_on_which_to_interpolate)
     #print(data)
     #pdb.set_trace()
-    if plot==True:
-        pylab.figure()
-        pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red',label='data')
-        #print('data[:,0] is',data[:,0])
-        print('x is',x_on_which_to_interpolate)
-        #pdb.set_trace()
-        for i,j in enumerate(x_on_which_to_interpolate):
-            pylab.axvline(j, linestyle='--')
-        pylab.axvline(x_on_which_to_interpolate[0],label='interpolation dates')
-        if title is not None:
-            pylab.title(title)
-        pylab.legend()
-        pylab.savefig(output_path+'/data_and_interpolation_dates.png',
-                      facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
-                      bbox_inches=None, pad_inches=0.5)
+
+    pylab.figure()
+    pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red',label='data')
+    #print('data[:,0] is',data[:,0])
+    #print('x is',x_on_which_to_interpolate)
+    #pdb.set_trace()
+    for i,j in enumerate(x_on_which_to_interpolate):
+        pylab.axvline(j, linestyle='--')
+    pylab.axvline(x_on_which_to_interpolate[0],label='interpolation dates')
+    if title is not None:
+        pylab.title(title)
+    pylab.legend()
+    pylab.savefig(output_path+'/data_and_interpolation_dates.png',
+                  facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
+                  bbox_inches=None, pad_inches=0.5)
+    pylab.close()
     #pylab.show()
     #print('data is',data)
     Results_array=np.empty((np.shape(x_on_which_to_interpolate)[0],5))
@@ -57,6 +58,7 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
     already_run=already_run
     if already_run==False:
         for i,j in enumerate(x_on_which_to_interpolate):
+            print('epoch #{0}'.format(i+1))
             #print('i is {0} and j is {1}'.format(i,j))
             #print('I am interpolating on ',x_on_which_to_interpolate)
             #print('the data x I am interpolating is',data[:,0])
@@ -76,7 +78,8 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
             err_higher=data[data[:,0]==x_higher,2]#resoudre le cas u plusieurs
             #print('the pont on which I am now interpolating is',j)
             #print('x_lower is,',x_lower)
-            print('y_lower is',y_lower)
+            if verbose==True:
+                print('y_lower is',y_lower)
             if np.shape(y_lower)[0] > 1:
                 print(
                 'warining, there is a repeated y point in the data file, at x point {0}. solve this and continue'.format(
@@ -86,7 +89,8 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
             #print('err_lower is',err_lower)
             #print('x_higher is,',x_higher)
             #print(np.shape(y_higher))
-            print('y_higher is',y_higher)
+            if verbose == True:
+                print('y_higher is',y_higher)
             if np.shape(y_higher)[0]>1:
                 print('warining, there is a repeated y point in the data file, at x point {0}. solve this and continue'.format(x_higher))
                 pdb.set_trace()
@@ -141,16 +145,18 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
                                                            prior_param=[prior_a, prior_b], data=my_data[:,0:2],
                                                            uncertainties=my_data[:,2], initial_conditions=[a_ini, b_ini],
                                                            flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt',
-                                                           already_run=False,nwalkers=70,num_steps=500)
+                                                           already_run=False,nwalkers=70,num_steps=500,verbose=verbose)
 
             best = fitter_general.calc_best_fit_n_param(ndim=2, model_nparam=model_linear_x_fixed,
                                                                 flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt',
                                                                 data=my_data, uncertainties=my_data[:,2], winners=50,
                                                                 output_file_path=output_path+'/error_calc_'+str(i)+'th_point',
                                                                 bounds=[prior_a, prior_b], already_run_calc_all_chis=False,
-                                                                show_plots=True)
+                                                                show_plots=False)
 
             bests = best[:-1]
+
+            '''
             plots_opt_fit = fitter_general.plot_opt_fit_n_param(ndim=2, model_nparam=model_linear_x_fixed,
                                                                         bests=bests, data=my_data,
                                                                         flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt',
@@ -161,15 +167,18 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
             triangle = fitter_general.plot_2D_distributions(
                         flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt', bests=bests,
                         title='test', output_file_path=output_path+'/error_calc_'+str(i)+'th_point', parameters_labels=['a', 'b'])
+            '''
 
             histos = fitter_general.plot_1D_marginalized_distribution(
                         flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt', bests=bests,
-                output_pdf_file_path=output_path+'/error_calc_'+str(i)+'th_point',output_txt_file_path=output_path+'/error_calc_'+str(i)+'th_point', parameters_labels=['a', 'b'], number_bins=2000)
+                output_pdf_file_path=output_path+'/error_calc_'+str(i)+'th_point',output_txt_file_path=output_path+'/error_calc_'+str(i)+'th_point', parameters_labels=['a', 'b'], number_bins=2000,
+                title='generated for the interpolation, epoch #{0}, band {1}'.format(i,band_name))
             #pylab.show()
 
 
             #def plot_1D_marginalized_distribution(flatchain_path, bests=None, output_png_file_path='.',
             #                                      output_txt_file_path='.', parameters_labels=None, number_bins=None):
+
 
             # plot le best et l erreur.
             lower_sigma=np.genfromtxt(output_path+'/error_calc_'+str(i)+'th_point/1sigma.txt',skip_header=1)[1,0]
@@ -184,44 +193,44 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
         Results_array=np.genfromtxt(output_path+'/Results_array.txt',skip_header=1)
         #print('Result is',Results_array)
     #print('Results_array is',Results_array)
-    if plot==True:
-        pylab.figure()
-        pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red',label='data')
-        for i,j in enumerate(x_on_which_to_interpolate):
-            #pylab.axvline(j, linestyle='--')
-            #print(np.shape(Results_array))
-            #print(Results_array)
-            #print(i)
-            if Results_array.ndim>1:
-                #print(Results_array[i,3])
-                #print(Results_array[i,4])
-                pylab.plot(j,Results_array[i,1],'bo')#,label='interpolation with interp1d')
-                pylab.plot(j,Results_array[i,2],'go')#,label='best b in linear fit')
-                #pylab.errorbar(j,Results_array[i.T,color='green')
-                pylab.vlines(j,Results_array[i,3],Results_array[i,4],color='green')
-            else:
-                #print(Results_array[i, 3])
-                #print(Results_array[i, 4])
-                pylab.plot(j, Results_array[1], 'bo')  # ,label='interpolation with interp1d')
-                pylab.plot(j, Results_array[2], 'go')  # ,label='best b in linear fit')
-                # pylab.errorbar(j,Results_array[i.T,color='green')
-                pylab.vlines(j, Results_array[3], Results_array[4], color='green')
 
-        if Results_array.ndim > 1:
-            pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 1], 'bo', label='interpolation with interp1d')
-            pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 2], 'go', label='best b in mcmc fit')
+    pylab.figure()
+    pylab.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color='red',label='data')
+    for i,j in enumerate(x_on_which_to_interpolate):
+        #pylab.axvline(j, linestyle='--')
+        #print(np.shape(Results_array))
+        #print(Results_array)
+        #print(i)
+        if Results_array.ndim>1:
+            #print(Results_array[i,3])
+            #print(Results_array[i,4])
+            pylab.plot(j,Results_array[i,1],'bo')#,label='interpolation with interp1d')
+            pylab.plot(j,Results_array[i,2],'go')#,label='best b in linear fit')
+            #pylab.errorbar(j,Results_array[i.T,color='green')
+            pylab.vlines(j,Results_array[i,3],Results_array[i,4],color='green')
         else:
-            pylab.plot(x_on_which_to_interpolate[0], Results_array[1], 'bo', label='interpolation with interp1d')
-            pylab.plot(x_on_which_to_interpolate[0], Results_array[2], 'go', label='best b in mcmc fit')
+            #print(Results_array[i, 3])
+            #print(Results_array[i, 4])
+            pylab.plot(j, Results_array[1], 'bo')  # ,label='interpolation with interp1d')
+            pylab.plot(j, Results_array[2], 'go')  # ,label='best b in linear fit')
+            # pylab.errorbar(j,Results_array[i.T,color='green')
+            pylab.vlines(j, Results_array[3], Results_array[4], color='green')
 
-        pylab.legend()
-        pylab.savefig(output_path+'/Plot_w_interpolated_errors.png',
-            facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
-            bbox_inches=None, pad_inches=0.5)
-        if title is not None:
-            pylab.title(title)
-        if show_plot==True:
-            pylab.show()
+    if Results_array.ndim > 1:
+        pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 1], 'bo', label='interpolation with interp1d',alpha=0.5)
+        pylab.plot(x_on_which_to_interpolate[0], Results_array[0, 2], 'go', label='best b in mcmc fit',alpha=0.5)
+    else:
+        pylab.plot(x_on_which_to_interpolate[0], Results_array[1], 'bo', label='interpolation with interp1d',alpha=0.5)
+        pylab.plot(x_on_which_to_interpolate[0], Results_array[2], 'go', label='best b in mcmc fit',alpha=0.5)
+
+    pylab.legend()
+    pylab.savefig(output_path+'/Plot_w_interpolated_errors.png',
+        facecolor='w', edgecolor='w', orientation='portrait', papertype=None, format='png', transparent=False,
+        bbox_inches=None, pad_inches=0.5)
+    if title is not None:
+        pylab.title(title)
+    if show_plot==True:
+        pylab.show()
         #pylab.plot()
 
     return Results_array

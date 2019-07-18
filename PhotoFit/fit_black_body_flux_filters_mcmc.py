@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 sigma_Boltzmann=5.670367e-8
 
-def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_winners=20,already_run_mcmc=False,already_run_calc_all_chis=False,Temp_prior=None,Radius_prior=None,initial_conditions=None,distance_pc=None,Ebv=None,R_ext=None,ndof=None,show_plot=False,output_mcmc=None,show_mag_AB=True,z=0,triangle_plot_title=None,path_to_txt_file=None,fast=False,dilution_factor=10,filters_directory=None):
+def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_winners=20,already_run_mcmc=False,already_run_calc_all_chis=False,Temp_prior=None,Radius_prior=None,initial_conditions=None,distance_pc=None,Ebv=None,R_ext=None,ndof=None,show_plot=False,output_mcmc=None,show_mag_AB=True,z=0,triangle_plot_title=None,path_to_txt_file=None,fast=False,dilution_factor=10,filters_directory=None,verbose=False):
 	"""Description: Fit a black-body spectrum alpha*F_bb to an observed spectrum, given as fuxes through a set of filters. Uses emcee, as opposed to fit_black_body_flux_filters
 	that uses a grid of T and a linear fit for alpha.
 	Input  :- Spectrun N-4 np array filter family, filter name, flux, error on flux
@@ -41,9 +41,9 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	 and change the location /Users/maayanesoumagnac/Maayane_Astro_python_library/data to the user one"""
 
 	#******************** convert waveunits into meters ***********************
-	print('I am running fit_bb_flux_filters_mcmc')
+	#print('I am running fit_bb_flux_filters_mcmc')
 	if np.shape(Spectrum)[1]<4:
-		print('Spectrum is in a wrong format, it is supposed to be a N-4 np array filter family, filter name, flux, error on flux')
+		print('ERROR:Spectrum is in a wrong format, it is supposed to be a N-4 np array filter family, filter name, flux, error on flux')
 		pdb.set_trace()
 	#Spectrum_good_units=np.zeros(np.shape(Spectrum))
 	Filter_vector=np.empty([np.shape(Spectrum)[0], 2],dtype=object)
@@ -56,20 +56,23 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	spectrum_flux = np.zeros((np.shape(Filter_vector)[0],3)) # centrl wavelength, flux, flux err
 	#mags_correct = np.zeros(np.shape(Filter_vector)[0])
 	lib = pyphot.get_library()
-	print('The filters library contains {0} filters,'.format(len(lib)))
-	print('from which the following filters are used here:')
-	print('Filter vector is',Filter_vector)
+	if verbose==True:
+		print('The filters library contains {0} filters,'.format(len(lib)))
+		print('from which the following filters are used here:')
+		print('Filter vector is',Filter_vector)
 	#P_vector=np.empty((np.shape(Filter_vector)[0],np.shape(Filter_vector)[1]+1),dtype=object)
 	#P_vector[:,0]=Filter_vector[:,0]
 	#P_vector[:,1]=Filter_vector[:,1]
 	#print(P_vector)
 	#pdb.set_trace()
 	[P_vectorx,effective_wavelength]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
-	print('the shape of Filter vector is',np.shape(Filter_vector)[0])
+	if verbose == True:
+		print('the shape of Filter vector is',np.shape(Filter_vector)[0])
 	P_vector=np.empty((np.shape(Filter_vector)[0],3),dtype=object)
-	print(np.shape(P_vector))
-	print(P_vectorx['filter_family'])
-	print(np.shape(P_vectorx['filter_family'][:]))
+	if verbose == True:
+		print(np.shape(P_vector))
+		print(P_vectorx['filter_family'])
+		print(np.shape(P_vectorx['filter_family'][:]))
 	P_vector[:,0]=P_vectorx['filter_family'][:]
 	P_vector[:,1] = P_vectorx['filter_name'][:]
 	P_vector[:,2]=P_vectorx['filter_object'][:]
@@ -116,7 +119,7 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	max_wavelength=np.max(wavelengths_max)
 	wavelengths=np.linspace(min_wavelength,max_wavelength,num=1000)
 	wavelengths_in_meters=wavelengths*1e-10
-	print(P_vector)
+	#print(P_vector)
 	#pdb.set_trace()
 	'''
 	#print wavelengths_in_meters
@@ -142,17 +145,22 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 	'''
 	# ******************** Fit ************************
 	if Temp_prior is None:
-		print('the prior for the temperature is [10^3,10^6]')
+		if verbose == True:
+			print('the prior for the temperature is [10^3,10^6]')
 		Temp_prior=np.array([1e3,1e6])
 	else:
-		print('the prior for the temperature is',Temp_prior)
+		if verbose == True:
+			print('the prior for the temperature is',Temp_prior)
 	if Radius_prior is None:
-		print('the prior for the temperature is [1e12,1e17]')
+		if verbose == True:
+			print('the prior for the temperature is [1e12,1e17]')
 		Radius_prior=np.array([1e12,1e17])
 	else:
-		print('the prior for the temperature is',Temp_prior)
+		if verbose == True:
+			print('the prior for the temperature is',Temp_prior)
 	if initial_conditions is None:
-		print('the default initial conditions are',  [1e5,1e14])
+		if verbose == True:
+			print('the default initial conditions are',  [1e5,1e14])
 		init=[1e5,1e14]
 	else:
 		init=initial_conditions
@@ -253,14 +261,14 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 		best_fit = model_nparam(bests[0], bests[1], data[:, 0]).model_array()
 
 
-
+		'''
 		a_tcheck = calc_black_body_flux_filters.calc_black_body_flux_filters(bests[0], np.arange(1e-7, 3e-6, 1e-9),
 																			 Filter_vector=None, P_vector=P_vector,
 																			 Radius=bests[1], distance_pc=distance_pc,
 																			 output_plot=True,
 																			 show_plots=False, output_txt=False,
 																			 lib=lib, z=z,Ebv=Ebv,R_ext=R_ext,output_file=output_mcmc)
-
+		'''
 		fig = pylab.figure()
 		pylab.plot(best_fit[:, 0], best_fit[:, 1], 'bo', label=r'best-fit model') # black body with the wavelength of corrected spectrum through filters
 		# pylab.plot(emcee_fit[:,0],emcee_fit[:,1],'b-')
@@ -328,6 +336,12 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 			ax.set_xlabel(xlabel)
 			ax.set_ylabel(ylabel)
 			pylab.legend(loc=1)
+			print('T is',bests[0])
+			print('R is',bests[1])
+			print('Ebv is', Ebv)
+			print('z is', z)
+			print('distance is',distance_pc)
+			#pdb.set_trace()
 			pylab.savefig(output_file_path + '/best_fit_with_chain.png', facecolor='w', edgecolor='w',
 						  orientation='portrait', papertype=None, format='png', transparent=False, bbox_inches=None,
 						  pad_inches=0.1)
