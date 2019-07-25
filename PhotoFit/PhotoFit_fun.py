@@ -69,7 +69,7 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                               already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,
                               distance_modulus=None,explosion_date=None,EBV=None,output=None,filters_directory=None,
                               mcmc=False,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,
-                              num_steps=None,nwalkers=None,csm=False,already_run_fit=None,excluded_bands=[]):
+                              num_steps=None,nwalkers=None,csm=False,already_run_fit=None,excluded_bands=[],prior_on_radius=False,lowrad=None,hirad=None):
 
     #print('num_steps is',num_steps)
     #print('nwalkers is',nwalkers)
@@ -412,6 +412,7 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 Spectrum.append(np.array(['2MASS', 'j_2mass', j['j_2mass'],  max(j['j_2mass_err'][1]-j['j_2mass'],j['j_2mass']-j['j_2mass_err'][0])],dtype=object))
 
             Spectrum_right_format=np.array(Spectrum)
+
             if csm==False:
                 if (j['time']< 1):
                     hitemp = 3e5
@@ -425,13 +426,14 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
             else:
                 if (j['time']< 1):
                     hitemp = 3e5
-                    hirad=2e15#7e15
+                    hirad=7e15
                 elif(j['time'] < 3):
                     hitemp = 5e4
-                    hirad =2e15#7e15
+                    hirad =7e15
                 else:
                     hitemp = 4e4
-                    hirad = 2e15#8e15
+                    hirad = 8e15
+
             #print('hitemp is',hitemp)
             #pdb.set_trace()
 
@@ -443,23 +445,47 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 print('******* method chosen: MCMC *******')
 
                 if already_run_fit[i]==False:
-                    if fast[i]==False:
+                    #if fast[i]==False:
+                    if prior_on_radius is False:
                         [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
                         (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
                          already_run_mcmc=already_run_mcmc,already_run_calc_all_chis=False,Temp_prior=np.array([3000,hitemp]),
-                         Radius_prior=np.array([1e14,hirad]),initial_conditions=np.array([15000,3e14]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
+                         Radius_prior=np.array([0.8e14,hirad]),initial_conditions=np.array([15000,1.5e14]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
                          path_to_txt_file=None,fast=fast[i],dilution_factor=10,filters_directory=filters_directory)
                     else:
-                        [best_temp, best_radius, best_luminosity, best_coeff] = fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc \
-                            (Spectrum_right_format,
-                             triangle_plot_title=r'$JD-t_{ref}=$' + str(round(j['time'] - explosion_date, 2)), nwalkers=nwalkers,
-                             num_steps=num_steps, num_winners=20, already_run_mcmc=already_run_mcmc,
-                             already_run_calc_all_chis=False, Temp_prior=np.array([7000, 35000]),
-                             Radius_prior=np.array([1e12, 1e15]), initial_conditions=np.array([15000, 8e13]),
-                             distance_pc=distance_pc,
-                             Ebv=EBV, ndof=None, show_plot=False,
-                             output_mcmc=output+'/day_' + str(round(j['time'] - explosion_date, 3)),
-                             show_mag_AB=True, z=redshift, path_to_txt_file=None, fast=fast[i], dilution_factor=10)
+                        print('the prior on the radius is ',[0.8e14,hirad[i]])
+                        [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
+                        (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
+                         already_run_mcmc=already_run_mcmc,already_run_calc_all_chis=False,Temp_prior=np.array([3000,hitemp]),
+                         Radius_prior=np.array([lowrad[i],hirad[i]]),initial_conditions=np.array([15000,(lowrad[i]+hirad[i])/2]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
+                         path_to_txt_file=None,fast=fast[i],dilution_factor=10,filters_directory=filters_directory)
+
+                    '''
+                    else:
+                        if hirad is None:
+                            [best_temp, best_radius, best_luminosity, best_coeff] = fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc \
+                                (Spectrum_right_format,
+                                 triangle_plot_title=r'$JD-t_{ref}=$' + str(round(j['time'] - explosion_date, 2)), nwalkers=nwalkers,
+                                 num_steps=num_steps, num_winners=20, already_run_mcmc=already_run_mcmc,
+                                 already_run_calc_all_chis=False, Temp_prior=np.array([7000, 35000]),
+                                 Radius_prior=np.array([1e12, 1e15]), initial_conditions=np.array([15000, 1.5e14]),
+                                 distance_pc=distance_pc,
+                                 Ebv=EBV, ndof=None, show_plot=False,
+                                 output_mcmc=output+'/day_' + str(round(j['time'] - explosion_date, 3)),
+                                 show_mag_AB=True, z=redshift, path_to_txt_file=None, fast=fast[i], dilution_factor=10)
+                        else:
+                            print('the prior on the radius is ', [0.8e14, hirad[i]])
+                            [best_temp, best_radius, best_luminosity, best_coeff] = fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc \
+                                (Spectrum_right_format,
+                                 triangle_plot_title=r'$JD-t_{ref}=$' + str(round(j['time'] - explosion_date, 2)), nwalkers=nwalkers,
+                                 num_steps=num_steps, num_winners=20, already_run_mcmc=already_run_mcmc,
+                                 already_run_calc_all_chis=False, Temp_prior=np.array([7000, 35000]),
+                                 Radius_prior=np.array([1e12, hirad[i]]), initial_conditions=np.array([15000, 1.5e14]),
+                                 distance_pc=distance_pc,
+                                 Ebv=EBV, ndof=None, show_plot=False,
+                                 output_mcmc=output+'/day_' + str(round(j['time'] - explosion_date, 3)),
+                                 show_mag_AB=True, z=redshift, path_to_txt_file=None, fast=fast[i], dilution_factor=10)
+                    '''
 
                 else:
                     if fast[i]==False:
@@ -611,22 +637,22 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
             data_dicts[j] = dict()
             data_dicts[j]['jd'] = data_dico['jd'][
                 (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-            data_dicts[j]['mag'] = data_dico['mag'][
-                (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+            #data_dicts[j]['mag'] = data_dico['mag'][
+            #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
             data_dicts[j]['flux'] = data_dico['flux'][
                 (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-            data_dicts[j]['magerr'] = data_dico['magerr'][
-                (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+            #data_dicts[j]['magerr'] = data_dico['magerr'][
+            #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
             data_dicts[j]['fluxerr'] = data_dico['fluxerr'][
                 (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-            data_dicts[j]['absmag'] = data_dico['absmag'][
-                (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-            data_dicts[j]['absmagerr'] = data_dico['absmagerr'][
-                (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+            #data_dicts[j]['absmag'] = data_dico['absmag'][
+            #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+            #data_dicts[j]['absmagerr'] = data_dico['absmagerr'][
+            #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
             data_dicts[j]['filter'] = data_dico['filter'][
                 (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
-            data_dicts[j]['instr'] = data_dico['instr'][
-                (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
+            #data_dicts[j]['instr'] = data_dico['instr'][
+            #    (data_dico['filter'] == j) & (data_dico['flux'] > lower_limit_on_flux)]
 
         #print(data_dicts.keys())
 

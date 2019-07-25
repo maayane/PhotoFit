@@ -20,18 +20,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="PhotoFit_fun.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="PhotoFit_fun.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="348">
-              <caret line="55" column="15" selection-start-line="55" selection-start-column="11" selection-end-line="55" selection-end-column="15" />
+            <state relative-caret-position="-289">
+              <caret line="669" column="18" selection-start-line="669" selection-start-column="18" selection-end-line="669" selection-end-column="18" />
               <folding>
                 <element signature="e#354#372#0" expanded="true" />
-                <element signature="e#27708#30992#0" expanded="false" />
-                <element signature="e#30369#30992#1" expanded="false" />
-                <element signature="e#41504#121700#0" expanded="false" />
-                <element signature="e#45065#46338#0" expanded="false" />
-                <element signature="e#54905#55640#1" expanded="false" />
+                <element signature="e#23710#25960#1" expanded="false" />
+                <element signature="e#30011#33295#0" expanded="false" />
+                <element signature="e#32672#33295#1" expanded="false" />
+                <element signature="e#43817#124013#0" expanded="false" />
+                <element signature="e#47378#48651#0" expanded="false" />
+                <element signature="e#57218#57953#1" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -47,20 +48,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fit_black_body_flux_filters.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="68" column="8" selection-start-line="68" selection-start-column="8" selection-end-line="68" selection-end-column="8" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="interpolate_errors.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="686">
+            <state relative-caret-position="3210">
               <caret line="221" column="9" selection-start-line="221" selection-start-column="9" selection-end-line="221" selection-end-column="9" />
               <folding />
             </state>
@@ -70,8 +61,8 @@
       <file leaf-file-name="fitter_general.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PhotoFit/fitter_general.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="693" column="17" selection-start-line="693" selection-start-column="14" selection-end-line="693" selection-end-column="17" />
+            <state relative-caret-position="285">
+              <caret line="674" column="73" selection-start-line="674" selection-start-column="73" selection-end-line="674" selection-end-column="73" />
               <folding>
                 <element signature="e#188#2994#1" expanded="false" />
                 <element signature="e#3171#11125#0" expanded="false" />
@@ -97,17 +88,17 @@
       <file leaf-file-name="black_body_flux_density.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PhotoFit/black_body_flux_density.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="893">
+            <state relative-caret-position="1725">
               <caret line="122" column="30" selection-start-line="122" selection-start-column="30" selection-end-line="122" selection-end-column="30" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fit_black_body_flux_filters_mcmc.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="fit_black_body_flux_filters_mcmc.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="599">
+            <state relative-caret-position="1200">
               <caret line="121" column="5" selection-start-line="121" selection-start-column="5" selection-end-line="121" selection-end-column="5" />
               <folding>
                 <element signature="e#3956#5171#1" expanded="false" />
@@ -160,17 +151,17 @@
         <option value="$PROJECT_DIR$/test/params_test.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fitter_general.py" />
         <option value="$PROJECT_DIR$/PhotoFit/interpolate_errors.py" />
-        <option value="$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py" />
         <option value="$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py" />
+        <option value="$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1246" />
-    <option name="y" value="-1347" />
-    <option name="width" value="1905" />
-    <option name="height" value="1170" />
+    <option name="x" value="40" />
+    <option name="y" value="263" />
+    <option name="width" value="1440" />
+    <option name="height" value="877" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -198,6 +189,7 @@
     </navigator>
     <panes>
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -246,7 +238,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -404,10 +395,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1246" y="-1347" width="1905" height="1170" extended-state="0" />
+    <frame x="40" y="263" width="1440" height="877" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20839895" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.175" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -637,7 +628,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2670">
           <caret line="187" column="94" selection-start-line="187" selection-start-column="94" selection-end-line="187" selection-end-column="94" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -645,15 +635,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1545">
           <caret line="121" column="9" selection-start-line="121" selection-start-column="9" selection-end-line="121" selection-end-column="9" />
-          <folding>
-            <element signature="e#4075#5066#1" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/black_body_flux_density.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="893">
+        <state relative-caret-position="1725">
           <caret line="122" column="30" selection-start-line="122" selection-start-column="30" selection-end-line="122" selection-end-column="30" />
           <folding />
         </state>
@@ -667,18 +654,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/energy_conversions.py">
+    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="45" selection-start-line="1" selection-start-column="45" selection-end-line="1" selection-end-column="45" />
-          <folding />
+        <state relative-caret-position="1200">
+          <caret line="121" column="5" selection-start-line="121" selection-start-column="5" selection-end-line="121" selection-end-column="5" />
+          <folding>
+            <element signature="e#3956#5171#1" expanded="false" />
+            <element signature="e#5782#6728#1" expanded="false" />
+            <element signature="e#7858#7913#0" expanded="false" />
+            <element signature="e#11865#16009#0" expanded="false" />
+            <element signature="e#17151#18819#1" expanded="false" />
+            <element signature="e#18876#24696#1" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/fitter_general.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="693" column="17" selection-start-line="693" selection-start-column="14" selection-end-line="693" selection-end-column="17" />
+        <state relative-caret-position="285">
+          <caret line="674" column="73" selection-start-line="674" selection-start-column="73" selection-end-line="674" selection-end-column="73" />
           <folding>
             <element signature="e#188#2994#1" expanded="false" />
             <element signature="e#3171#11125#0" expanded="false" />
@@ -692,46 +686,39 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/interpolate_errors.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="686">
+        <state relative-caret-position="3210">
           <caret line="221" column="9" selection-start-line="221" selection-start-column="9" selection-end-line="221" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="251">
+          <caret line="196" column="163" selection-start-line="196" selection-start-column="161" selection-end-line="196" selection-end-column="163" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PhotoFit/energy_conversions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="45" selection-start-line="1" selection-start-column="45" selection-end-line="1" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PhotoFit/PhotoFit_fun.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="348">
-          <caret line="55" column="15" selection-start-line="55" selection-start-column="11" selection-end-line="55" selection-end-column="15" />
+        <state relative-caret-position="-289">
+          <caret line="669" column="18" selection-start-line="669" selection-start-column="18" selection-end-line="669" selection-end-column="18" />
           <folding>
             <element signature="e#354#372#0" expanded="true" />
-            <element signature="e#27708#30992#0" expanded="false" />
-            <element signature="e#30369#30992#1" expanded="false" />
-            <element signature="e#41504#121700#0" expanded="false" />
-            <element signature="e#45065#46338#0" expanded="false" />
-            <element signature="e#54905#55640#1" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="68" column="8" selection-start-line="68" selection-start-column="8" selection-end-line="68" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PhotoFit/fit_black_body_flux_filters_mcmc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="599">
-          <caret line="121" column="5" selection-start-line="121" selection-start-column="5" selection-end-line="121" selection-end-column="5" />
-          <folding>
-            <element signature="e#3956#5171#1" expanded="false" />
-            <element signature="e#5782#6728#1" expanded="false" />
-            <element signature="e#7858#7913#0" expanded="false" />
-            <element signature="e#11865#16009#0" expanded="false" />
-            <element signature="e#17151#18819#1" expanded="false" />
-            <element signature="e#18876#24696#1" expanded="false" />
+            <element signature="e#23710#25960#1" expanded="false" />
+            <element signature="e#30011#33295#0" expanded="false" />
+            <element signature="e#32672#33295#1" expanded="false" />
+            <element signature="e#43817#124013#0" expanded="false" />
+            <element signature="e#47378#48651#0" expanded="false" />
+            <element signature="e#57218#57953#1" expanded="false" />
           </folding>
         </state>
       </provider>
