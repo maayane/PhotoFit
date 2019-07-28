@@ -413,26 +413,34 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
 
             Spectrum_right_format=np.array(Spectrum)
 
+            #print('prior_on_raidus',prior_on_radius)
+            #pdb.set_trace()
             if csm==False:
                 if (j['time']< 1):
                     hitemp = 3e5
-                    hirad=1e15
+                    if prior_on_radius == False:
+                        hirad=1e15
                 elif(j['time'] < 2):
                     hitemp = 5e4
-                    hirad = 2e15
+                    if prior_on_radius == False:
+                        hirad = 2e15
                 else:
-                    hitemp = 2e4
-                    hirad = 2e15
-            else:
+                    hitemp = 5e4
+                    if prior_on_radius == False:
+                        hirad = 2e15
+            elif csm==True:
                 if (j['time']< 1):
                     hitemp = 3e5
-                    hirad=7e15
+                    if prior_on_radius == False:
+                        hirad=7e15
                 elif(j['time'] < 3):
                     hitemp = 5e4
-                    hirad =7e15
+                    if prior_on_radius == False:
+                        hirad =7e15
                 else:
-                    hitemp = 4e4
-                    hirad = 8e15
+                    hitemp = 5e4
+                    if prior_on_radius == False:
+                        hirad = 8e15
 
             #print('hitemp is',hitemp)
             #pdb.set_trace()
@@ -449,10 +457,11 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                     if prior_on_radius is False:
                         [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
                         (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
-                         already_run_mcmc=already_run_mcmc,already_run_calc_all_chis=False,Temp_prior=np.array([3000,hitemp]),
+                         already_run_mcmc=already_run_mcmc,already_run_ccalc_all_chis=False,Temp_prior=np.array([3000,hitemp]),
                          Radius_prior=np.array([0.8e14,hirad]),initial_conditions=np.array([15000,1.5e14]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
                          path_to_txt_file=None,fast=fast[i],dilution_factor=10,filters_directory=filters_directory)
                     else:
+                        print('hirad is',hirad)
                         print('the prior on the radius is ',[0.8e14,hirad[i]])
                         [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
                         (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
