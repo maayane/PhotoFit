@@ -64,7 +64,7 @@ The simplest way to run PhotoFit is
 
 By default, the code shows and save plots generated while running. They are interesting, but if you do not want to see or save them, you can set `show_underlying_plots` to `False`
 
-And if you want the code to tell you more about what it is doing at each step, you can set `verbose` to `True`:
+And if you want the code to tell you more about what it is doing at each step, you can set `verbose` to `True` (we recommand keeping it to `False` though):
 
 The `Best` numpy array, containing the time evolution of T and R, is stored in your output directory (defined in the `params.py` file), in a file called `Results.txt`. In addition to this file, the code creates in your output directory one sub-directory per epoch, with several files and plots. In particular, the plot stored in `SED_date_X.XXX.pdf`(left) shows the infered SED at epoch X.XXX and the plot stored in `fit_result_FLux.pdf` (right) shows the data and best-fit model superimposed.
 
