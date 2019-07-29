@@ -26,7 +26,7 @@ At the end of this first step, there is one spectral energy distribution (SED) t
 
 ## Credit
 
-If you are using PhotoFit, please reference the appendix of Soumagnac et al. 2019 (in preparation)
+If you are using PhotoFit, please reference the appendix of [Soumagnac et al. 2019](https://ui.adsabs.harvard.edu/abs/2019arXiv190711252S/exportcitation)
 
 ## How to install `PhotoFit`?
 
