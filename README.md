@@ -192,13 +192,13 @@ We advise you to run PhotoFit in two steps:
 contain what you assume is the 1 sigma confidence interval around these values, but not too wide. See below examples of bad and good choices of priors. After the run, you should check these histograms in `results_fit_sed_mcmc/day_XXX/histo_param_T.pdf`
 and `results_fit_sed_mcmc/day_XXX/histo_param_R.pdf`
 
-*Bad choices of priors:* for this epoch,`lowtemp=0`, `hitemp=45000`,`lowrad=0`, `hirad=7.5e15`
+**Bad choices of priors:** for this epoch,`lowtemp=0`, `hitemp=45000`,`lowrad=0`, `hirad=7.5e15`
 <p align="center">
   <img src="./test/histo_param_T_bad.png" width="350">
   <img src="./test/histo_param_R_bad.png" width="350">
 </p>
 
-*Good choices of priors*: for this epoch,`lowtemp=3000`, `hitemp=16000`,`lowrad=0.3e15`, `hirad=1.5e15`
+**Good choices of priors**: for this epoch,`lowtemp=3000`, `hitemp=16000`,`lowrad=0.3e15`, `hirad=1.5e15`
 <p align="center">
   <img src="./test/histo_param_T_good.png" width="350">
   <img src="./test/histo_param_R_good.png" width="350">
