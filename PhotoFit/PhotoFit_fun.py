@@ -69,7 +69,7 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                               already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,
                               distance_modulus=None,explosion_date=None,EBV=None,output=None,filters_directory=None,
                               mcmc=False,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,
-                              num_steps=None,nwalkers=None,csm=False,already_run_fit=None,excluded_bands=[],prior_on_radius=False,lowrad=None,hirad=None):
+                              num_steps=None,nwalkers=None,csm=False,already_run_fit=None,excluded_bands=[],priors=False,lowrad=None,hirad=None,lowtemp=None,hitemp=None):
 
     #print('num_steps is',num_steps)
     #print('nwalkers is',nwalkers)
@@ -95,7 +95,10 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     data_dico = \
     read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
 
-
+    if priors ==True:
+        if None in (lowrad,hirad,lowtemp,hitemp):
+            print('ERROR: if priors is set to "True", you need to provide four lists of priors limit, lowrad, hirad, lowtemp and hitemp')
+            pdb.set_trace()
     data_dicts=dict()
     for i,j in enumerate(data_dico['filter']):
         data_dicts[j]=dict()
@@ -132,6 +135,8 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     interp_and_errors_array=dict()
     interp=dict()
 
+    #print(data_dicts.keys())
+    #pdb.set_trace()
     for k in [x for x in data_dicts.keys() if x not in excluded_bands]:
         already_run_interp_errors[k] = already_run_interp_errors_from_param[k]#params.already_run_interp_errors[k]
 
@@ -158,57 +163,62 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
         #print('the days of {0} are {1}'.format(k,data_dicts[k]['jd']-explosion_date))
         condition[k]=np.logical_and(interpolation_dates>=np.min(data_dicts[k]['jd']),interpolation_dates<=np.max(data_dicts[k]['jd']))
         JD_basis_interpolation[k] = interpolation_dates[condition[k]]
-        if verbose == True:
-            print('The interpolation dates relevant to this band are {1}'.format(k,JD_basis_interpolation[k]-explosion_date))
+        #if verbose == True:
+        print('The interpolation dates relevant to this band are {1}'.format(k,JD_basis_interpolation[k]-explosion_date))
+        #pdb.set_trace()
         #print('and interpolating on {0}'.format(interpolation_dates-explosion_date))
         #print('len(JD_basis_interpolation[k]) is',len(JD_basis_interpolation[k]))
         if len(JD_basis_interpolation[k])>0:
+            if (len(JD_basis_interpolation[k]) ==1) and (JD_basis_interpolation[k][0]==data_dicts[k]['jd'][0]):
+                #print('we are in the case where there is one data point only')
+                interp[k] = dict()
+                interp[k][str(round(JD_basis_interpolation[k][0]-explosion_date, 8))]=[data_dicts[k]['jd'][0],data_dicts[k]['flux'][0],data_dicts[k]['flux'][0],data_dicts[k]['flux'][0]-data_dicts[k]['fluxerr'][0],data_dicts[k]['flux'][0]+data_dicts[k]['fluxerr'][0]]
+                #print(interp[k][str(round(JD_basis_interpolation[k][0]-explosion_date, 8))])
+                #print(interp[k][str(round(JD_basis_interpolation[k][0], 8))])
+                #pdb.set_trace()
 
+            else:
+                a=np.array(list(zip(data_dicts[k]['jd'],data_dicts[k]['flux'],data_dicts[k]['fluxerr'])))
+                jd_flux_fluxerr[k]=a[a[:, 0].argsort()]
+                output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
+                if already_run_interp_errors[k]==False:
+                    if os.path.exists(output_path)==True:
+                        shutil.rmtree(output_path)
+                    os.mkdir(output_path)
+                interp_and_errors_array[k]=interpolate_errors.interpolate_errors\
+                (jd_flux_fluxerr[k],JD_basis_interpolation[k],output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k),
+                 already_run=already_run_interp_errors[k],show_plot=False,title='{0}'.format(k),verbose=verbose,band_name='{0}'.format(k))#array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                interp[k]=dict()
+                #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
+                #print('np.shape(interp_and_errors_array[k]) is',np.shape(interp_and_errors_array[k]))
+                #print('k is',k)
 
-            a=np.array(list(zip(data_dicts[k]['jd'],data_dicts[k]['flux'],data_dicts[k]['fluxerr'])))
-            jd_flux_fluxerr[k]=a[a[:, 0].argsort()]
-            output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
-            if already_run_interp_errors[k]==False:
-                if os.path.exists(output_path)==True:
-                    shutil.rmtree(output_path)
-                os.mkdir(output_path)
-            interp_and_errors_array[k]=interpolate_errors.interpolate_errors\
-            (jd_flux_fluxerr[k],JD_basis_interpolation[k],output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k),
-             already_run=already_run_interp_errors[k],show_plot=False,title='{0}'.format(k),verbose=verbose,band_name='{0}'.format(k))#array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
-            interp[k]=dict()
-            #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
-            #print('np.shape(interp_and_errors_array[k]) is',np.shape(interp_and_errors_array[k]))
-            #print('k is',k)
-
-            for i, j in enumerate(JD_basis_interpolation[k]):
-                if interp_and_errors_array[k].ndim==1:
-                    interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
-                else:
-                    interp[k][str(round(j-explosion_date,8))]=interp_and_errors_array[k][i,:]
+                for i, j in enumerate(JD_basis_interpolation[k]):
+                    if interp_and_errors_array[k].ndim==1:
+                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
+                    else:
+                        interp[k][str(round(j-explosion_date,8))]=interp_and_errors_array[k][i,:]
             #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
             #print('JD_basis_interpolation[k] is',JD_basis_interpolation[k]-explosion_date)
 
-
+    #print(interp['UVW1'])
+    #pdb.set_trace()
     Spectra=[]
     if verbose == True:
         print('I am creating the Spectra')
+    #print(interp.keys())
+    #pdb.set_trace()
     for i,j in enumerate(interpolation_dates):
-        #print('********')
-        #print('i is',i)
-        #print('********')
         epoch=dict()
         epoch['time']=round(interpolation_dates[i]-explosion_date,8)#jd_flux_fluxerr_UVW2[2,0]#
         #print('epoch[time] is',str(epoch['time']))
         for k in [x for x in data_dicts.keys() if x not in excluded_bands]:
             if len(JD_basis_interpolation[k]) > 0:
+                #print(interp.keys())
                 if str(epoch['time']) in interp[k].keys():
                     epoch[k]=interp[k][str(epoch['time'])][1] #flux
                     epoch[k+'_err']=[interp[k][str(epoch['time'])][3],interp[k][str(epoch['time'])][4]] # lower and higher limit of 2 sigma area. the error is half of this
         Spectra.append(epoch)
-
-    #for i,j in enumerate(Spectra):
-    #    print('At day {0}, the Spectrum is {1}'.format(j['time'],Spectra[i]))
-    #    pdb.set_trace()
 
     print('***************************************************')
     print('******* IMPORTANT CHECK BEFORE YOU PROCEED ********')
@@ -413,34 +423,34 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
 
             Spectrum_right_format=np.array(Spectrum)
 
-            #print('prior_on_raidus',prior_on_radius)
+            #print('prior_on_raidus',priors)
             #pdb.set_trace()
             if csm==False:
                 if (j['time']< 1):
-                    hitemp = 3e5
-                    if prior_on_radius == False:
+                    if priors == False:
                         hirad=1e15
+                        hitemp = 3e5
                 elif(j['time'] < 2):
-                    hitemp = 5e4
-                    if prior_on_radius == False:
+                    if priors == False:
                         hirad = 2e15
+                        hitemp = 5e4
                 else:
-                    hitemp = 5e4
-                    if prior_on_radius == False:
+                    if priors == False:
                         hirad = 2e15
+                        hitemp = 5e4
             elif csm==True:
                 if (j['time']< 1):
-                    hitemp = 3e5
-                    if prior_on_radius == False:
+                    if priors == False:
                         hirad=7e15
+                        hitemp = 3e5
                 elif(j['time'] < 3):
-                    hitemp = 5e4
-                    if prior_on_radius == False:
+                    if priors == False:
                         hirad =7e15
+                        hitemp = 5e4
                 else:
-                    hitemp = 5e4
-                    if prior_on_radius == False:
+                    if priors == False:
                         hirad = 8e15
+                        hitemp = 5e4
 
             #print('hitemp is',hitemp)
             #pdb.set_trace()
@@ -449,24 +459,23 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
             #math.log10(3000), math.log10(hitemp)
 
             if mcmc==True:
-
                 print('******* method chosen: MCMC *******')
-
                 if already_run_fit[i]==False:
                     #if fast[i]==False:
-                    if prior_on_radius is False:
-                        [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
-                        (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
-                         already_run_mcmc=already_run_mcmc,already_run_ccalc_all_chis=False,Temp_prior=np.array([3000,hitemp]),
-                         Radius_prior=np.array([0.8e14,hirad]),initial_conditions=np.array([15000,1.5e14]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
-                         path_to_txt_file=None,fast=fast[i],dilution_factor=10,filters_directory=filters_directory)
-                    else:
-                        print('hirad is',hirad)
-                        print('the prior on the radius is ',[0.8e14,hirad[i]])
+                    if priors is False:
                         [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
                         (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
                          already_run_mcmc=already_run_mcmc,already_run_calc_all_chis=False,Temp_prior=np.array([3000,hitemp]),
-                         Radius_prior=np.array([lowrad[i],hirad[i]]),initial_conditions=np.array([15000,(lowrad[i]+hirad[i])/2]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
+                         Radius_prior=np.array([0.8e14,hirad]),initial_conditions=np.array([15000,1.5e14]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
+                         path_to_txt_file=None,fast=fast[i],dilution_factor=10,filters_directory=filters_directory)
+                    else:
+                        #print('hirad is',hirad)
+                        #print('the prior on the radius is ',[0.8e14,hirad[i]])
+
+                        [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc\
+                        (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),nwalkers=nwalkers,num_steps=num_steps,num_winners=20,
+                         already_run_mcmc=already_run_mcmc,already_run_calc_all_chis=False,Temp_prior=np.array([lowtemp[i],hitemp[i]]),
+                         Radius_prior=np.array([lowrad[i],hirad[i]]),initial_conditions=np.array([(lowtemp[i]+hitemp[i])/2,(lowrad[i]+hirad[i])/2]),distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_mcmc=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
                          path_to_txt_file=None,fast=fast[i],dilution_factor=10,filters_directory=filters_directory)
 
                     '''
@@ -519,11 +528,19 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 print('******* method chosen: LINEAR FIT *******')
                 #print(Spectrum_right_format)
                 #pdb.set_trace()
+                #print('Spectrum',Spectrum)
+                #print('Spectrum right format',Spectrum_right_format)
                 if already_run_fit[i]==False:
-                    [Xi_array, best_temp, index_min, best_coeff, best_radius,best_luminosity]=fit_black_body_flux_filters.fit_black_body_flux_filters(
-                        Spectrum_right_format,TempVec=np.logspace(math.log10(3000),math.log10(hitemp),num_iterations),num_temp_iterations=None,
-                        distance=distance_pc,uncertainties=Spectrum_right_format[:,3],Ebv=EBV,z=redshift,output_file_path=output+'/day_'+str(round(j['time'],3))
-                        ,path_to_txt_file=output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt',filters_directory=filters_directory)
+                    if priors is False:
+                        [Xi_array, best_temp, index_min, best_coeff, best_radius,best_luminosity]=fit_black_body_flux_filters.fit_black_body_flux_filters(
+                            Spectrum_right_format,TempVec=np.logspace(math.log10(3000),math.log10(hitemp),num_iterations),num_temp_iterations=None,
+                            distance=distance_pc,uncertainties=Spectrum_right_format[:,3],Ebv=EBV,z=redshift,output_file_path=output+'/day_'+str(round(j['time'],3))
+                            ,path_to_txt_file=output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt',filters_directory=filters_directory)
+                    else:
+                        [Xi_array, best_temp, index_min, best_coeff, best_radius,best_luminosity]=fit_black_body_flux_filters.fit_black_body_flux_filters(
+                            Spectrum_right_format,TempVec=np.logspace(math.log10(lowtemp[i]),math.log10(hitemp[i]),num_iterations),num_temp_iterations=None,
+                            distance=distance_pc,uncertainties=Spectrum_right_format[:,3],Ebv=EBV,z=redshift,output_file_path=output+'/day_'+str(round(j['time'],3))
+                            ,path_to_txt_file=output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt',filters_directory=filters_directory)
                 else:
                     best_temp=np.genfromtxt(output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt')[1]
                     best_radius=np.genfromtxt(output+'/day_'+str(round(j['time'],3))+'/best_fit_result.txt')[4]
@@ -714,15 +731,28 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
                 else:
                     os.mkdir(output_path)
                 #print('already_run_interp_errors', already_run_interp_errors)
-                interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
-                    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
-                     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-                     already_run=already_run_interp_errors[k], show_plot=False,
-                     title='{0} on the interpolation dates'.format(
-                         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
-                interp[k] = dict()
-                for i, j in enumerate(JD_basis_interpolation[k]):
-                    interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+
+
+                if (len(JD_basis_interpolation[k]) == 1) and (JD_basis_interpolation[k][0] == data_dicts[k]['jd'][0]):
+                    interp_and_errors_array[k] = [
+                        data_dicts[k]['jd'][0], data_dicts[k]['flux'][0], data_dicts[k]['flux'][0],
+                        data_dicts[k]['flux'][0] - data_dicts[k]['fluxerr'][0],
+                        data_dicts[k]['flux'][0] + data_dicts[k]['fluxerr'][0]]
+                    interp[k] = dict()
+                    #print(JD_basis_interpolation[k])
+                    interp[k][str(round(JD_basis_interpolation[k][0] - explosion_date, 8))] = interp_and_errors_array[k][:]
+
+                else:
+                    interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                        (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                         output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                         already_run=already_run_interp_errors[k], show_plot=False,
+                         title='{0} on the interpolation dates'.format(
+                             k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                    interp[k] = dict()
+                #print(interp_and_errors_array[k])
+                    for i, j in enumerate(JD_basis_interpolation[k]):
+                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
         pylab.close('all')
         Spectra = []
 
@@ -763,7 +793,7 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
                 luminosities_early=energy_conversions.convert_energy(4*math.pi*np.power(radii_early*1e-2,2)*sigma_Boltzmann*np.power(temperatures_early,4),'J','erg')
                 #histos de luminosities
                 histos=fitter_general.plot_1D_marginalized_distribution(luminosities_early, bests=None, output_pdf_file_path=output_png_file_path, output_txt_file_path=output_txt_file_path,
-                                                  parameters_labels=None, number_bins=10000)
+                                                  parameters_labels=None, number_bins=20000)
         for i, j in enumerate(Spectra):
             errors_luminosity_early[i,0]=round(j['time'],3)
             errors_luminosity_early[i,1]=np.genfromtxt(output+'/results_errors_lumi/day_'+str(round(j['time'],3))+'/1sigma.txt',comments='#')[0]
@@ -1003,24 +1033,36 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
 
         else:
             if len(JD_basis_interpolation[k]) > 0:
-                a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
-                jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
-                output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
-                if os.path.exists == False:
-                    os.mkdir(output_path)
-                interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
-                    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
-                     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-                     already_run=already_interpolated, show_plot=False,
-                     title='{0} on the interpolation dates'.format(
-                         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
-                interp[k] = dict()
-                for i, j in enumerate(JD_basis_interpolation[k]):
-                    if interp_and_errors_array[k].ndim == 1:
-                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
-                    else:
-                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
-                pylab.close('all')
+
+                if len(JD_basis_interpolation[k]) == 1 and data_dicts[k]['jd'][0]:
+                    # print('we are in the case where there is one data point only')
+                    if JD_basis_interpolation[k][0] == data_dicts[k]['jd'][0]:
+                        # print('Yeah')
+                        interp[k] = dict()
+
+                        interp[k][str(round(JD_basis_interpolation[k][0] - explosion_date, 8))] = [
+                            data_dicts[k]['jd'][0], data_dicts[k]['flux'][0], data_dicts[k]['flux'][0],
+                            data_dicts[k]['flux'][0] - data_dicts[k]['fluxerr'][0],
+                            data_dicts[k]['flux'][0] + data_dicts[k]['fluxerr'][0]]
+
+                else:
+                    a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
+                    jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
+                    output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
+                    if os.path.exists == False:
+                        os.mkdir(output_path)
+                    interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                        (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                         output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                         already_run=already_interpolated, show_plot=False,
+                         title='{0} on the interpolation dates'.format(k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                    interp[k] = dict()
+                    for i, j in enumerate(JD_basis_interpolation[k]):
+                        if interp_and_errors_array[k].ndim == 1:
+                            interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
+                        else:
+                            interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+                    pylab.close('all')
                     #interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
 
 

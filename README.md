@@ -57,7 +57,16 @@ The simplest way to run PhotoFit is
 ```python
 >>> import PhotoFit
 >>> import params_test as params
->>>Best=PhotoFit_fun.calculate_T_and_R_in_time(data_file=params.data_file,dates_file=params.dates_file,already_run_interp_errors_from_param=params.already_run_interp_errors,already_run_mcmc=params.already_run_mcmc,already_run_matrix=params.already_run_matrix,num_iterations=params.num_iterations,show_underlying_plots=True,verbose=False,redshift=params.z,distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,EBV=params.EBV,output=params.output,filters_directory=params.filters_directory,mcmc=params.mcmc,output_file_interpolation=params.output_file_interpolation,lower_limit_on_flux=params.lower_limit_on_flux,csm=params.csm,num_steps=params.num_steps,nwalkers=params.nwalkers)
+>>>Best=PhotoFit_fun.calculate_T_and_R_in_time(data_file=params.data_file,dates_file=params.dates_file,already_run_interp_errors_from_param=params.already_run_interp_errors,
+                                            already_run_mcmc=params.already_run_mcmc,already_run_matrix=params.already_run_matrix,
+                                            num_iterations=params.num_iterations,show_underlying_plots=True,verbose=False,redshift=params.z,
+                                            distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,EBV=params.EBV,
+                                            output=output,filters_directory=params.filters_directory,mcmc=params.mcmc,
+                                            output_file_interpolation=params.output_file_interpolation,
+                                            lower_limit_on_flux=params.lower_limit_on_flux,csm=params.csm,num_steps=params.num_steps,
+                                            nwalkers=params.nwalkers,excluded_bands=[],already_run_fit=params.already_run_fit,priors=params.priors,lowrad=params.lowrad,hirad=params.hirad,
+                                            lowtemp=params.lowtemp,hitemp=params.hitemp)
+
 ```
 
 `Best` is a numpy array of which the first column is the time (jd), the second column is the temperature (K) and the third column is the radius (cm).
@@ -90,6 +99,7 @@ The simplest way to visualize the evolution of R and T is simply to run
 
 ```
 
+
 If you want to compare the temperature and radius to those of another object, just tell `PhotoFit` where to look for this additional data (buy setting the  `data_compare` pparameter in `params.py`) and run
 
 ```python
@@ -105,8 +115,9 @@ If you want to compare the temperature and radius to those of another object, ju
 ### Visualize the evolution of L
 
 ```python
->>>PhotoFit_fun.plot_L_in_time(Best,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,dates_file=params.dates_file,error_lum_ran=False,explosion_date=params.explosion_date,output=params.output,mcmc=params.mcmc,output_file_interpolation=params.output_file_interpolation)
-
+>>>PhotoFit_fun.plot_L_in_time(Best,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,dates_file=params.dates_file,
+                            error_lum_ran=False,explosion_date=params.explosion_date,output=output,mcmc=params.mcmc,
+                            output_file_interpolation=params.output_file_interpolation,excluded_bands=[])
 ```
 
 <p align="center">
@@ -120,8 +131,12 @@ If you have done the fit using mcmc, `PyPhot` will calculate the errors on the l
 To visualize all the SEDs on one 2-D plot, run
 
 ```python
->>>PhotoFit_fun.plot_SEDs(Best,already_interpolated=True,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,dates_file=params.dates_file,already_run_interp_errors_from_params=params.already_run_interp_errors,number_of_plot=9,redshift=params.z,distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,output=params.output,filters_directory=params.filters_directory,output_file_interpolation=params.output_file_interpolation,EBV=params.EBV)
- 
+>>>PhotoFit_fun.plot_SEDs(Best,already_interpolated=True,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,
+                       dates_file=params.dates_file,already_run_interp_errors_from_params=params.already_run_interp_errors,
+                       number_of_plot=9,redshift=params.z,distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,
+                       output=output,filters_directory=params.filters_directory,output_file_interpolation=params.output_file_interpolation,
+                       EBV=params.EBV)
+
 ```
 <p align="center">
   <img src="./test/result_fit_sed_mat/2D_SEDs_9.png" width="550">
@@ -161,7 +176,32 @@ If you do not edit the parameters listed below and simply run `PhotoFit`, it wil
 * `nwalkers` -  a **float**. This is only to be edited if `mcmc=True`, i.e. if you are using the mcmc fit method. Determines the number of walkers in the mcmc. See the [emcee documentation](http://dfm.io/emcee/current/) for details.
 * `num_steps` - a **float**. This is only to be edited if `mcmc=True`, i.e. if you are using the mcmc fit method. Determines the number of walkers in the mcmc. See the [emcee documentation](http://dfm.io/emcee/current/) for details.
 * `data_compare` - a **string**. This is in case you want to compare your R and T results with existing results from a file while visualizing them (see the [section on visualizing R and T](https://github.com/maayane/PhotoFit/blob/master/README.md#visualize-the-evolution-of-r-and-t)). This parameters determines the path to this file, which needs to have no header and the following format: column#1 - time from explosion, column#2 - temperature (K), column#3 -radius (cm). The default parameter will make you compare your results with the supernova PTF 13dqy. 
+* `already_run_fit` - this parameter is to help you re-run the fit only for specific epochs. If set to `None`, the code will run the fit for all epochs. If you want to re-run the fit for, e.g. the 3rd epoch only, `already_run_fit` should be a list of Boolean of length the number of epochs, where all items are `True` except the 3rd which should be `False`.
+* `priors` - set to `True` if you are running with the mcmc method and want to save time by definting the interval you expect the errors on T and R to be in, for each epoch.
+* `lowrad` - a list of length the number of epochs, with all the lower limits on the prior on R (i.e. you expect the lower limit of the 1 sigma error on R to be above this value)
+* `hirad` - a list of length the number of epochs, with all the upper limits on the prior on R (i.e. you expect the upper limit of the 1 sigma error on R to be below this value)
+* `lowtemp` - a list of length the number of epochs, with all the lower limits on the prior on T (i.e. you expect the lower limit of the 1 sigma error on T to be above this value)
+* `hitemp` - a list of length the number of epochs, with all the upper limits on the prior on T (i.e. you expect the upper limit of the 1 sigma error on T to be below this value)
 
+
+## Our advice: run first the with the linear fit mode, then adjust the priors on T and R and run with the mcmc mode.
+We advise you to run PhotoFit in two steps:
+1. Run first with the linear fit mode. i.e. with `mcmc=False`, all `output_file_interpolation` set to `False` (unless you ran this step before), `already_run_matrix=False`, `already_run_mcmc=False` and `priors=False`.
+2. Have a look at the results (the `T_bb_evo.png` and `r_bb_evo.png` file in your `result_fit_sed_mat` directory). Then run again with `mcmc=True`, `already_run_mcmc=False`, and `priors=True`. The parameters
+`lowrad`, `hirad`, `lowtemp` and `hitemp` are the limits on the priors on T and R for each epoch. You want them to contain the values read in `T_bb_evo.png` and `r_bb_evo.png`, be wide enough to
+contain what you assume is the 1 sigma confidence interval around these values, but not too wide. See below examples of bad and good choices of priors.
+
+<p align="center">
+  <img src="./test/histo_param_T_bad.png" width="350">
+  <img src="./test/histo_param_R_bad.png" width="350">
+</p>
+Bad choices of priors
+
+<p align="center">
+  <img src="./test/histo_param_T_good.png" width="350">
+  <img src="./test/histo_param_R_good.png" width="350">
+</p>
+Good choices of priors
 
 ## Give it a try with the test data!
 

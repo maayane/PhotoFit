@@ -7,7 +7,7 @@ mcmc=False# if False, plot with linear fit. If True, plots with mcmc
 
 output_file_mcmc='./results_fit_sed_mcmc'
 output_file_linear='./result_fit_sed_mat'
-output_file_interpolation='./test/results_interpolation'
+output_file_interpolation='./results_interpolation'
 if mcmc==True:
     output=output_file_mcmc
 else:
@@ -62,11 +62,21 @@ num_iterations=100
 
 # In case you fit with mcmc
 already_run_mcmc=False
-nwalkers=100
+nwalkers=80
 num_steps=350
 
-# In both case: either None or a list of Boolean of size the number of epoched, where True is for epochs already ran and False is for epoch left to run
+# In both case: either None or a list of Boolean of size the number of epochs, where True is for epochs already ran and False is for epoch left to run
 already_run_fit=None
+
+
+#Setting the priors on T and R:
+priors=True
+lowrad=[0.5e14,0.5e14,0.5e14,0.5e14,0.5e14,0.5e14,1e14,1e14,1e14,1e14,1e14,1e14,1e14,1e14,1e14,8e14,8e14,8e14,8e14,8e14,8e14,8e14,8e14,8e14,8e14]
+hirad=[5e14,5e14,5e14,5e14,5e14,5e14,1e15,1e15,1e15,1e15,1e15,1e15,1e15,1e15,1e15,2e15,2e15,2e15,2e15,2e15,2e15,2e15,2e15,2e15,2e15]
+lowtemp=[1e4,1e4,1e4,1e4,1e4,1e4,1e4,1e4,5e3,5e3,5e3,5e3,5e3,5e3,5e3,5e3,5e3,5e3,5e3,5e3,5e3,4e3,4e3,4e3,4e3]
+hitemp=[4e4,4e4,3e4,3e4,3e4,3e4,3e4,3e4,1.8e4,1.8e4,1.8e4,1.8e4,1.8e4,1.8e4,1.8e4,1.8e4,1.8e4,1.8e4,1e4,1e4,1e4,1e4,1e4,1e4,1e4]
+
+
 
 # In case you want to compare your R and T results with existing results from a file
 data_compare='./data_files/Yaron_2017_results.txt'#file with column#1: time from explosion, column#2: temperature (K), column#3:radius (cm)
