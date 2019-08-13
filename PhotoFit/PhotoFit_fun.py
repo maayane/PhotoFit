@@ -800,6 +800,12 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
             errors_luminosity_early[i,2]=np.genfromtxt(output+'/results_errors_lumi/day_'+str(round(j['time'],3))+'/1sigma.txt',comments='#')[1]
 
         results=np.genfromtxt(output+'/Results.txt')
+        #my_file = Path(results)
+        #if my_file.is_file():
+        results_w_L_file=output+'/Results_w_L.txt'
+        matrice_resultls=np.hstack((Best,errors_luminosity_early[:,1:3]))
+        np.savetxt(results_w_L_file,matrice_resultls, header='JD, best T, lower 1sigma limit on T, upper 1sigma limit on T,best R, lower 1sigma limit on R, upper 1sigma limit on R, best L,lower 1sigma limit on L, upper 1sigma limit on L ')
+
         Lum=Best[:,7]
 
         pylab.figure()

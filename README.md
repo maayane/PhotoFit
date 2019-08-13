@@ -124,7 +124,8 @@ If you want to compare the temperature and radius to those of another object, ju
   <img src="./test/result_fit_sed_mat/L_bb_evo.png" width="350">
 </p>
 
-If you have done the fit using mcmc, `PyPhot` will calculate the errors on the luminosity L. To avoid doing this again and again after the first time you ran `PhotoFit.`, set the `error_lum_ran` to `True`:
+If you have done the fit using mcmc, `PyPhot` will calculate the errors on the luminosity L. To avoid doing this again and again after the first time you ran `PhotoFit.`, set the `error_lum_ran` to `True`.
+The results of the fit (dates, best R with errors, best T with errors, best L with errors) will be stored in the `Results_w_L.txt` in your `output_mcmc` directory.
 
 ### Visualize the spectral energy distributions (SEDs) at each epoch
 
