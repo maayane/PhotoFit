@@ -74,31 +74,54 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     #print('num_steps is',num_steps)
     #print('nwalkers is',nwalkers)
     #pdb.set_trace()
+
+    print('**********************************')
+    print('** PRELIMINARY PARAMETERS CHECK **')
+    print('**********************************')
+
+
+    interpolation_dates = np.genfromtxt(dates_file)  # param.dates_file
+
     if data_file is None:
-        print('you need to procide a data_file')
-        exit()
+        raise Exception('you need to provide a data_file')
+        #exit()
     if dates_file is None:
-        print('you need to procide a dates file')
-        exit()
+        raise Exception('you need to provide a dates file')
+        #exit()
     if already_run_interp_errors_from_param is None:
-        print('you need to procide a already_run_interp_errors_from_param array')
-        exit()
+        raise Exception('you need to provide a already_run_interp_errors_from_param array')
+        #exit()
     if already_run_mcmc is None:
-        print('you need to procide a already_run_mcmc param')
-        exit()
+        raise Exception('you need to provide a already_run_mcmc param, True or False')
+        #exit()
     if already_run_matrix is None:
-        print('you need to procide a already_run_matrix')
-        exit()
+        raise Exception('you need to procide a already_run_matrix param, True or False')
+        #exit()
+
+    num_epochs = len(interpolation_dates)
+
+    if priors ==True:
+        if None in (lowrad,hirad,lowtemp,hitemp):
+            raise Exception('ERROR: if priors is set to "True", you need to provide four lists of priors limit: lowrad, hirad, lowtemp and hitemp')
+        if (len(lowrad) != num_epochs) | (len(hirad) != num_epochs)| (len(hitemp) != num_epochs)| (len(lowtemp) != num_epochs):
+            raise Exception('the prior on the radius and the temperature should be 4 lists with the same number of elements as in the dates file. The number of dates is: {}'.format(
+                len(interpolation_dates)))
+    if (already_run_mcmc==True) & (already_run_fit != None):
+        if len(already_run_fit) != num_epochs:
+            raise Exception(
+                'already_run_fit should be either None or a boolean list with the same number of elements as in the dates file. The number of dates is: {}'.format(
+                    len(interpolation_dates)))
+    if (already_run_matrix == True) & (already_run_fit != None):
+        if len(already_run_fit) != num_epochs:
+            raise Exception(
+                'already_run_fit should be either None or a boolean list with the same number of elements as in the dates file. The number of dates is: {}'.format(
+                    len(interpolation_dates)))
 
     distance_pc = distances_conversions.DM_to_pc(distance_modulus)
 
     data_dico = \
     read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
-
-    if priors ==True:
-        if None in (lowrad,hirad,lowtemp,hitemp):
-            print('ERROR: if priors is set to "True", you need to provide four lists of priors limit, lowrad, hirad, lowtemp and hitemp')
-            pdb.set_trace()
+            #pdb.set_trace()
     data_dicts=dict()
     for i,j in enumerate(data_dico['filter']):
         data_dicts[j]=dict()
@@ -117,9 +140,6 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
 
     ########################################### Make the spectrum to fit for each epoch ############################################
 
-    ##### definition of interpolation dates
-
-    interpolation_dates=np.genfromtxt(dates_file)#param.dates_file
 
     print('**********************************')
     print('******* INTERPOLATION STEP *******')
