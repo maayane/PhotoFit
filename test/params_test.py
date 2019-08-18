@@ -68,6 +68,7 @@ num_steps=350
 # In both case: either None or a list of Boolean of size the number of epochs, where True is for epochs already ran and False is for epoch left to run
 already_run_fit=None
 
+excluded_bands=[]
 
 #Setting the priors on T and R:
 priors=True

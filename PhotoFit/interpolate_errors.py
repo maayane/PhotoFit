@@ -122,7 +122,10 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
                 prior_b = np.sort(np.array([y_lower + 0.* y_lower, y_higher - 0.1 * y_higher]))
 
             else:
-                prior_a=np.array([0.1*a_ini,10*a_ini])
+                if a_ini>0:
+                    prior_a=np.array([-10*a_ini,10*a_ini])
+                if a_ini<0:
+                    prior_a = np.array([10 * a_ini, -10 * a_ini])
                 prior_bx=np.sort(np.array([y_lower,y_higher]))
                 prior_b = np.array([0.1*np.min(prior_bx),1.9*np.max(prior_bx)])
             #print('the prior on b is {0}'.format(prior_b))
@@ -163,11 +166,11 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
                                                                         uncertainties=my_data[:,2],
                                                                         output_file_path=output_path+'/error_calc_'+str(i)+'th_point',
                                                                         xlabel='x', ylabel='y')
-
+            '''
             triangle = fitter_general.plot_2D_distributions(
                         flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt', bests=bests,
                         title='test', output_file_path=output_path+'/error_calc_'+str(i)+'th_point', parameters_labels=['a', 'b'])
-            '''
+
 
             histos = fitter_general.plot_1D_marginalized_distribution(
                         flatchain_path=output_path+'/error_calc_'+str(i)+'th_point/flatchain.txt', bests=bests,

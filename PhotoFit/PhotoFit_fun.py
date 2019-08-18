@@ -725,8 +725,10 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
         already_run_interp_errors['r_sdss'] = True
         already_run_interp_errors['g_sdss'] = True
         already_run_interp_errors['i_sdss'] = True
+        already_run_interp_errors['u_sdss'] = True
         already_run_interp_errors['r_p48'] = True
         already_run_interp_errors['g_p48'] = True
+        already_run_interp_errors['i_p48'] = True
         already_run_interp_errors['z_sdss'] = True
 
         ### Interpolate all data on the interpolation dates dates ####
@@ -734,6 +736,8 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
             if verbose==True:
                 print('I am looking at the {0} band of the data'.format(k))
                 print('the days of {0} are {1}'.format(k, data_dicts[k]['jd'] - explosion_date))
+            #print(k)
+            #print(data_dicts[k])
             condition[k] = np.logical_and(interpolation_dates >= np.min(data_dicts[k]['jd']),
                                           interpolation_dates <= np.max(data_dicts[k]['jd']))
             JD_basis_interpolation[k] = interpolation_dates[condition[k]]
@@ -772,7 +776,13 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
                     interp[k] = dict()
                 #print(interp_and_errors_array[k])
                     for i, j in enumerate(JD_basis_interpolation[k]):
-                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+                        #print('k is',k)
+                        #print(JD_basis_interpolation[k])
+                        #print(interp_and_errors_array[k])
+                        if len(JD_basis_interpolation[k])>1:
+                            interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+                        else:
+                            interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
         pylab.close('all')
         Spectra = []
 
@@ -1059,36 +1069,80 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
 
         else:
             if len(JD_basis_interpolation[k]) > 0:
+                a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
+                jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
+                output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
+                if os.path.exists(output_path):
+                    if verbose == True:
+                        print(output_path + 'exists')
+                else:
+                    os.mkdir(output_path)
+                # print('already_run_interp_errors', already_run_interp_errors)
 
-                if len(JD_basis_interpolation[k]) == 1 and data_dicts[k]['jd'][0]:
-                    # print('we are in the case where there is one data point only')
-                    if JD_basis_interpolation[k][0] == data_dicts[k]['jd'][0]:
-                        # print('Yeah')
-                        interp[k] = dict()
 
-                        interp[k][str(round(JD_basis_interpolation[k][0] - explosion_date, 8))] = [
-                            data_dicts[k]['jd'][0], data_dicts[k]['flux'][0], data_dicts[k]['flux'][0],
-                            data_dicts[k]['flux'][0] - data_dicts[k]['fluxerr'][0],
-                            data_dicts[k]['flux'][0] + data_dicts[k]['fluxerr'][0]]
+                if (len(JD_basis_interpolation[k]) == 1) and (JD_basis_interpolation[k][0] == data_dicts[k]['jd'][0]):
+                    interp_and_errors_array[k] = [
+                        data_dicts[k]['jd'][0], data_dicts[k]['flux'][0], data_dicts[k]['flux'][0],
+                        data_dicts[k]['flux'][0] - data_dicts[k]['fluxerr'][0],
+                        data_dicts[k]['flux'][0] + data_dicts[k]['fluxerr'][0]]
+                    interp[k] = dict()
+                    # print(JD_basis_interpolation[k])
+                    interp[k][str(round(JD_basis_interpolation[k][0] - explosion_date, 8))] = interp_and_errors_array[
+                                                                                                  k][:]
 
                 else:
-                    a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
-                    jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
-                    output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
-                    if os.path.exists == False:
-                        os.mkdir(output_path)
                     interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
                         (jd_flux_fluxerr[k], JD_basis_interpolation[k],
                          output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-                         already_run=already_interpolated, show_plot=False,
-                         title='{0} on the interpolation dates'.format(k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                         already_run=already_run_interp_errors[k], show_plot=False,
+                         title='{0} on the interpolation dates'.format(
+                             k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
                     interp[k] = dict()
+                    # print(interp_and_errors_array[k])
                     for i, j in enumerate(JD_basis_interpolation[k]):
-                        if interp_and_errors_array[k].ndim == 1:
-                            interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
-                        else:
+                        # print('k is',k)
+                        # print(JD_basis_interpolation[k])
+                        # print(interp_and_errors_array[k])
+                        if len(JD_basis_interpolation[k]) > 1:
                             interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
-                    pylab.close('all')
+                        else:
+                            interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
+        pylab.close('all')
+        '''
+        if len(JD_basis_interpolation[k]) > 0:
+
+
+
+            if (len(JD_basis_interpolation[k]) == 1) and (JD_basis_interpolation[k][0] == data_dicts[k]['jd'][0]):
+                # print('we are in the case where there is one data point only')
+                if JD_basis_interpolation[k][0] == data_dicts[k]['jd'][0]:
+                    print('Yeah')
+                    interp[k] = dict()
+
+                    interp[k][str(round(JD_basis_interpolation[k][0] - explosion_date, 8))] = [
+                        data_dicts[k]['jd'][0], data_dicts[k]['flux'][0], data_dicts[k]['flux'][0],
+                        data_dicts[k]['flux'][0] - data_dicts[k]['fluxerr'][0],
+                        data_dicts[k]['flux'][0] + data_dicts[k]['fluxerr'][0]]
+
+            else:
+                a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
+                jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
+                output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
+                if os.path.exists == False:
+                    os.mkdir(output_path)
+                interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                     already_run=already_interpolated, show_plot=False,
+                     title='{0} on the interpolation dates'.format(k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                interp[k] = dict()
+                for i, j in enumerate(JD_basis_interpolation[k]):
+                    if interp_and_errors_array[k].ndim == 1:
+                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][:]
+                    else:
+                        interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
+                pylab.close('all')
+        '''
                     #interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
 
 
@@ -1103,6 +1157,7 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
         # print('epoch[time] is',str(epoch['time']))
         for k in [x for x in data_dicts.keys() if x not in excluded_bands]:
             if len(JD_basis_interpolation[k]) > 0:
+                #print(interp.keys())
                 if str(epoch['time']) in interp[k].keys():
                     epoch[k] = interp[k][str(epoch['time'])][1]  # flux
                     epoch[k + '_err'] = [interp[k][str(epoch['time'])][3], interp[k][str(epoch['time'])][4]]  # fluxerr

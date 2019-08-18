@@ -27,19 +27,19 @@ Best=PhotoFit_fun.calculate_T_and_R_in_time(data_file=params.data_file,dates_fil
                                             output=output,filters_directory=params.filters_directory,mcmc=params.mcmc,
                                             output_file_interpolation=params.output_file_interpolation,
                                             lower_limit_on_flux=params.lower_limit_on_flux,csm=params.csm,num_steps=params.num_steps,
-                                            nwalkers=params.nwalkers,excluded_bands=[],already_run_fit=params.already_run_fit,priors=params.priors,lowrad=params.lowrad,hirad=params.hirad,
+                                            nwalkers=params.nwalkers,excluded_bands=params.excluded_bands,already_run_fit=params.already_run_fit,priors=params.priors,lowrad=params.lowrad,hirad=params.hirad,
                                             lowtemp=params.lowtemp,hitemp=params.hitemp)
 
 PhotoFit_fun.plot_T_and_R_in_time(Best,data_compare=params.data_compare,compare=False,label_comparision='PTF 13dqy',output=output)
 
 PhotoFit_fun.plot_L_in_time(Best,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,dates_file=params.dates_file,
                             error_lum_ran=False,explosion_date=params.explosion_date,output=output,mcmc=params.mcmc,
-                            output_file_interpolation=params.output_file_interpolation,excluded_bands=[])
+                            output_file_interpolation=params.output_file_interpolation,excluded_bands=params.excluded_bands)
 
 PhotoFit_fun.plot_SEDs(Best,already_interpolated=True,data_file=params.data_file,lower_limit_on_flux=params.lower_limit_on_flux,
                        dates_file=params.dates_file,already_run_interp_errors_from_params=params.already_run_interp_errors,
                        number_of_plot=9,redshift=params.z,distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,
                        output=output,filters_directory=params.filters_directory,output_file_interpolation=params.output_file_interpolation,
-                       EBV=params.EBV)
+                       EBV=params.EBV,excluded_bands=params.excluded_bands)
 
 
