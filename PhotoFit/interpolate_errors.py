@@ -7,6 +7,7 @@ import os
 from . import fitter_general
 import pylab
 from scipy.interpolate import interp1d
+import matplotlib.pyplot as plt
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -239,5 +240,85 @@ def interpolate_errors(data,x_on_which_to_interpolate,output_path=None,already_r
     return Results_array
 
 
-    #savetxt
-    #return [x,errors]
+
+def interpolate_errors_analytic(data,x_on_which_to_interpolate,show_plot=False):
+    """Description: Interpolates a dataset with errors and onto  specified positions
+    Input  :- N-3 array with the known x position, y positions, errors
+            - an M-1 array with the x positions on which to interpolate
+            
+        Output : a M-5 array with the x positions on which to interpolate, interp1d, interp1d, lower sigma, higher sigma
+        Tested : ?
+             By : Ido Irani Dec 2019
+            URL :
+        Example: 
+        Reliable:  """
+
+
+
+
+    Results_array=np.empty((np.shape(x_on_which_to_interpolate)[0],5))
+    # calculate the interpolated values with interp1d
+    interp_flux2= np.interp(x_on_which_to_interpolate,data[:,0], data[:,1])
+    interp_error=np.zeros_like(interp_flux2)
+    interp_flux=np.zeros_like(interp_flux2)
+    for i,x in enumerate(x_on_which_to_interpolate):
+        a,b=interpolate_linear_error(x,data)
+        interp_flux[i]=a
+        interp_error[i]=b
+    frac_err=(interp_flux2-interp_flux)/interp_flux
+    print((frac_err<1e-10).all())
+ 
+   
+
+    Results_array[:,0]=x_on_which_to_interpolate
+    Results_array[:,1]=interp_flux
+    Results_array[:,2]=interp_flux
+    Results_array[:,3]=interp_flux-interp_error
+    Results_array[:,4]=interp_flux+interp_error
+
+
+    if show_plot:
+         plt.figure()
+         for x in x_on_which_to_interpolate:
+            plt.plot([x,x],[0,max(data[:,1])],'g--')
+         plt.errorbar(data[:,0],data[:,1],data[:,2],capsize=3,color='r')
+         plt.errorbar(x_on_which_to_interpolate,interp_flux,interp_error,color='b',ls="",capsize=3)  
+         plt.show()
+
+
+
+    return Results_array
+
+def interpolate_linear_error(x0,data):
+    """Description: Given an error vector, interpolates the error on position x
+    Input  :- a position x0 on which to interpolate
+            - a 3N array of  
+                - a ndarray of x positions
+                - a ndarray y of values
+                - a ndarray yerr of corresponding errors
+            
+        Output : err_interp, the error of the interpolated value
+        Tested : ?
+             By : Ido Irani Dec 2019
+            URL :
+        Example: 
+        
+        Reliable:  """
+    
+    x=data[:,0]
+    y=data[:,1]
+    yvar=data[:,2]**2
+
+    i=np.max(np.argwhere((x0-x)>0))
+    i=int(i)
+    f2=(x0-x[i])/(x[i+1]-x[i])
+    f1=(x[i+1]-x0)/(x[i+1]-x[i])
+
+    y0= f1*y[i]+f2*y[i+1]
+    yerr0=np.sqrt(f1**2*yvar[i]+f2**2*yvar[i+1])
+    return y0,yerr0
+
+
+
+
+

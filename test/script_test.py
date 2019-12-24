@@ -22,7 +22,7 @@ else:
 
 Best=PhotoFit_fun.calculate_T_and_R_in_time(data_file=params.data_file,dates_file=params.dates_file,already_run_interp_errors_from_param=params.already_run_interp_errors,
                                             already_run_mcmc=params.already_run_mcmc,already_run_matrix=params.already_run_matrix,
-                                            num_iterations=params.num_iterations,show_underlying_plots=True,verbose=False,redshift=params.z,
+                                            num_iterations=params.num_iterations,show_underlying_plots=params.plots,verbose=False,redshift=params.z,
                                             distance_modulus=params.distance_modulus,explosion_date=params.explosion_date,EBV=params.EBV,
                                             output=output,filters_directory=params.filters_directory,mcmc=params.mcmc,
                                             output_file_interpolation=params.output_file_interpolation,

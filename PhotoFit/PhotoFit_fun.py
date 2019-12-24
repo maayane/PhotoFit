@@ -166,8 +166,8 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     #print('without the excluded bands:',[x for x in data_dicts.keys() if x not in excluded_bands])
     #pdb.set_trace()
 
-    if os.path.exists(output_file_interpolation) == False:
-        os.mkdir(output_file_interpolation)
+#    if os.path.exists(output_file_interpolation) == False:
+#        os.mkdir(output_file_interpolation)
     #[x for x in a if x not in [2, 3, 7]]
 
     for k in [x for x in data_dicts.keys() if x not in excluded_bands]:
@@ -200,14 +200,28 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
             else:
                 a=np.array(list(zip(data_dicts[k]['jd'],data_dicts[k]['flux'],data_dicts[k]['fluxerr'])))
                 jd_flux_fluxerr[k]=a[a[:, 0].argsort()]
-                output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
-                if already_run_interp_errors[k]==False:
-                    if os.path.exists(output_path)==True:
-                        shutil.rmtree(output_path)
-                    os.mkdir(output_path)
-                interp_and_errors_array[k]=interpolate_errors.interpolate_errors\
-                (jd_flux_fluxerr[k],JD_basis_interpolation[k],output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k),
-                 already_run=already_run_interp_errors[k],show_plot=False,title='{0}'.format(k),verbose=verbose,band_name='{0}'.format(k))#array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                #output_path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
+                #if already_run_interp_errors[k]==False:
+                #    if os.path.exists(output_path)==True:
+                #        shutil.rmtree(output_path)
+                    #os.mkdir(output_path)
+
+                path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
+                already_run=already_run_interp_errors[k]
+                title='{0}'.format(k)
+                band_name='{0}'.format(k)
+
+
+                interp_and_errors_array[k]=interpolate_errors.interpolate_errors_analytic(jd_flux_fluxerr[k],JD_basis_interpolation[k]
+                            ,show_plot=False)      
+                
+
+#
+#                interp_and_errors_array[k]=interpolate_errors.interpolate_errors(jd_flux_fluxerr[k],JD_basis_interpolation[k]
+#                            ,output_path=path,already_run=already_run,show_plot=False            
+#                            ,title=title,verbose=verbose,band_name=band_name)#array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+#
+
                 interp[k]=dict()
                 #print('interp_and_errors_array[k] is',interp_and_errors_array[k])
                 #print('np.shape(interp_and_errors_array[k]) is',np.shape(interp_and_errors_array[k]))
@@ -749,11 +763,11 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
                 a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
                 jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
                 output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
-                if os.path.exists(output_path):
-                    if verbose==True:
-                        print(output_path + 'exists')
-                else:
-                    os.mkdir(output_path)
+                #if os.path.exists(output_path):
+                #    if verbose==True:
+                #        print(output_path + 'exists')
+                #else:
+                    #os.mkdir(output_path)
                 #print('already_run_interp_errors', already_run_interp_errors)
 
 
@@ -767,12 +781,17 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
                     interp[k][str(round(JD_basis_interpolation[k][0] - explosion_date, 8))] = interp_and_errors_array[k][:]
 
                 else:
-                    interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
-                        (jd_flux_fluxerr[k], JD_basis_interpolation[k],
-                         output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-                         already_run=already_run_interp_errors[k], show_plot=False,
-                         title='{0} on the interpolation dates'.format(
-                             k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                    #interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                    #    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                    #     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                    #     already_run=already_run_interp_errors[k], show_plot=False,
+                    #     title='{0} on the interpolation dates'.format(
+                    #         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                    path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
+                    already_run=already_run_interp_errors[k]
+                    interp_and_errors_array[k]=interpolate_errors.interpolate_errors_analytic(jd_flux_fluxerr[k],JD_basis_interpolation[k]
+                            ,show_plot=False)      
+                
                     interp[k] = dict()
                 #print(interp_and_errors_array[k])
                     for i, j in enumerate(JD_basis_interpolation[k]):
@@ -1054,14 +1073,18 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                 a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
                 jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
                 output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
-                if os.path.exists==False:
-                    os.mkdir(output_path)
-                interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
-                    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
-                     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-                     already_run=already_run_interp_errors[k], show_plot=False,
-                     title='{0} on the interpolation dates'.format(
-                         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                #if os.path.exists==False:
+                    #os.mkdir(output_path)
+                #interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                #    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                #     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                #     already_run=already_run_interp_errors[k], show_plot=False,
+                #     title='{0} on the interpolation dates'.format(
+                #         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
+                already_run=already_run_interp_errors[k]
+                interp_and_errors_array[k]=interpolate_errors.interpolate_errors_analytic(jd_flux_fluxerr[k],JD_basis_interpolation[k]
+                        ,show_plot=False)
                 interp[k] = dict()
                 for i, j in enumerate(JD_basis_interpolation[k]):
                     interp[k][str(round(j - explosion_date, 8))] = interp_and_errors_array[k][i, :]
@@ -1071,12 +1094,12 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
             if len(JD_basis_interpolation[k]) > 0:
                 a = np.array(list(zip(data_dicts[k]['jd'], data_dicts[k]['flux'], data_dicts[k]['fluxerr'])))
                 jd_flux_fluxerr[k] = a[a[:, 0].argsort()]
-                output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
-                if os.path.exists(output_path):
-                    if verbose == True:
-                        print(output_path + 'exists')
-                else:
-                    os.mkdir(output_path)
+                #output_path = output_file_interpolation + '/errors_interpolation_results_{0}'.format(k)
+                #if os.path.exists(output_path):
+                #    if verbose == True:
+                #        print(output_path + 'exists')
+                #else:
+                    #os.mkdir(output_path)
                 # print('already_run_interp_errors', already_run_interp_errors)
 
 
@@ -1091,12 +1114,16 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                                                                                                   k][:]
 
                 else:
-                    interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
-                        (jd_flux_fluxerr[k], JD_basis_interpolation[k],
-                         output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
-                         already_run=already_run_interp_errors[k], show_plot=False,
-                         title='{0} on the interpolation dates'.format(
-                             k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                    #interp_and_errors_array[k] = interpolate_errors.interpolate_errors \
+                    #    (jd_flux_fluxerr[k], JD_basis_interpolation[k],
+                    #     output_path=output_file_interpolation + '/errors_interpolation_results_{0}'.format(k),
+                    #     already_run=already_run_interp_errors[k], show_plot=False,
+                    #     title='{0} on the interpolation dates'.format(
+                    #         k))  # array with days_nuv, interp1d P48, interp P48 with another method, lower limit 1sigma, upper limit 1 sigma
+                    path=output_file_interpolation+'/errors_interpolation_results_{0}'.format(k)
+                    already_run=already_run_interp_errors[k]
+                    interp_and_errors_array[k]=interpolate_errors.interpolate_errors_analytic(jd_flux_fluxerr[k],JD_basis_interpolation[k]
+                            ,show_plot=False)
                     interp[k] = dict()
                     # print(interp_and_errors_array[k])
                     for i, j in enumerate(JD_basis_interpolation[k]):
