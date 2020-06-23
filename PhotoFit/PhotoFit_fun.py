@@ -123,6 +123,7 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
             #pdb.set_trace()
     data_dicts=dict()
+
     for i,j in enumerate(data_dico['filter']):
         data_dicts[j]=dict()
         data_dicts[j]['jd']=data_dico['jd'][(data_dico['filter']==j) & (data_dico['flux']>lower_limit_on_flux)]
@@ -1306,13 +1307,13 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                     #print(j['time'])
                     #print(j.keys())
 
-                    best_fit_full = black_body_flux_density.black_body_flux_density(Result_T2D[i, k],
+                    best_fit_full = black_body_flux_density.black_body_flux_density_fast(Result_T2D[i, k],
                                                                                     np.arange(1e-7, 3e-6, 1e-9),
                                                                                     'P',
                                                                                     distance_pc=distance_pc,
                                                                                     Radius=distances_conversions.cm_to_solar_radius(
                                                                                         Result_R2D[i, k]),
-                                                                                    redshift=redshift, Ebv=EBV)[2]
+                                                                                    redshift=redshift, Ebv=EBV)
                     axes2d[k, i].plot(best_fit_full[:, 0] * 1e10, best_fit_full[:, 1], 'k-')
 
                     #axes2d[k, i].plot(np.arange(1e-7, 3e-6, 1e-9) * 1e10,
@@ -1537,13 +1538,13 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                     #                                                                      Result_R2D[i]),
                     #                                                                  redshift=redshift, Ebv=EBV)[
                     #                      2][:, 1], 'k-')
-                    best_fit_full = black_body_flux_density.black_body_flux_density(Result_T2D[i],
+                    best_fit_full = black_body_flux_density.black_body_flux_density_fast(Result_T2D[i],
                                                                                     np.arange(1e-7, 3e-6, 1e-9),
                                                                                     'P',
                                                                                     distance_pc=distance_pc,
                                                                                     Radius=distances_conversions.cm_to_solar_radius(
                                                                                         Result_R2D[i]),
-                                                                                    redshift=redshift, Ebv=EBV)[2]
+                                                                                    redshift=redshift, Ebv=EBV)
                     axes2d[i].plot(best_fit_full[:, 0] * 1e10, best_fit_full[:, 1], 'k-')
 
                     if 'UVW1' in j.keys():
@@ -1777,13 +1778,13 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                     # print(i)
                     #print(j['time'])
                     #print(j.keys())
-                    best_fit_full = black_body_flux_density.black_body_flux_density(Result_T2D[i, k],
+                    best_fit_full = black_body_flux_density.black_body_flux_density_fast(Result_T2D[i, k],
                                                                                     np.arange(1e-7, 3e-6, 1e-9),
                                                                                     'P',
                                                                                     distance_pc=distance_pc,
                                                                                     Radius=distances_conversions.cm_to_solar_radius(
                                                                                         Result_R2D[i, k]),
-                                                                                    redshift=redshift, Ebv=EBV)[2]
+                                                                                    redshift=redshift, Ebv=EBV)
                     axes2d[k, i].plot(best_fit_full[:, 0] * 1e10, best_fit_full[:, 1], 'k-')
                     #axes2d[k, i].plot(np.arange(1e-7, 3e-6, 1e-9) * 1e10,
                     #                  black_body_flux_density.black_body_flux_density(Result_T2D[i, k], np.arange(1e-7, 3e-6, 1e-9),
@@ -2005,13 +2006,13 @@ def plot_SEDs(Best,already_interpolated=False,data_file=None,lower_limit_on_flux
                     #print(i)
                     # print(j['time'])
                     # print(j.keys())
-                    best_fit_full = black_body_flux_density.black_body_flux_density(Result_T2D[i],
+                    best_fit_full = black_body_flux_density.black_body_flux_density_fast(Result_T2D[i],
                                                                                     np.arange(1e-7, 3e-6, 1e-9),
                                                                                     'P',
                                                                                     distance_pc=distance_pc,
                                                                                     Radius=distances_conversions.cm_to_solar_radius(
                                                                                         Result_R2D[i]),
-                                                                                    redshift=redshift, Ebv=EBV)[2]
+                                                                                    redshift=redshift, Ebv=EBV)
                     axes2d[i].plot(best_fit_full[:, 0] * 1e10, best_fit_full[:, 1], 'k-')
 
                     #axes2d[i].plot(np.arange(1e-7, 3e-6, 1e-9) * 1e10,

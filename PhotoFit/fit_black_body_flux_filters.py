@@ -179,6 +179,7 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 					P = lib[s[1]]  # filter name
 				mags_correct[i] = -2.5 * np.log10(Spectrum_correct[i, 2]) - P.AB_zero_mag
 	'''
+	wavelens=np.arange(1e-7, 3e-6, 5e-9)
 	if uncertainties is None:
 		for i, j in enumerate(Temp):
 			#print(wavelengths_in_meters)
@@ -186,11 +187,13 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 			print('*********************')
 			print('i=',i)
 			print('*********************')
-			A = np.array(calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9), Filter_vector=Filter_vector,Radius=None, distance_pc=None, output_plot=False,show_plots=False,output_txt=False, lib=lib,z=z,Ebv=Ebv)[:, 3])
+
+			
+			A = np.array(calc_black_body_flux_filters.calc_black_body_flux_filters(j, wavelens, Filter_vector=Filter_vector,Radius=None, distance_pc=None, output_plot=False,show_plots=False,output_txt=False, lib=lib,z=z,Ebv=Ebv)[:, 3])
 			matrix_solution = np.dot(1. / (np.dot(A.transpose(), A)), (np.dot(A.transpose(), spectrum_flux[:,1])))
 			coeff1[i] = matrix_solution
 			Xi_array[i, 2] = fitting_tools.objective_no_cov(
-					coeff1[i] * calc_black_body_flux_filters.calc_black_body_flux_filters(j, np.arange(1e-7, 3e-6, 1e-9),
+					coeff1[i] * calc_black_body_flux_filters.calc_black_body_flux_filters(j, wavelens,
 																						  Filter_vector=Filter_vector, Radius=None,
 																						  distance_pc=None,
 																						  output_txt=False,
@@ -285,10 +288,10 @@ def fit_black_body_flux_filters(Spectrum,TempVec=None,num_temp_iterations=None,d
 	#																			distance_pc=None, output_plot=False,
 	#																			output_txt=False)[:, 3],'go', label = 'best fit')
 	#print('bb')
-	bb=black_body_flux_density.black_body_flux_density(best_temp, np.arange(1e-7, 3e-6, 1e-9), 'P',
+	bb=black_body_flux_density.black_body_flux_density_fast(best_temp, np.arange(1e-7, 3e-6, 1e-9), 'P',
 															   distance_pc=distance,
 															   Radius=distances_conversions.cm_to_solar_radius(
-																   best_radius),redshift=z,Ebv=Ebv)[2]
+																   best_radius),redshift=z,Ebv=Ebv)
 
 
 

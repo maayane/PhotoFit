@@ -1,3 +1,5 @@
+#! //anaconda/bin/python
+
 
 import numpy as np
 from . import get_filter
@@ -42,6 +44,7 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
 	            //anaconda/lib/python2.7/site-packages/pyphot/phot.py Filter class
 	 TO DO: give an option for the speed: decrease the length of TempVec, give the spec units as options"""
     #print('I am running calc_blacl_body_flux_filter'
+    
     if Filter_vector is None and P_vector is None:
         print('ERROR: you need to define either Filter_vector or P_vector')
         pdb.set_trace()
@@ -64,12 +67,11 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
     #print(' black_body_spectrum is {0}'.format(black_body_spectrum)
     #else:
     #    black_body_spectrum =black_body_flux_density.black_body_flux_density(Temp, wavelengths, 'P', distance_pc=distance_pc, Radius=Radius,Ebv=Ebv)[2]/(z+1)  # in erg/sec/cm^2/Ang
-    #black_body_spectrum = \
-    #black_body_flux_density.black_body_flux_density(Temp, wavelengths, 'P', distance_pc=distance_pc, Radius=Radius,
-    #                                                Ebv=Ebv,R_ext=R_ext,redshift=z)[2]   # in erg/sec/cm^2/Ang
     black_body_spectrum = \
     black_body_flux_density.black_body_flux_density_fast(Temp, wavelengths, 'P', distance_pc=distance_pc, Radius=Radius,
                                                     Ebv=Ebv,R_ext=R_ext,redshift=z)   # in erg/sec/cm^2/Ang
+   
+    #print('black_body_spectrum is',black_body_spectrum)
     #print('T is',Temp)
     #print('R is',Radius)
     #print('distance is',distance_pc)
@@ -79,6 +81,8 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
     #print('black_body_spectrum[:,1] is',black_body_spectrum[:,1])
     #print 'bbflux density is',black_body_flux_density.black_body_flux_density(Temp, wavelengths, 'P', distance_pc=distance_pc, Radius=Radius,Ebv=Ebv)[2]
     #wavelengths_AA = wavelengths* 1e10#pyphot takes wavelengths in AA
+                                                                                        
+
     wavelengths_AA=black_body_spectrum[:,0]*1e10
     if lib is None:
         lib = pyphot.get_library()
@@ -112,11 +116,14 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
                         delimiter=None)
                     P = pyphot.Filter(Transmission[:, 0], Transmission[:, 1], name='GALEX_NUV', dtype='photon',
                                       unit='Angstrom')
+
             else:
                 f = lib.find(j[0].lower())#filter family
                 P = lib[j[1]]#filter name
+
             # this calculates \bar{f}(P) through through filter P. wavelength must be given in the same units as wavelength units defined in filters
 #            print('wavelengths in AA are',wavelengths_AA
+                
 #            print('the bb spectrum is', black_body_spectrum[:, 1]
             #pdb.set_trace()
             '''
@@ -124,6 +131,7 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
             #P_vector['filter_family'] = Filter_vector[:, 0]
             #P_vector['filter_name'] = Filter_vector[:, 1]
             #P_vector['filter_object'] = []
+
             fluxes = P['filter_object'][i].get_flux(black_body_spectrum[:, 0]*1e10, black_body_spectrum[:, 1])
             #print(fluxes)
             #pdb.set_trace()

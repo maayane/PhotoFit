@@ -9,8 +9,7 @@ import pdb
 import scipy
 from scipy import interpolate
 import numpy as np
-from SOPRANOS import get_filter
-from numba import jit,njit
+from . import get_filter
 
 
 def extinction_in_filter(E,filter_family,filter_name,Model,R=None):
@@ -40,8 +39,7 @@ def extinction_in_filter(E,filter_family,filter_name,Model,R=None):
     else:
         R_V=R
     if Model=='C':
-        #ido changed here  
-        extinction_model_l=a_lambda_cardelli_fast(L_micro,R_V)
+        extinction_model_l=a_lambda_cardelli(L_micro,R_V)
     elif Model=='A':
         extinction_model_l=a_lambda_allen(L_micro)
     else: print("Unknown model, choose between 'A' (Allen) and 'C' (Cardelli)")
@@ -74,17 +72,14 @@ def extinction_in_single_wavelength(E,L,Model,R=None):
     else:
         R_V=R
     if Model=='C':
-        #ido changed here  
-        extinction_model_l=a_lambda_cardelli_fast(L_micro,R_V)
+        extinction_model_l=a_lambda_cardelli(L_micro,R_V)
     elif Model=='A':
         extinction_model_l=a_lambda_allen(L_micro)
     else: print("Unknown model, choose between 'A' (Allen) and 'C' (Cardelli)")
     A_lambda=R_V*E*extinction_model_l
     return A_lambda
 
-
-#@jit(nopython=True)#, parallel=True)
-def extinction_in_array_of_wavelength(E,wavelength,Model,R=3.08):
+def extinction_in_array_of_wavelength(E,wavelength,Model,R=None):
     """Description: Given a unique wavelength, or a list of wavelengths, calculates the extinction in magnitude A_{\lambda}.
     The program works in the 0.1-2 micron range.
     The program is using the Cardelli, Clayton, Mathis (1989) or Allen models.
@@ -103,21 +98,18 @@ def extinction_in_array_of_wavelength(E,wavelength,Model,R=3.08):
     Reliable:  """
     #L_micro=get_filter.filter_effective_wavelength(filter_family,filter_name)
     #print 'you gave the code the filter family and name name {0},{1} and it converted it into wavelenght {2} microns'.format(filter_family,filter_name,L_micro)
-    # if R==None:
-    #     R_V=3.08
-    # else:
-    #     R_V=R
-    # if Model=='C':
-       #ido changed here  
-    extinction_model_l=a_lambda_cardelli_fast(wavelength,R)
-    # elif Model=='A':
-    #     extinction_model_l=a_lambda_allen(wavelength)
-    # else: print("Unknown model, choose between 'A' (Allen) and 'C' (Cardelli)")
+    if R==None:
+        R_V=3.08
+    else:
+        R_V=R
+    if Model=='C':
+        extinction_model_l=a_lambda_cardelli(wavelength,R_V)
+    elif Model=='A':
+        extinction_model_l=a_lambda_allen(wavelength)
+    else: print("Unknown model, choose between 'A' (Allen) and 'C' (Cardelli)")
     #print R_V
     #print E
-    # print(extinction_model_l)
-    # import pdb; pdb.set_trace()
-    A_lambda=R*E*extinction_model_l
+    A_lambda=R_V*E*extinction_model_l
     return A_lambda
 
 def a_lambda_allen(W):
@@ -180,66 +172,6 @@ def a_lambda_cardelli(W,R=None):
             pdb.set_trace()
         A_lambda_over_A_V[i]=a[i]+b[i]/R
     return A_lambda_over_A_V
-
-
-#@jit(nopython=True)#, parallel=True)
-def a_lambda_cardelli_fast(W,R=3.08):
-    """Description: inspired by Eran's function of the same name, faster version using numba.
-    Input  : wavelength in microns
-    Output : numpy array of A(lambda), the size of wavelengths.
-    Tested : ?
-         By : Erez (Dec 2019), on top of Ido Irani (Nov 2019)
-        URL :
-    Example: extinction_model=a_lambda_cardelli_fast(wavelength,R_V)
-    Reliable: 2 
-    """
-
-    
-    #print('Wavelengths in microns are',W)
-    x = 1. / W
-    # if  isinstance(x, float)==True:
-    #     x = np.array([x])
-    y = x - 1.82
-    #print np.shape(x)
-    #print np.shape(y)
-    a = np.zeros(np.shape(x))
-    b = np.zeros(np.shape(x))
-    A_lambda_over_A_V = np.zeros(np.shape(x))
-
-    # if R==None:
-    #     R=3.08 # default average milkey way R
-    #     #infrared
-    idx_IR=np.logical_and(np.greater_equal(x,0.3),np.less(x,1.1))
-    a[idx_IR]=0.574*(x[idx_IR]**1.61)
-    b[idx_IR]=-0.527*(x[idx_IR]**1.61)
-
-    idx_ONIR=np.logical_and(np.greater_equal(x,1.1),np.less(x,3.3))
-    a[idx_ONIR]=1 + 0.17699*y[idx_ONIR] - 0.50447*y[idx_ONIR]**2 - 0.02427*y[idx_ONIR]**3 + 0.72085*y[idx_ONIR]**4 + 0.01979*y[idx_ONIR]**5 - 0.77530*y[idx_ONIR]**6 + 0.32999*y[idx_ONIR]**7
-    b[idx_ONIR]=1.41338*y[idx_ONIR] + 2.28305*y[idx_ONIR]**2 + 1.07233*y[idx_ONIR]**3 - 5.38434*y[idx_ONIR]**4 - 0.62251*y[idx_ONIR]**5 + 5.30260*y[idx_ONIR]**6 - 2.09002*y[idx_ONIR]**7
-    
-    idx_NUVa= np.logical_and(np.greater_equal(x,3.3),np.less(x,5.9))
-    a[idx_NUVa] = 1.752 - 0.316*x[idx_NUVa]- 0.104/((x[idx_NUVa] - 4.67)**2 + 0.341)
-    b[idx_NUVa] = -3.090 + 1.825*x[idx_NUVa] + 1.206/((x[idx_NUVa] - 4.62)**2 + 0.263)
-    
-    idx_NUVb= np.logical_and(np.greater_equal(x,5.9),np.less(x,8))
-    Fa = -0.04473*(x[idx_NUVb] - 5.9)**2 - 0.009779*(x[idx_NUVb] - 5.9)**3
-    Fb = 0.2130*(x[idx_NUVb] - 5.9)**2 + 0.1207*(x[idx_NUVb] - 5.9)**3
-    a[idx_NUVb] = 1.752 - 0.316*x[idx_NUVb]- 0.104/((x[idx_NUVb] - 4.67)**2 + 0.341)+Fa
-    b[idx_NUVb] = -3.090 + 1.825*x[idx_NUVb] + 1.206/((x[idx_NUVb] - 4.62)**2 + 0.263)+Fb                    
-    
-    idx_FUV=np.logical_and(np.greater_equal(x,8),np.less_equal(x,10))
-    a[idx_FUV] = -1.073 - 0.628*(x[idx_FUV] - 8.) + 0.137*(x[idx_FUV] - 8.)**2 - 0.070*(x[idx_FUV] - 8.)**3
-    b[idx_FUV] = 13.670 + 4.257*(x[idx_FUV]  - 8.) - 0.420*(x[idx_FUV]  - 8.)**2 + 0.374*(x[idx_FUV] - 8.)**3
-    A_lambda_over_A_V=a+b/R
-    
-    ##print('time from last step is %s' %(time.time()-start_time))
-    ##print('this is line %s' %getframeinfo(currentframe()).lineno)
-    ##start_time=time.time()    
-    return A_lambda_over_A_V
-
-
-
-
 
 def correct_obs_flux_for_extinction(observed_flux,Ebv,Model=None,R=None):
     """Description: Given an observed flux and an extinction Ebv, correct for the extinction, by doing
@@ -331,7 +263,6 @@ def correct_obs_mag_for_extinction(observed_mag,Ebv,Model=None,R=None):
         pdb.set_trace()
     return corrected_mag
 
-#@jit(nopython=True)#, parallel=True)
 def apply_extinction_to_theoretical_flux(theoretical_flux,Ebv,Model=None,R=None):
     """Description: Given a theorectical flux f_true and an extinction Ebv, apply extinction to simulate the observed flux, by doing
     f_obs=f_th*10^(-0.4*A) (since, by definition of A, mag_obs=mag_th+A), with A calculated as in extinction_in_array_of_wavelength
@@ -348,38 +279,33 @@ def apply_extinction_to_theoretical_flux(theoretical_flux,Ebv,Model=None,R=None)
     Example: e=
     Reliable:  """
     #print('the extinction Ebv is {0}'.format(Ebv))
-# if  isinstance(theoretical_flux, np.ndarray)==True:
-    tens=np.zeros(np.shape(theoretical_flux)[0])
-    #print 'the shape of theoretica flux is {0}'.format(np.shape(theoretical_flux))
-    #print 'the shape of theoretica tens is {0}'.format(np.shape(tens))
-    tens[:]=10.
-    corrected_flux=np.zeros(np.shape(theoretical_flux))
-    # if Model==None:
-    #     if R==None:
-    #         A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],'C')
-    #     else:
-    if R == None:
-        R_v = 3.08
-    A=R_v*Ebv*a_lambda_cardelli_fast(theoretical_flux[:,0],R_v)
-    # A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],'C')
-    # if Model=='A':
-    #     if R==None:
-    #         A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],Model)
-    #     else:
-    #         A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],Model,R)
-    #print('A is',A)
-    #pdb.set_trace()
-    #print np.shape(corrected_flux)
-    #print np.shape(tens)
-    corrected_flux[:,1]=np.multiply(theoretical_flux[:,1],np.power(tens,-A*0.4))
-    #print('theretical flux',theoretical_flux[:,1])
-    #print np.power(tens,A*0.4)
-    #print np.multiply(theoretical_flux[:,1],np.power(tens,A*0.4))
-    #print('corrected_flux',corrected_flux[:,1])
-    corrected_flux[:,0]=theoretical_flux[:,0]
-    # else:
-    #     print('flux is an unknown data type')
-    #     pdb.set_trace()
+    if  isinstance(theoretical_flux, np.ndarray)==True:
+        tens=np.zeros(np.shape(theoretical_flux)[0])
+        #print 'the shape of theoretica flux is {0}'.format(np.shape(theoretical_flux))
+        #print 'the shape of theoretica tens is {0}'.format(np.shape(tens))
+        tens[:]=10.
+        corrected_flux=np.zeros(np.shape(theoretical_flux))
+        if Model==None:
+            if R==None:
+                A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],'C')
+            else:
+                A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],'C',R)
+        else:
+            if R==None:
+                A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],Model)
+            else:
+                A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],Model,R)
+        #print np.shape(corrected_flux)
+        #print np.shape(tens)
+        corrected_flux[:,1]=np.multiply(theoretical_flux[:,1],np.power(tens,-A*0.4))
+        #print('theretical flux',theoretical_flux[:,1])
+        #print np.power(tens,A*0.4)
+        #print np.multiply(theoretical_flux[:,1],np.power(tens,A*0.4))
+        #print('corrected_flux',corrected_flux[:,1])
+        corrected_flux[:,0]=theoretical_flux[:,0]
+    else:
+        print('flux is an unknown data type')
+        pdb.set_trace()
     #if plot==True:
     #pylab.figure()
     #pylab.plot(theoretical_flux[:,0],theoretical_flux[:,1],label='spectrum before')

@@ -221,7 +221,7 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 			g = np.zeros((len(self.lam), 2))
 			g[:, 0] = self.lam
 			#print(g[:,0])
-			g[:, 1] = calc_black_body_flux_filters.calc_black_body_flux_filters(self.T,np.arange(1e-7, 3e-6, 1e-9),
+			g[:, 1] = calc_black_body_flux_filters.calc_black_body_flux_filters(self.T,np.arange(1e-7, 3e-6, 5e-9),
 																				Filter_vector=None, P_vector=P_vector,
 																				Radius=self.r, distance_pc=distance_pc,
 																				output_plot=False,
@@ -294,10 +294,11 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 				emcee_fit_indata = model_nparam(a, b, data[:, 0])
 				pylab.plot(emcee_fit_indata.model_array()[:, 0], emcee_fit_indata.model_array()[:, 1], 'b-',
 						   alpha=0.5)
-
-			best_fit_full=black_body_flux_density.black_body_flux_density(bests[0], np.arange(1e-7, 3e-6, 1e-9), 'P', distance_pc=distance_pc,
+			wavelens=np.arange(1e-7, 3e-6, 5e-9)
+			
+			best_fit_full=black_body_flux_density.black_body_flux_density_fast(bests[0], wavelens, 'P', distance_pc=distance_pc,
 															Radius=distances_conversions.cm_to_solar_radius(bests[1]),
-															Ebv=Ebv,R_ext=R_ext, redshift=z)[2]
+															Ebv=Ebv,R_ext=R_ext, redshift=z)
 
 			#print('best_fit_full is',best_fit_full)
 			#print('T is', bests[0])

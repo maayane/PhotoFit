@@ -7,7 +7,7 @@ mcmc=True# if False, plot with linear fit. If True, plots with mcmc
 
 output_file_mcmc='./results_fit_sed_mcmc'
 output_file_linear='./result_fit_sed_mat'
-output_file_interpolation='./results_interpolation'
+#output_file_interpolation='./results_interpolation'
 
 plots=False
 
@@ -37,34 +37,34 @@ lower_limit_on_flux=1e-40
 filters_directory='../PhotoFit/Filters' #put the path to the Filters directory here
 
 # Interpolation step
-already_run_interp_errors=dict() #don't touch this line
-already_run_interp_errors['UVW1']=            False
-already_run_interp_errors['UVW2']=            False
-already_run_interp_errors['UVM2']=            False
-already_run_interp_errors['u_swift']=         False
-already_run_interp_errors['b_swift']=         False
-already_run_interp_errors['v_swift']=         False
-already_run_interp_errors['r_sdss']=          False
-already_run_interp_errors['g_sdss']=          False
-already_run_interp_errors['i_sdss']=          False
-already_run_interp_errors['r_p48']=           False
-already_run_interp_errors['g_p48']=           False
-already_run_interp_errors['z_sdss']=          False
-already_run_interp_errors['u_johnson']=       False
-already_run_interp_errors['v_johnson']=       False
-already_run_interp_errors['b_johnson']=       False
-already_run_interp_errors['i_cousin']=        False
-already_run_interp_errors['r_cousin']=        False
-already_run_interp_errors['j_2mass']=         False
-already_run_interp_errors['h_2mass']=         False
-
+#already_run_interp_errors=dict() #don't touch this line
+#already_run_interp_errors['UVW1']=            False
+#already_run_interp_errors['UVW2']=            False
+#already_run_interp_errors['UVM2']=            False
+#already_run_interp_errors['u_swift']=         False
+#already_run_interp_errors['b_swift']=         False
+#already_run_interp_errors['v_swift']=         False
+#already_run_interp_errors['r_sdss']=          False
+#already_run_interp_errors['g_sdss']=          False
+#already_run_interp_errors['i_sdss']=          False
+#already_run_interp_errors['r_p48']=           False
+#already_run_interp_errors['g_p48']=           False
+#already_run_interp_errors['z_sdss']=          False
+#already_run_interp_errors['u_johnson']=       False
+#already_run_interp_errors['v_johnson']=       False
+#already_run_interp_errors['b_johnson']=       False
+#already_run_interp_errors['i_cousin']=        False
+#already_run_interp_errors['r_cousin']=        False
+#already_run_interp_errors['j_2mass']=         False
+#already_run_interp_errors['h_2mass']=         False
+#
 
 # In case you fit with a linear-fitting algorythm
 already_run_matrix=False
 num_iterations=100
 
 # In case you fit with mcmc
-already_run_mcmc=False
+already_run_mcmc=True
 nwalkers=80
 num_steps=350
 
