@@ -27,6 +27,7 @@ from . import black_body_flux_density
 from . import distances_conversions
 from . import energy_conversions
 from . import fitter_general
+from . import fit_black_body_flux_filters_dynesty
 
 #print('Hi')
 #pdb.set_trace()
@@ -65,10 +66,10 @@ __all__=['calculate_T_and_R_in_time','plot_T_and_R_in_time','plot_L_in_time','pl
 
 # make sure you don't have cases with repeated x,y, and different yerr
 #lower_limit_on_flux=params.lower_limit_on_flux
-def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_errors_from_param=None,already_run_mcmc=None,
-                              already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,
+def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_errors_from_param=None,already_run_mcmc=None,already_run_dynesty=None,
+                              already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,distance_pc=None,
                               distance_modulus=None,explosion_date=None,EBV=None,output=None,filters_directory=None,
-                              mcmc=False,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,
+                              mcmc=False, dynesty=None,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,
                               num_steps=None,nwalkers=None,csm=False,already_run_fit=None,excluded_bands=[],priors=False,lowrad=None,hirad=None,lowtemp=None,hitemp=None):
 
     #print('num_steps is',num_steps)
@@ -81,7 +82,6 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
 
 
     interpolation_dates = np.genfromtxt(dates_file)  # param.dates_file
-    print("I AM HEREEE")
     if data_file is None:
         raise Exception('you need to provide a data_file')
         #exit()
@@ -97,6 +97,8 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     if already_run_matrix is None:
         raise Exception('you need to procide a already_run_matrix param, True or False')
         #exit()
+    if already_run_dynesty is None: 
+        raise Exception('you need to procide a already_run_dynesty param, True or False')
 
     num_epochs = len(interpolation_dates)
 
@@ -116,8 +118,8 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
             raise Exception(
                 'already_run_fit should be either None or a boolean list with the same number of elements as in the dates file. The number of dates is: {}'.format(
                     len(interpolation_dates)))
-
-    distance_pc = distances_conversions.DM_to_pc(distance_modulus)
+    if distance_pc is None:
+        distance_pc = distances_conversions.DM_to_pc(distance_modulus)
 
     data_dico = \
     read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
@@ -400,7 +402,9 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
     if mcmc==True:
         fast=[False]*len(Spectra)
         already_run=already_run_mcmc
-    else:
+    elif dynesty==True:
+        already_run=already_run_dynesty
+    else:    
         already_run=already_run_matrix
 
     if already_run==False:
@@ -555,6 +559,63 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 Best[i, 1] = best_temp
                 Best[i, 2] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[0, 0]
                 Best[i, 3] =np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[0, 1]
+                Best[i, 4] = best_radius
+                Best[i, 5] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 0]
+                Best[i, 6] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 1]
+                Best[i, 7] = best_luminosity
+
+            elif dynesty==True:
+                print('******* method chosen: Nested Sampling *******')
+                if already_run_fit[i]==False:
+                    #if fast[i]==False:
+                    if priors is False:
+                        p=[np.array([5e3,hitemp]),np.array([5e13,hirad])]
+
+                    else:
+                        p=[np.array([lowtemp[i],hitemp[i]]),np.array([lowrad[i],hirad[i]])]
+                    res_obj=fit_black_body_flux_filters_dynesty.fit_black_body_flux_filters_dynesty\
+                        (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),num_winners=20,
+                        already_run_dynesty=already_run_dynesty,already_run_calc_all_chis=False,priors=p,
+                        distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_dynesty=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
+                        path_to_txt_file=None,dilution_factor=10,filters_directory=filters_directory)
+                    [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=res_obj
+
+                    '''
+                    else:
+                        if hirad is None:
+                            [best_temp, best_radius, best_luminosity, best_coeff] = fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc \
+                                (Spectrum_right_format,
+                                 triangle_plot_title=r'$JD-t_{ref}=$' + str(round(j['time'] - explosion_date, 2)), nwalkers=nwalkers,
+                                 num_steps=num_steps, num_winners=20, already_run_mcmc=already_run_mcmc,
+                                 already_run_calc_all_chis=False, Temp_prior=np.array([7000, 35000]),
+                                 Radius_prior=np.array([1e12, 1e15]), initial_conditions=np.array([15000, 1.5e14]),
+                                 distance_pc=distance_pc,
+                                 Ebv=EBV, ndof=None, show_plot=False,
+                                 output_mcmc=output+'/day_' + str(round(j['time'] - explosion_date, 3)),
+                                 show_mag_AB=True, z=redshift, path_to_txt_file=None, fast=fast[i], dilution_factor=10)
+                        else:
+                            print('the prior on the radius is ', [0.8e14, hirad[i]])
+                            [best_temp, best_radius, best_luminosity, best_coeff] = fit_black_body_flux_filters_mcmc.fit_black_body_flux_filters_mcmc \
+                                (Spectrum_right_format,
+                                 triangle_plot_title=r'$JD-t_{ref}=$' + str(round(j['time'] - explosion_date, 2)), nwalkers=nwalkers,
+                                 num_steps=num_steps, num_winners=20, already_run_mcmc=already_run_mcmc,
+                                 already_run_calc_all_chis=False, Temp_prior=np.array([7000, 35000]),
+                                 Radius_prior=np.array([1e12, hirad[i]]), initial_conditions=np.array([15000, 1.5e14]),
+                                 distance_pc=distance_pc,
+                                 Ebv=EBV, ndof=None, show_plot=False,
+                                 output_mcmc=output+'/day_' + str(round(j['time'] - explosion_date, 3)),
+                                 show_mag_AB=True, z=redshift, path_to_txt_file=None, fast=fast[i], dilution_factor=10)
+                    '''
+
+                else:
+                    best_temp=np.genfromtxt(output+'/day_'+str(round(j['time'],3))+'/best_fit_results.txt')[0]
+                    best_radius=np.genfromtxt(output+'/day_'+str(round(j['time'],3))+'/best_fit_results.txt')[1]
+                    best_luminosity=np.genfromtxt(output+'/day_'+str(round(j['time'],3))+'/best_fit_results.txt')[2]
+
+                Best[i, 0] = j['time']
+                Best[i, 1] = best_temp
+                Best[i, 2] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[0, 0]
+                Best[i, 3] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[0, 1]
                 Best[i, 4] = best_radius
                 Best[i, 5] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 0]
                 Best[i, 6] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 1]

@@ -231,7 +231,6 @@ def fit_black_body_flux_filters_mcmc(Spectrum,nwalkers=100,num_steps=350,num_win
 
 
 	#Important comment: Here the spectrum is not corrected. in calc_black_body_flux_filter, E and z are applied to a theoretical bb of which the synthetic photo is compared to the data
-
 	samples = fitter_general.emcee_n_param(ndim=2, model_nparam=model_black_body_dist_fixed,
 										   prior_param=[Temp_prior, Radius_prior], data=spectrum_flux[:,0:2], uncertainties=spectrum_flux[:,2],
 										   initial_conditions=init,nwalkers=nwalkers,num_steps=num_steps,
