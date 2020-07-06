@@ -70,12 +70,11 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                               already_run_matrix=None,show_underlying_plots=True,verbose=False,redshift=None,distance_pc=None,
                               distance_modulus=None,explosion_date=None,EBV=None,output=None,filters_directory=None,
                               mcmc=False, dynesty=None,output_file_interpolation=None,lower_limit_on_flux=None,num_iterations=None,
-                              num_steps=None,nwalkers=None,csm=False,already_run_fit=None,excluded_bands=[],priors=False,lowrad=None,hirad=None,lowtemp=None,hitemp=None):
+                              num_steps=None,nwalkers=None,csm=False,already_run_fit=None,excluded_bands=[],priors=False,lowrad=None,hirad=None,lowtemp=None,hitemp=None,**kwargs):
 
     #print('num_steps is',num_steps)
     #print('nwalkers is',nwalkers)
     #pdb.set_trace()
-
     print('**********************************')
     print('** PRELIMINARY PARAMETERS CHECK **')
     print('**********************************')
@@ -577,7 +576,7 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                         (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),num_winners=20,
                         already_run_dynesty=already_run_dynesty,already_run_calc_all_chis=False,priors=p,
                         distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_dynesty=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
-                        path_to_txt_file=None,dilution_factor=10,filters_directory=filters_directory)
+                        path_to_txt_file=None,dilution_factor=10,filters_directory=filters_directory,**kwargs)
                     [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=res_obj
 
                     '''

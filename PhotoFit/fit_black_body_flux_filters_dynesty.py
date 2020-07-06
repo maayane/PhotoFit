@@ -131,6 +131,7 @@ def fit_black_body_flux_filters_dynesty(Spectrum,**kwargs):
     TO DO: give an option for the speed: decrease the length of TempVec, give the spec units as options,
     and change the location /Users/maayanesoumagnac/Maayane_Astro_python_library/data to the user one
     """
+
     inputs = {'sampler':'dynamic',
              'nlive':250,
              'z':0,
