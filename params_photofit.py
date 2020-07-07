@@ -1,8 +1,5 @@
 import os 
-import sys
-UTILS_PATH=os.environ['UTILS_PATH']
-sys.path.insert(1,UTILS_PATH)
-from PhotoUtils import dist_mod
+
 ## Parameters used in script_test.py ##
 mcmc=False# if False, plot with linear fit. If True, plots with mcmc
 dynesty=True
@@ -12,18 +9,6 @@ output_file_mcmc='./results_fit_sed_mcmc'
 output_file_dynesty='./results_fit_sed_dynesty'
 output_file_linear='./result_fit_sed_mat'
 output_file_interpolation='./results_interpolation'
-
-
-if mcmc==True:
-    output=output_file_mcmc
-elif dynesty==True:
-    output=output_file_dynesty
-else:
-    output=output_file_linear
-if os.path.exists(output):
-    print('the output directory, '+output + ' exists already')
-else:
-    os.mkdir(output)
 
 ########## Definition of the object parameters ##########
 excluded_bands=['b_swift']
@@ -100,3 +85,15 @@ hitemp=[4e4]*13
 
 
 number_of_plot=9 #number of sed plots can be 9/16
+
+####################### DON'T TOUCH BELOW THIS POINT #######################
+if mcmc==True:
+    output=output_file_mcmc
+elif dynesty==True:
+    output=output_file_dynesty
+else:
+    output=output_file_linear
+if os.path.exists(output):
+    print('the output directory, '+output + ' exists already')
+else:
+    os.mkdir(output)
