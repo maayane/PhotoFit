@@ -147,7 +147,9 @@ def fit_black_body_flux_filters_dynesty(Spectrum,**kwargs):
              'num_winners':20,
              'already_run_dynesty':False,
              'already_run_calc_all_chis':False,
-             'dilution_factor':10}
+             'dilution_factor':10, 
+
+             }
 
 
     inputs.update(kwargs)

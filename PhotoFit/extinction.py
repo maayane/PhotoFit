@@ -360,6 +360,8 @@ def apply_extinction_to_theoretical_flux(theoretical_flux,Ebv,Model=None,R=None)
     #     else:
     if R == None:
         R_v = 3.08
+    else: 
+        R_v = R
     A=R_v*Ebv*a_lambda_cardelli_fast(theoretical_flux[:,0],R_v)
     # A=extinction_in_array_of_wavelength(Ebv,theoretical_flux[:,0],'C')
     # if Model=='A':

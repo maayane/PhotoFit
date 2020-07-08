@@ -408,6 +408,7 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
 
     if already_run==False:
         Best=np.zeros((np.shape(Spectra)[0],8))
+        Best_wchi2=np.zeros((np.shape(Spectra)[0],10))
         #print(Best)
         #pdb.set_trace()
         for i,j in enumerate(Spectra): #goes through all epochs
@@ -557,18 +558,20 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 Best[i, 0] = j['time']
                 Best[i, 1] = best_temp
                 Best[i, 2] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[0, 0]
-                Best[i, 3] =np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[0, 1]
+                Best[i, 3] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[0, 1]
                 Best[i, 4] = best_radius
                 Best[i, 5] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 0]
                 Best[i, 6] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 1]
                 Best[i, 7] = best_luminosity
-
+                Best_wchi2[i,0:8]=Best[i, 0:8]
+                Best_wchi2[i,8]=np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/best_fit_results.txt',skip_header=1)[4]
+                Best_wchi2[i,9]=np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/best_fit_results.txt',skip_header=1)[5]
             elif dynesty==True:
                 print('******* method chosen: Nested Sampling *******')
                 if already_run_fit[i]==False:
                     #if fast[i]==False:
                     if priors is False:
-                        p=[np.array([5e3,hitemp]),np.array([5e13,hirad])]
+                        p=[np.array([5e3,hitemp]),np.array([1e13,hirad])]
 
                     else:
                         p=[np.array([lowtemp[i],hitemp[i]]),np.array([lowrad[i],hirad[i]])]
@@ -619,7 +622,9 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 Best[i, 5] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 0]
                 Best[i, 6] = np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/1sigma.txt',skip_header=1)[1, 1]
                 Best[i, 7] = best_luminosity
-
+                Best_wchi2[i,0:8]=Best[i, 0:8]
+                Best_wchi2[i,8]=np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/best_fit_results.txt',skip_header=1)[4]
+                Best_wchi2[i,9]=np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/best_fit_results.txt',skip_header=1)[5]
             else:
                 print('******* method chosen: LINEAR FIT *******')
                 #print(Spectrum_right_format)
@@ -650,12 +655,16 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                 Best[i,5]='0'#np.genfromtxt(output_file_linear+'/day_'+str(round(j['time']-explosion_date,3))+'/1sigma.txt',skip_header=1)[1,0]
                 Best[i,6] ='0'#np.genfromtxt(output_file_linear+'/day_'+str(round(j['time']-explosion_date,3))+'/1sigma.txt',skip_header=1)[1,1]
                 Best[i,7]=best_luminosity
+                Best_wchi2[i,0:8]=Best[i, 0:8]
+                Best_wchi2[i,8]=np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/best_fit_results.txt',skip_header=1)[4]
+                Best_wchi2[i,9]=np.genfromtxt(output+'/day_' + str(round(j['time'], 3)) + '/best_fit_results.txt',skip_header=1)[5]
             #pylab.show()
 
 
         np.savetxt(output + '/Results.txt', Best,
                        header='JD, best T, lower sigma_T, upper sigma_T,best R, lower sigma_R, upper sigma_R, best L')
-
+        np.savetxt(output + '/Results_w_chi2.txt', Best_wchi2,
+                       header='JD, best T, lower sigma_T, upper sigma_T,best R, lower sigma_R, upper sigma_R, best L, chi2, chi2/dof')
 
     else:
         print('******* You have ran the fit already *******')
@@ -742,7 +751,7 @@ def plot_T_and_R_in_time(Best,data_compare=None,compare=False,label_comparision=
     pylab.show()
     '''
 
-def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,error_lum_ran=False,explosion_date=None,output=None,mcmc=False,output_file_interpolation=None,ylim=None,excluded_bands=[],verbose=False):
+def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,error_lum_ran=False,explosion_date=None,output=None,mcmc=False, dynesty=False,output_file_interpolation=None,ylim=None,excluded_bands=[],verbose=False):
     ################ L #######
     print('**********************************')
     print('******* PLOT CALCULATED L ********')
@@ -753,7 +762,7 @@ def plot_L_in_time(Best,dates_file=None,data_file=None,lower_limit_on_flux=None,
     data_dico = \
         read_data_from_file.read_data_into_numpy_array(data_file, header=True, delimiter=',', no_repeat_rows=True)[2]
 
-    if mcmc==True:
+    if (mcmc==True)|(dynesty==True):
         data_dicts = dict()
         for i, j in enumerate(data_dico['filter']):
             data_dicts[j] = dict()

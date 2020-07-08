@@ -93,10 +93,10 @@ show_plot=False #Show underlying plots
 
 
 priors=True
-lowrad=[1e13]*13#the lower limit on the radius prior
-hirad=[4e15]*13#the upper limit on the radius prior
-lowtemp=[5e3]*13
-hitemp=[4e4]*13
+lowrad=[1e13]*n#the lower limit on the radius prior
+hirad=[4e15]*n#the upper limit on the radius prior
+lowtemp=[5e3]*n
+hitemp=[4e4]*n
 
 
 number_of_plot=9 #number of sed plots can be 9/16
