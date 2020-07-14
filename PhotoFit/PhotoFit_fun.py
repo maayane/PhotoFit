@@ -574,14 +574,19 @@ def calculate_T_and_R_in_time(data_file=None,dates_file=None,already_run_interp_
                         p=[np.array([5e3,hitemp]),np.array([1e13,hirad])]
 
                     else:
+                        import time
+                        s=time.time()
                         p=[np.array([lowtemp[i],hitemp[i]]),np.array([lowrad[i],hirad[i]])]
-                    res_obj=fit_black_body_flux_filters_dynesty.fit_black_body_flux_filters_dynesty\
+                        res_obj=fit_black_body_flux_filters_dynesty.fit_black_body_flux_filters_dynesty\
                         (Spectrum_right_format,triangle_plot_title=r'$JD-t_{ref}=$'+str(round(j['time'],2)),num_winners=20,
                         already_run_dynesty=already_run_dynesty,already_run_calc_all_chis=False,priors=p,
                         distance_pc=distance_pc,Ebv=EBV,ndof=None,show_plot=False,output_dynesty=output+'/day_'+str(round(j['time'],3)),show_mag_AB=True,z=redshift,
                         path_to_txt_file=None,dilution_factor=10,filters_directory=filters_directory,**kwargs)
+                        e=time.time()
+                        print('''epoch elapsed time: {0}s'''.format(e-s))
                     [best_temp, best_radius, best_luminosity,best_coeff,chi_square,chi_square_dof]=res_obj
 
+                    
                     '''
                     else:
                         if hirad is None:

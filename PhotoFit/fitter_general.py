@@ -223,6 +223,133 @@ def emcee_n_param(ndim,model_nparam, prior_param, data, uncertainties, initial_c
             samples = np.genfromtxt(flatchain_path)
     return samples
 
+def calc_best_fit_2_param(ndim,model_nparam,flatchain_path,data,uncertainties,winners=50,output_file_path=None,bounds=None,already_run_calc_all_chis=False,show_plots=False,dilution_factor=0,verbose=False):
+    """Description:
+        -Input  :
+        -Output : a numpy array with [best params, chi2]
+        Plots and txt files:
+        txt files:
+       pdf files:
+        Tested : ?
+             By : Maayane T. Soumagnac Nov 2016, modified by Ido Irani 2020 for Photofit 
+            URL :
+        Example: best=fitter_general.calc_best_fit_n_param()
+        Reliable:  """
+    if verbose==True:
+        print('*** Calculation of the maximum likelihood values ***')
+    samples=np.genfromtxt(flatchain_path,delimiter=None,dtype=float)
+    if output_file_path==None:
+        output_file_path='.'
+    file_path_to_all_chain_chis = output_file_path + '/all_param_and_chis_of_chain.txt'
+    #### 1. calculate the chi2 of all the parameters combinations of the chain, store this in file_path_to_all_chain_chis/all_param_and_chis_of_chain.txt'
+    if already_run_calc_all_chis != True:
+        if dilution_factor==0:
+            if verbose == True:
+                print('I am calculating the chi value for each combination of parameters in the chain')
+            chis = np.zeros((np.shape(samples)[0], ndim+1))
+            for i, line in enumerate(samples):
+                # print('i am a line {0}'.format(i)
+                model_nparam.T=line[0]
+                model_nparam.r=line[1]
+                my_objective = class_chi2.objective_with_uncertainties(model_nparam.model_array(),data, sigmas=uncertainties)
+                                                                           
+
+                chis[i, 0:ndim] = samples[i, 0:ndim]
+                chis[i, ndim] = my_objective.chi_square_value()
+        else:
+            if verbose == True:
+                print('I am calculating the chi value for every {0} combination of parameters in the chain'.format(dilution_factor))
+            samples_diluted=samples[::dilution_factor].copy()
+            chis = np.zeros((np.shape(samples_diluted)[0], ndim + 1))
+            for i, line in enumerate(samples_diluted):
+                model_nparam.T=line[0]
+                model_nparam.r=line[1]
+                my_objective = class_chi2.objective_with_uncertainties(
+                    model_nparam.model_array(),
+                    data, sigmas=uncertainties)
+            
+                chis[i, 0:ndim] = samples[i, 0:ndim]
+                chis[i, ndim] = my_objective.chi_square_value()
+        np.savetxt(file_path_to_all_chain_chis, chis)
+    else:
+        chis = np.genfromtxt(file_path_to_all_chain_chis)
+    #### 2. sort all the chis by increasing order
+    param_and_chi_sorted = chis[np.argsort(chis[:, ndim])]
+    #### 3. take the n=winners combinations with lowest chi2, and use them as initial point of the op.minimize algorythm
+    result_op_min = np.zeros((winners, np.shape(param_and_chi_sorted)[1]))
+
+    def lnlike(theta, data, uncert):
+        model_nparam.T=theta[0]
+        model_nparam.r=theta[1]
+        return -0.5 * class_chi2.objective_with_uncertainties(model_nparam.model_array(),
+                                                          data, sigmas=uncert).chi_square_value()
+        
+
+    nll = lambda *args: -lnlike(*args) / 0.5
+    bounds=[[np.min(bounds[i]),np.max(bounds[i])] for i in range(ndim)]
+    #print bounds
+    for i in range(winners):
+        result_op_mini = op.minimize(nll, [param_and_chi_sorted[i, j] for j in range(ndim)],args=(data, uncertainties), bounds=bounds)
+        besties = result_op_mini["x"]
+        #print besties
+        result_op_min[i, 0:np.shape(param_and_chi_sorted)[1] - 1] = besties
+        model_nparam.T=besties[0]
+        model_nparam.r=besties[1]
+        result_op_min[i, np.shape(param_and_chi_sorted)[1] - 1] = class_chi2.objective_with_uncertainties(
+        model_nparam.model_array(), data,sigmas=uncertainties).chi_square_value()
+        
+    #### 4. sort and store the obtained best fit parameters and corresponding chi in file_path_to_all_chain_chis/winners_best_chis.txt
+    best_param_and_chi_sorted = result_op_min[np.argsort(result_op_min[:, ndim])]
+    # print best_param_and_chi_sorted
+    np.savetxt(output_file_path + '/' + str(winners) + '_best_combination_and_chis.txt', best_param_and_chi_sorted)
+
+    #### 5. find the three optimized best fit combinations with lowest chi2 and store them in best_com
+    maxparam = np.zeros((np.shape(best_param_and_chi_sorted)))
+
+    j = 0
+    maxparam[0, :] = best_param_and_chi_sorted[0, 0:np.shape(best_param_and_chi_sorted)[1]]
+    for i in range(winners - 1):
+
+        a = (
+        best_param_and_chi_sorted[i + 1, 0:np.shape(best_param_and_chi_sorted)[1] - 1] != best_param_and_chi_sorted[
+                                                                                          i,
+                                                                                          0:np.shape(
+                                                                                              best_param_and_chi_sorted)[
+                                                                                                1] - 1])
+
+        if a.all():  # if the param are not the same
+            j = j + 1
+            maxparam[j, :] = best_param_and_chi_sorted[i + 1,
+                             0:np.shape(best_param_and_chi_sorted)[1]]  # we add the line to the column
+
+    maxiparam_good_size = maxparam
+
+    np.savetxt(output_file_path + '/best_optimized_combinations.txt', maxiparam_good_size,
+               header='best parameters,chi^2')
+
+    if show_plots == True:
+        pylab.figure()
+        pylab.plot(param_and_chi_sorted[:, ndim], 'b', label=r'$\chi^2 of the combinations in the chain$')
+        pylab.title(r'sorted $\chi^2$ values in the chain {0}'.format(flatchain_path))
+        pylab.xlabel('index')
+        pylab.ylabel('$\chi^2$')
+        pylab.savefig(output_file_path + '/all_chis_plot.pdf', facecolor='w', edgecolor='w', orientation='portrait',
+                      papertype=None, format='pdf',
+                      transparent=False, bbox_inches=None, pad_inches=0.1)
+        pylab.figure()
+        pylab.plot(best_param_and_chi_sorted[:, ndim], 'r')
+        pylab.title(r'sorted optimized $\chi^2$ values')
+        pylab.xlabel('index')
+        pylab.ylabel('$\chi^2$')
+        pylab.savefig(output_file_path + '/opt_chis_plot.pdf', facecolor='w', edgecolor='w', orientation='portrait',
+                      papertype=None, format='pdf',
+                      transparent=False, bbox_inches=None, pad_inches=0.1)
+    if verbose==True:
+        print('the best fit param are {0} and the corrisponding chi^2 is {1}'.format(maxiparam_good_size[0,:ndim],maxiparam_good_size[0, ndim]))
+        print('the reduced chi^2 is {0}'.format(round(maxiparam_good_size[0, ndim] / (np.shape(data)[0] - ndim), 4)))
+
+    return maxiparam_good_size[0, :]
+
 def calc_best_fit_n_param(ndim,model_nparam,flatchain_path,data,uncertainties,winners=50,output_file_path=None,bounds=None,already_run_calc_all_chis=False,show_plots=False,dilution_factor=0,verbose=False):
     """Description:
         -Input  :

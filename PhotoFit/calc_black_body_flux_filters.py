@@ -9,6 +9,8 @@ import os
 import logging
 import shutil
 import pdb
+from scipy.interpolate import interp2d
+import matplotlib.pyplot as plt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,6 +47,7 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
     if Filter_vector is None and P_vector is None:
         print('ERROR: you need to define either Filter_vector or P_vector')
         pdb.set_trace()
+    #import ipdb; ipdb.set_trace()
     if output_txt==True:
         if os.path.exists('./outputs_from_calc_black_body_flux_filters_function'):
             logger.info('output_path/txt_files did exist, I am removing it and creating a new one')
@@ -183,3 +186,150 @@ def calc_black_body_flux_filters(Temp,wavelengths,filters_directory=None,Filter_
         pylab.show()
     #print('output array is',output_array)
     return output_array #N*4 array where each line is: [filter family, filtername,effective wavelength of P,\bar{f}(P)], f is in [erg/sec/cm^2/\AA ]
+
+def Integrate_flux_in_filter(black_body_spectrum,filters_directory,Filter_vector=None,P_vector=None):
+    if Filter_vector is not None:
+        [P, _ ]=get_filter.make_filter_object(Filter_vector,filters_directory=filters_directory)
+        output_array = np.empty([np.shape(Filter_vector)[0], 4], dtype=object)
+        string = np.empty(np.shape(Filter_vector)[0], dtype=object)
+        for i in range(len(Filter_vector)):
+            fluxes = P['filter_object'][i].get_flux(black_body_spectrum[:, 0]*1e10, black_body_spectrum[:, 1])
+
+            output_array[i,0]=Filter_vector[i,0]
+            output_array[i,1]=Filter_vector[i,1]
+            output_array[i, 2] = P['filter_object'][i].cl.item()#le eff_wl de Eran (auquel je veux pouvoir comparer) est le cl de pyphot
+            output_array[i,3]=fluxes
+            string[i]=output_array[i,1]+'\n'+r'$(\lambda_c=$'+str(round(output_array[i,2],3))+'$)$'
+    else:
+        output_array = np.empty([np.shape(P_vector)[0], 4], dtype=object)
+        string = np.empty(np.shape(P_vector)[0], dtype=object)
+        for i in range(len(P_vector)):
+            fluxes = P_vector[i,2].get_flux(black_body_spectrum[:, 0]*1e10, black_body_spectrum[:, 1])
+            output_array[i, 0] = P_vector[i, 0]
+            output_array[i, 1] = P_vector[i, 1]
+            output_array[i, 2] = P_vector[i, 2].cl.item()# le eff_wl de Eran (auquel je veux pouvoir comparer) est le cl de pyphot
+            output_array[i, 3] = fluxes
+            string[i] = output_array[i, 1] + '\n' + r'$(\lambda_c=$' + str(round(output_array[i, 2], 3)) + '$)$'
+    return output_array,string
+
+
+def Plot_bb_fits(black_body_spectrum,string,output_array,output_file,show_plots):
+    pylab.figure()
+    pylab.plot(output_array[:,2], output_array[:,3], 'ro', label='synthetic flux through input filters')
+    pylab.plot(black_body_spectrum[:,0]*1e10,black_body_spectrum[:,1],'b-', label='theoretical black body with input T ans R')
+    #if Ebv != None:
+    #    pylab.plot(output_array[:, 2], output_array[:,4], 'mo', label='without extinction')
+        #pylab.plot(1 / wavelengths_allen, AlA_Alen, 'b', label='Allen')
+    pylab.xlabel(r'Central wavelength of filters ($\AA$)')
+    pylab.ylabel(r'flux $\bar{f}(P)$, $[erg/sec/cm^2/\AA ]$')
+    pylab.title('result of calc_blac_body_flux_filters.py')
+    labels = string[:]
+    pylab.xticks(output_array[:,2],labels)#,rotation='vertical')
+    pylab.legend(loc=4)
+    pylab.savefig(output_file+'/spectrum_plot_from_calc_black_body_flux_filters.pdf', facecolor='w', edgecolor='w',
+              orientation='portrait', papertype=None, format='pdf', transparent=False, bbox_inches=None,
+              pad_inches=0.1)
+              
+    if show_plots==True:
+        pylab.show()
+
+def calc_black_body_flux_filters_clean(Temp,Radius,Ebv,distance_pc,Filter_vector=None,P_vector=None,wavelengths=np.arange(1e-7, 3e-6, 5e-9),output_txt=True,filters_directory=None,output_plot=True,lib=None,show_plots=False,R_ext=3.08,z=0,output_file=None,**kwargs):
+    """This code calcultes a grid of synthetic fluxes \bar{f}(P) of a blackbody in a given filter P (filter family and filter name), given its temperature T, Radius and distance.
+    Input  :- Temperature [K]
+            - wavelengths [m]
+            - Filter vector: N-long array of of arrays [[filter family, filtername],[filter family, filtername],[filter family, filtername],...etc]
+            the family and names are the ones provided by the pyphot library #FIX THERE IS A PROBBLEM IF FILTER VECTOR IS ONLY 1D
+            - alternatively, you can give a N-long array [[filter family, filtername,P1],[filter family, filtername,P2],..,[filter family, filtername.PN]], where P are pyphot.Filter objects. This can help to speed up the code, e.g. if it's used in a mcmc
+            - Radius in cm default is None
+            - distance: distance of the blackbody in pc, default is 10 pc
+            - output_txt: if True (default), create an output file with txt files. In codes using this function
+            many tims (e.g. fit_black_body_fluxfiters.py), you may want to set it to false.
+            - output_plot: if True (default), create an output file with txt files. In codes using this function
+            in loops (e.g. fit_black_body_fluxfiters.py), you may want to set it to false.
+            - lib: library of filters in the same format as the pyphot library. If None, uses lib = pyphot.get_library().
+            in codes using this function in loops (e.g. fit_black_body_fluxfiters.py), you may want to set lib = pyphot.get_library() outside of the loop.
+            - CAREFULL! Ebv and z are exinctions and redshift to be APPLIED (not corrected) to a theoretical black boday before synthetic photometry is ran on it.
+            i.e. the theoretical bb is extincted and redshifted by E abd z
+    Output  :- N*4 array where each line is: [filter family, filtername,effective wavelength of P,\bar{f}(P)], f is in [erg/sec/cm^2/\AA ]
+    Plots and output files: -plot of lambda_mean(P), \bar{f}(P)
+	Tested : ?
+	    By : Maayane T. Soumagnac Nov 2016
+	   URL :
+	Example: sun_flux=calc_black_body_flux_filters.calc_black_body_flux_filters(T,wavelengths,Filter_vector,distance=4.8481e-6,Radius=1.)
+	Link to other functions: it is the same to do calc_anyspectrum_flux_filters(black_body_flux_density) and calc_black_body_flux_filters
+	Reliable:
+	Reference: my notes in observationnal astronomy, pargraph on synthetic photometry,
+	            //anaconda/lib/python2.7/site-packages/pyphot/phot.py Filter class
+	 TO DO: give an option for the speed: decrease the length of TempVec, give the spec units as options"""
+    #print('I am running calc_blacl_body_flux_filter'
+    if Filter_vector is None and P_vector is None:
+        print('ERROR: you need to define either Filter_vector or P_vector')
+        pdb.set_trace()
+    if output_txt==True:
+        if os.path.exists('./outputs_from_calc_black_body_flux_filters_function'):
+            logger.info('output_path/txt_files did exist, I am removing it and creating a new one')
+            shutil.rmtree('./outputs_from_calc_black_body_flux_filters_function')
+        else:
+            logger.info('the output file file did not exist yet. I am creating it now')
+        os.makedirs('./outputs_from_calc_black_body_flux_filters_function')
+
+    if Radius is not None:
+        Radius=distances_conversions.cm_to_solar_radius(Radius)
+    black_body_spectrum = \
+    black_body_flux_density.black_body_flux_density_fast(Temp, wavelengths, 'P', distance_pc=distance_pc, Radius=Radius,
+                                                    Ebv=Ebv,R_ext=R_ext,redshift=z)   # in erg/sec/cm^2/Ang
+    if lib is None:
+        lib = pyphot.get_library()
+    else:
+        lib=lib
+
+    output_array,string=Integrate_flux_in_filter(black_body_spectrum,filters_directory=filters_directory,Filter_vector=Filter_vector,P_vector=P_vector)
+            
+    if output_txt==True:
+        outpath='./outputs_from_calc_black_body_flux_filters_function/output_array.txt'
+        head=r'Filter family, Filter name, effective wavelength $(\AA)$, flux $\bar{f}(P)$ $[erg/sec/cm^2/\AA ]$'
+        np.savetxt(outpath, output_array,header=head,fmt="%s")
+    if output_plot==True:
+        Plot_bb_fits(black_body_spectrum,string,output_array,output_file,show_plots)
+    return output_array #N*4 array where each line is: [filter family, filtername,effective wavelength of P,\bar{f}(P)], f is in [erg/sec/cm^2/\AA ]
+
+
+
+
+def generate_grid(T_lims,R_lims,Ebv,z,grid_path,filters_directory,distance_pc,lib,R_ext,Filter_vector=None,P_vector=None, res=100):
+    logT_min=np.log10(np.min(T_lims))
+    logT_max=np.log10(np.max(T_lims))
+    logR_min=np.log10(np.min(R_lims))
+    logR_max=np.log10(np.max(R_lims))
+
+    T_vec=np.linspace(logT_min,logT_max,res)
+    R_vec=np.linspace(logR_min,logR_max,res)
+    grid={}
+    f_grid={}
+    for j in range(len(P_vector)):
+        filt=P_vector[j,0]+'+'+P_vector[j,1]
+        grid[filt]=np.zeros((res,res))
+
+    
+    wl=np.arange(1e-7, 3e-6, 5e-9)
+    Tv, Rv = np.meshgrid(10**T_vec, 10**R_vec)
+    for n in range(res):
+        for m in range(res):
+            TT=Tv[n,m]
+            RR=Rv[n,m]
+            out = calc_black_body_flux_filters(TT,wl,Filter_vector=Filter_vector, P_vector=P_vector,
+                                                                            Radius=RR, distance_pc=distance_pc,
+                                                                            output_plot=False,
+                                                                            show_plots=False, output_txt=False,
+                                                                            lib=lib, z=z,Ebv=Ebv,R_ext=R_ext)
+
+            for j in range(len(P_vector)):
+                filt=P_vector[j,0]+'+'+P_vector[j,1]
+                grid[filt][n,m]=out[j, 3]	
+
+
+    #head='T_lim={0},R_lims={1},Ebv={2}'.format(T_lims,R_lims,Ebv)
+    #np.savetxt(grid_path,grid,header=head,fmt="%s")
+    return Tv, Rv, grid
+
+
