@@ -11,14 +11,14 @@ output_file_linear='./result_fit_sed_mat'
 output_file_interpolation='./results_interpolation'
 
 ########## Definition of the object parameters ##########
-excluded_bands=['b_swift']
-z = 0.005224
+excluded_bands=['v_swift']
+z = 0.023033
 distance_pc=None
-distance_modulus=30.39#31.8
-n=13 #number of epochs
-explosion_date=2458975.0 #in principle, this has to be in jd. For the test data it is in jd-explosion dates
+distance_modulus=34.95#31.8
+n=7 #number of epochs
+explosion_date=2459087 #in principle, this has to be in jd. For the test data it is in jd-explosion dates
 #EBV=0.035
-EBV=0.02
+EBV=0.033
 csm=False
 plots=False
 
